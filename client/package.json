@@ -3,5 +3,14 @@
   "version": "0.0.1",
   "main": "index.js",
   "license": "UNLICENSED",
-  "private": true
+  "private": true,
+  "scripts": {
+    "elm": "elm make Main.elm --output elm.js || true",
+    "elm:watch": "chokidar '**/*.elm' -c 'yarn elm'",
+    "start": "electron main.js",
+    "watch": "yarn start & yarn elm:watch & wait"
+  },
+  "devDependencies": {
+    "chokidar": "^2.0.0"
+  }
 }
