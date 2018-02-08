@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "chokidar": "^2.0.0"
+  },
+  "dependencies": {
+    "bulma": "^0.6.2"
   }
 }
