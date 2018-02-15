@@ -109,13 +109,16 @@
 
   <script>
     
-    web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
-    console.log(web3.isConnected());
-    var abi;
+    web3FirstChain = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
+    web3SecondChain = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+    console.log(web3FirstChain.isConnected());
+    console.log(web3SecondChain.isConnected());
+    var abi;//JSON.parse()
     var gContract;
-    web3.eth.defaultAccount = web3.eth.coinbase;
+    //This is only needed when you try to claim, so only needed on web3SecondChain
+    //web3FirstChain.eth.defaultAccount = web3FirstChain.eth.coinbase;
     var accounts = []    
-    web3.eth.getAccounts((err,acc) => {
+    web3FirstChain.eth.getAccounts((err,acc) => {
         console.log(acc);
         accounts.push(acc);
     });
@@ -124,27 +127,15 @@
     function prepareAndDeploy(){
       var bytecode = '0x'+compiledContract.contracts[":HTLC"].bytecode; //hardcoded specifying htl-contract
       abi = JSON.parse(compiledContract.contracts[":HTLC"].interface);
-      var p_digest = web3.sha3(document.getElementById('secret').value);
+      var p_digest = web3FirstChain.sha3(document.getElementById('secret').value);
       var p_dest = document.getElementById('dest').value;//"0xd513156a649ee0112a721ea9b4ea92ee7beb5ffd";
-      var ether = web3.toWei(document.getElementById('ether').value, "ether");//web3.toWei(10,"ether");
+      var ether = web3FirstChain.toWei(document.getElementById('ether').value, "ether");//web3FirstChain.toWei(10,"ether");
 
-      var contract = web3.eth.contract(abi);
-      let gasEstimate =  4712386;//web3.eth.estimateGas({data: bytecode});
-      var contractInstance = contract.new(p_digest,p_dest, {data: bytecode,gas: gasEstimate,from: web3.eth.coinbase, value: ether});
+      var contract = web3FirstChain.eth.contract(abi);
+      let gasEstimate =  4712386;//web3FirstChain.eth.estimateGas({data: bytecode});
+      var contractInstance = contract.new(p_digest,p_dest, {data: bytecode,gas: gasEstimate,from: web3FirstChain.eth.coinbase, value: ether});
       gContract = contractInstance;
       waitBlock(contractInstance);
-      //pass callback to start watching immediately
-      /*var claimEvent = contractInstance.Claim();
-      
-      claimEvent.watch(function(error,result) {
-        //TODO: add automated unlock here!
-        if(!error){
-          console.log("The secret is " + result);
-          console.log("Claimed, new balance of account2 is.");
-          console.log(web3.fromWei(eth.getBalance(accounts[1])));
-
-        }
-      });*/
     }
 
     function addDeployEvent(){
@@ -160,23 +151,24 @@
     // in a block to get the address of the contract
     async function waitBlock(contract) {
       while (true) {
-        let receipt = web3.eth.getTransactionReceipt(contract.transactionHash);
+        let receipt = web3FirstChain.eth.getTransactionReceipt(contract.transactionHash);
         if (receipt && receipt.contractAddress) {
           console.log("Contract deployed at " + receipt.contractAddress);
           addEvent();
           break;
         }
-        console.log("Waiting for a mined block to include your contract... currently in block " + web3.eth.blockNumber);
+        console.log("Waiting for a mined block to include your contract... currently in block " + web3FirstChain.eth.blockNumber);
         await sleep(4000);
       }
     }
     
     function unlock(){
-      let contract = web3.eth.contract(abi);
+      
+      web3SecondChain.eth.defaultAccount = web3SecondChain.eth.coinbase;
+      let contract = web3SecondChain.eth.contract(abi);
       let contractInstance = contract.at(document.getElementById('adrForHTLC').value);
       console.log(contractInstance);
       let _hash = document.getElementById('key').value;
-      
       
       contractInstance.claim(_hash);
     }
@@ -190,7 +182,7 @@
         if(!error){
           console.log("The secret is " + result.args._hash.toString());
           //This is hardcoded for my second account 
-          console.log(web3.fromWei(web3.eth.getBalance('0xd513156a649ee0112a721ea9b4ea92ee7beb5ffd')).c["0"]);
+          console.log(web3FirstChain.fromWei(web3FirstChain.eth.getBalance('0xd513156a649ee0112a721ea9b4ea92ee7beb5ffd')).c["0"]);
         } else {
           console.log(error);
         }
