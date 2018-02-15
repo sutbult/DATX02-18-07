@@ -1,6 +1,8 @@
 Knockoff remix
 =======================
 
+This has enough functionality to close issue #17
+
 Guide:
 --------------
 
