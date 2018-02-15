@@ -68,9 +68,9 @@ contract HTLC {
     //a string is subitted that is hash tested to the digest; If true the funds are sent to the dest address and destroys the contract
     function claim(string _hash) public returns(bool result) {
        require(digest == keccak256(_hash));
-       selfdestruct(dest);
        Claim(_hash);
-       return true;
+       selfdestruct(dest);
+       return true; //This will not occur
        }
 
     // allow payments
