@@ -1,7 +1,17 @@
 Knockoff remix
 =======================
 
-This has enough functionality to close issue #17
+This has enough functionality to close issue #17. 
+
+TODO
+---------
+- [ ] make abi fixed
+- [ ] Don't hardcode ":HTLC"
+- [ ] add Unlock Functionality
+
+# Suggestions:
++ Do something with estimateGas
+
 
 Guide:
 --------------
