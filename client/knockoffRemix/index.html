@@ -24,6 +24,8 @@
   <div clas="mui-container">
   <label for="secret" class="col-lg-2 control-label">Secret</label>
     <input id="secret" type="text">
+  <label for="digest" class="col-lg-2 control-label">Digest</label>
+    <input id="digest" type="text">
 
   <label for="dest" class="col-lg-2 control-label">Destination</label>
     <input id="dest" type="text">
@@ -127,8 +129,17 @@
     function prepareAndDeploy(){
       var bytecode = '0x'+compiledContract.contracts[":HTLC"].bytecode; //hardcoded specifying htl-contract
       abi = JSON.parse(compiledContract.contracts[":HTLC"].interface);
-      var p_digest = web3FirstChain.sha3(document.getElementById('secret').value);
-      var p_dest = document.getElementById('dest').value;//"0xd513156a649ee0112a721ea9b4ea92ee7beb5ffd";
+      
+      var p_digest;
+      //Will differ if you placed or accepted bid
+      if(!document.getElementById('secret').value){
+        p_digest = document.getElementById('digest').value;
+      }else{
+        p_digest = web3FirstChain.sha3(document.getElementById('secret').value);
+      }
+
+      //var p_digest = web3FirstChain.sha3(document.getElementById('secret').value);
+      var p_dest = document.getElementById('dest').value;
       var ether = web3FirstChain.toWei(document.getElementById('ether').value, "ether");//web3FirstChain.toWei(10,"ether");
 
       var contract = web3FirstChain.eth.contract(abi);
