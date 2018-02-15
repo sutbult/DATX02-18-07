@@ -46,9 +46,9 @@ contract HTLC {
     function claim(string _hash) public returns(bool result) {
        require(digest == keccak256(_hash));
        transfer(dest);
+       Claim(_hash);       
        selfdestruct(dest);
-       Claim(_hash);
-       return true;
+       return true; //This will not occur
        }
 
     function transfer(address _to) internal {
