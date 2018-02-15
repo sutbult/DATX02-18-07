@@ -18,8 +18,9 @@ window.onload = function () {
     loadSolcVersion()
   })
 
-  addCompileEvent()
-  addDeployEvent()
+  addCompileEvent();
+  addDeployEvent();
+  addUnlockEvent();
 }
 
 function loadSolcVersion() {

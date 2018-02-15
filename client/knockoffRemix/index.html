@@ -4,7 +4,6 @@
 <head>
   <title>Compile and Deploy</title>
   <link rel="stylesheet" href="libs/mui.min.css">
-  <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
@@ -65,8 +64,8 @@
             //a string is subitted that is hash tested to the digest; If true the funds are sent to the dest address and destroys the contract
             function claim(string _hash) public returns(bool result) {
                require(digest == keccak256(_hash));
-               selfdestruct(dest);
                Claim(_hash);
+               selfdestruct(dest);
                return true;
                }
         
@@ -113,6 +112,8 @@
     web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
     console.log(web3.isConnected());
     var abi;
+    var gContract;
+    web3.eth.defaultAccount = web3.eth.coinbase;
     var accounts = []    
     web3.eth.getAccounts((err,acc) => {
         console.log(acc);
@@ -123,17 +124,27 @@
     function prepareAndDeploy(){
       var bytecode = '0x'+compiledContract.contracts[":HTLC"].bytecode; //hardcoded specifying htl-contract
       abi = JSON.parse(compiledContract.contracts[":HTLC"].interface);
-      var p_digest = web3.sha3(document.getElementById('secret').value);//'688787d8ff144c502c7f5cffaafe2cc588d86079f9de88304c26b0cb99ce91c6';
+      var p_digest = web3.sha3(document.getElementById('secret').value);
       var p_dest = document.getElementById('dest').value;//"0xd513156a649ee0112a721ea9b4ea92ee7beb5ffd";
-      console.log(p_dest);
       var ether = web3.toWei(document.getElementById('ether').value, "ether");//web3.toWei(10,"ether");
 
       var contract = web3.eth.contract(abi);
       let gasEstimate =  4712386;//web3.eth.estimateGas({data: bytecode});
-      let contractInstance = contract.new(p_digest,p_dest, {data: bytecode,gas: gasEstimate,from: web3.eth.coinbase, value: ether});
-
+      var contractInstance = contract.new(p_digest,p_dest, {data: bytecode,gas: gasEstimate,from: web3.eth.coinbase, value: ether});
+      gContract = contractInstance;
       waitBlock(contractInstance);
-        
+      //pass callback to start watching immediately
+      /*var claimEvent = contractInstance.Claim();
+      
+      claimEvent.watch(function(error,result) {
+        //TODO: add automated unlock here!
+        if(!error){
+          console.log("The secret is " + result);
+          console.log("Claimed, new balance of account2 is.");
+          console.log(web3.fromWei(eth.getBalance(accounts[1])));
+
+        }
+      });*/
     }
 
     function addDeployEvent(){
@@ -152,6 +163,7 @@
         let receipt = web3.eth.getTransactionReceipt(contract.transactionHash);
         if (receipt && receipt.contractAddress) {
           console.log("Contract deployed at " + receipt.contractAddress);
+          addEvent();
           break;
         }
         console.log("Waiting for a mined block to include your contract... currently in block " + web3.eth.blockNumber);
@@ -161,14 +173,34 @@
     
     function unlock(){
       let contract = web3.eth.contract(abi);
+      let contractInstance = contract.at(document.getElementById('adrForHTLC').value);
+      console.log(contractInstance);
+      let _hash = document.getElementById('key').value;
+      
+      
+      contractInstance.claim(_hash);
     }
 
-    function addUlockEvent(){
+    function addEvent(){
+      console.log("Here");
+      var claimEvent = gContract.Claim();
+      
+      claimEvent.watch(function(error,result) {
+        //TODO: add automated unlock here!
+        if(!error){
+          console.log("The secret is " + result.args._hash.toString());
+          //This is hardcoded for my second account 
+          console.log(web3.fromWei(web3.eth.getBalance('0xd513156a649ee0112a721ea9b4ea92ee7beb5ffd')).c["0"]);
+        } else {
+          console.log(error);
+        }
+      });
+    }
+
+    function addUnlockEvent(){
       const unlockBtn = document.getElementById('htlc-unlock');
       unlockBtn.addEventListener('click', unlock);
     }
-
-
 
 
 
