@@ -90,6 +90,18 @@
       </div>
     </div>
   </div> 
+  <div clas="mui-container">
+      <label for="key" class="col-lg-2 control-label">Secret</label>
+        <input id="key" type="text">
+      <label for="adrForHTLC" class="col-lg-2 control-label">Address to contract</label>
+        <input id="adrForHTLC" type="text">
+        <button id="htlc-unlock"  class="mui-btn mui-btn--primary">
+          Unlock
+        </button>
+  </div>
+
+
+
 
   <script src="libs/mui.min.js" type="text/javascript"></script>
   <script src="libs/solc.min.js" type="text/javascript"></script>
@@ -100,7 +112,7 @@
     
     web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
     console.log(web3.isConnected());
-
+    var abi;
     var accounts = []    
     web3.eth.getAccounts((err,acc) => {
         console.log(acc);
@@ -109,46 +121,52 @@
 
     //this function gets called by addDeployEvent() when you press the deploy btn
     function prepareAndDeploy(){
-      var bytecode = '0x'+compiledContract.contracts[":HTLC"].bytecode;
-      var abi = JSON.parse(compiledContract.contracts[":HTLC"].interface);
+      var bytecode = '0x'+compiledContract.contracts[":HTLC"].bytecode; //hardcoded specifying htl-contract
+      abi = JSON.parse(compiledContract.contracts[":HTLC"].interface);
       var p_digest = web3.sha3(document.getElementById('secret').value);//'688787d8ff144c502c7f5cffaafe2cc588d86079f9de88304c26b0cb99ce91c6';
       var p_dest = document.getElementById('dest').value;//"0xd513156a649ee0112a721ea9b4ea92ee7beb5ffd";
       console.log(p_dest);
       var ether = web3.toWei(document.getElementById('ether').value, "ether");//web3.toWei(10,"ether");
 
-      var HelloWorld = web3.eth.contract(abi);
+      var contract = web3.eth.contract(abi);
       let gasEstimate =  4712386;//web3.eth.estimateGas({data: bytecode});
-      let contract = HelloWorld.new(p_digest,p_dest, {data: bytecode,gas: gasEstimate,from: web3.eth.coinbase, value: ether});
+      let contractInstance = contract.new(p_digest,p_dest, {data: bytecode,gas: gasEstimate,from: web3.eth.coinbase, value: ether});
 
-      waitBlock(contract);
+      waitBlock(contractInstance);
         
     }
 
     function addDeployEvent(){
-        const deployBtn = document.getElementById('contract-deploy');
-        deployBtn.addEventListener('click', prepareAndDeploy);
+      const deployBtn = document.getElementById('contract-deploy');
+      deployBtn.addEventListener('click', prepareAndDeploy);
     }
 
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // We need to wait until any miner has included the transaction
+    // wait until any miner has included the transaction
     // in a block to get the address of the contract
     async function waitBlock(contract) {
       while (true) {
         let receipt = web3.eth.getTransactionReceipt(contract.transactionHash);
         if (receipt && receipt.contractAddress) {
-          console.log("Your contract has been deployed at " + receipt.contractAddress);
+          console.log("Contract deployed at " + receipt.contractAddress);
           break;
         }
-        console.log("Waiting a mined block to include your contract... currently in block " + web3.eth.blockNumber);
+        console.log("Waiting for a mined block to include your contract... currently in block " + web3.eth.blockNumber);
         await sleep(4000);
       }
     }
+    
+    function unlock(){
+      let contract = web3.eth.contract(abi);
+    }
 
-
-
+    function addUlockEvent(){
+      const unlockBtn = document.getElementById('htlc-unlock');
+      unlockBtn.addEventListener('click', unlock);
+    }
 
 
 
