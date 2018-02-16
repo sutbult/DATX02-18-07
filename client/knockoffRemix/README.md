@@ -1,4 +1,4 @@
-Knockoff remix
+Knockoff remix (This is outdated, learn embark and you will need no flags)
 =======================
 
 This has enough functionality to close issue #17. 
