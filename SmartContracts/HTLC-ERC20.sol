@@ -9,7 +9,7 @@ contract ERC20Partial {
     event Transfer(address indexed _from, address indexed _to, uint _value);
 }
 
-contract HTLC {
+contract HTLC_ERC20 {
 
 ////////////////
 //Global VARS//////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ contract HTLC {
 //Operations////////////////////////////////////////////////////////////////////////
 //////////////
 
-    function HTLC(bytes32 _digest, address _dest, address _token) public payable {
+    function HTLC_ERC20(bytes32 _digest, address _dest, address _token) public payable {
         digest = _digest;
         dest = _dest;
         token = _token;
