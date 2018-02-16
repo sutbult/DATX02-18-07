@@ -1,3 +1,5 @@
+pragma solidity ^0.4.18;
+
 contract ERC20Partial {
     mapping (address => uint256) public balanceOf;    
     function transfer(address _to, uint _value) public returns (bool success);
@@ -14,7 +16,7 @@ contract HTLC_ERC20O {
     bytes32 public digest;
     address public dest;
     address private token;
-    uint public timeOut = now + 1 hours;
+    uint public timeOut = 0;
     address issuer;
 
 /////////////
