@@ -7,5 +7,14 @@
       }
     },
     "name": "development"
+  },
+  "0xb6cfeab83614da04c03db0fb8a6787a45d0be8d576fcc6f8f457a5a816d22ab3": {
+    "contracts": {
+      "0xaff03fd7efa89593e0122583d3e17ea2fc492c53220fd44a4e9593208423e1ac": {
+        "name": "HTLCinstance",
+        "address": "0x59193ca4a34974570e4b44f663775a9f0b74e74c"
+      }
+    },
+    "name": "development"
   }
 }

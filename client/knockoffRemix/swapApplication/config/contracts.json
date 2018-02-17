@@ -15,6 +15,15 @@
     ],
     "gas": "auto",
     "contracts": {
+      "HTLC": {
+        "deploy": false
+      },
+      "HTLCinstance": {
+        "instanceOf": "HTLC",
+        "args": [
+          
+        ]
+      }
     }
   }
 }

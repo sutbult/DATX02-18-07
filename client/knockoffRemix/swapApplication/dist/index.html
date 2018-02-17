@@ -38,7 +38,8 @@
 
 
   <!-- <script src="libs/solc.min.js" type="text/javascript"></script>-->
-  <script src="libs/web3.min.js" type="text/javascript"></script>
+  <script src= "../.embark/development/js/web3.js" type="text/javascript"></script>
+  <script src= "js/jQuery.min.js" type="text/javascript"></script> -->
 
   <script>
     
@@ -47,17 +48,18 @@
       addUnlockEvent();
     }
 
-
-
-
-
-
-    web3FirstChain = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
-    web3SecondChain = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+    web3FirstChain = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+    web3SecondChain = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
     console.log(web3FirstChain.isConnected());
     console.log(web3SecondChain.isConnected());
     var abi;
     var bytecode;
+    $.getJSON('contracts/HTLC.json', (result) => {
+      abi = result.abi; 
+      bytecode = '0x' + result.code;
+      
+    });
+
     var gContract;
     //This is only needed when you try to claim, so only needed on web3SecondChain
     //web3FirstChain.eth.defaultAccount = web3FirstChain.eth.coinbase;
@@ -128,15 +130,12 @@
     }
 
     function addEvent(){
-      console.log("Here");
       var claimEvent = gContract.Claim();
       
       claimEvent.watch(function(error,result) {
         //TODO: add automated unlock here!
         if(!error){
           console.log("The secret is " + result.args._hash.toString());
-          //This is hardcoded for my second account 
-          console.log(web3FirstChain.fromWei(web3FirstChain.eth.getBalance('0xd513156a649ee0112a721ea9b4ea92ee7beb5ffd')).c["0"]);
         } else {
           console.log(error);
         }
@@ -151,6 +150,9 @@
     function status(txt) {
       document.getElementById('status').innerHTML = txt
     }
+
+
+
   </script>
 
 </body>
