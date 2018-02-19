@@ -16,6 +16,24 @@
       "password": "config/development/password"
     },
     "wsOrigins": "http://localhost:8000"
+  },"development2": {
+    "enabled": true,
+    "networkType": "custom",
+    "genesisBlock": "config/development/genesis.json",
+    "datadir": ".embark/development/datadir2",
+    "mineWhenNeeded": true,
+    "networkId": 1800,
+    "nodiscover": false,
+    "maxpeers": 20,
+    "port": 30001,
+    "rpcHost": "localhost",
+    "rpcPort": 7545,
+    "rpcCorsDomain": "http://localhost:8000",
+    "ipcpath": "\\\\.\\pipe\\geth2.ipc",
+    "account": {
+      "password": "config/development/password"
+    },
+    "wsOrigins": "http://localhost:8000"
   },
   "testnet": {
     "enabled": true,
