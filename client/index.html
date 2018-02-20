@@ -11,10 +11,17 @@
 		<!-- This div is where we will insert our UI -->
 		<div id="container"></div>
 		<div class="container is-fullhd">
+			<nav class="breadcrumb" aria-label="breadcrumbs">
+				<ul>
+					<li><a href="#">Home</a></li>
+					<li class="is-active"><a href="#">Browse bids</a></li>
+				</ul>
+			</nav>
 			<div class="box">
-				<h4 class="title is-5">Filter</h4>
+				<h4 class="title is-4">Filter</h4>
 				<div class="columns">
 					<div class="column">
+						<h6 class="title is-5">From</h6>
 						<div class="field">
 							<p class="control has-icons-left">
 								<input class="input" type="text" placeholder="Filter" />
@@ -23,9 +30,117 @@
 								</span>
 							</p>
 						</div>
+						<table class="table is-fullwidth is-hoverable is-striped">
+							<thead>
+								<tr>
+									<th>Currency</th>
+									<th>Shown</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Bitcoin</td>
+									<td>
+										<label class="checkbox">
+											<input type="checkbox" checked />
+										</label>
+									</td>
+								</tr>
+								<tr>
+									<td>Bitcoin cash</td>
+									<td>
+										<label class="checkbox">
+											<input type="checkbox" />
+										</label>
+									</td>
+								</tr>
+								<tr>
+									<td>Ethereum</td>
+									<td>
+										<label class="checkbox">
+											<input type="checkbox" checked />
+										</label>
+									</td>
+								</tr>
+								<tr>
+									<td>Ethereum classic</td>
+									<td>
+										<label class="checkbox">
+											<input type="checkbox" />
+										</label>
+									</td>
+								</tr>
+								<tr>
+									<td>Monero</td>
+									<td>
+										<label class="checkbox">
+											<input type="checkbox" />
+										</label>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 					<div class="column">
-						B
+						<h6 class="title is-5">To</h6>
+						<div class="field">
+							<p class="control has-icons-left">
+								<input class="input" type="text" placeholder="Filter" />
+								<span class="icon is-small is-left">
+									<i class="fas fa-search"></i>
+								</span>
+							</p>
+						</div>
+						<table class="table is-fullwidth is-hoverable is-striped">
+							<thead>
+								<tr>
+									<th>Currency</th>
+									<th>Shown</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Bitcoin</td>
+									<td>
+										<label class="checkbox">
+											<input type="checkbox" />
+										</label>
+									</td>
+								</tr>
+								<tr>
+									<td>Bitcoin cash</td>
+									<td>
+										<label class="checkbox">
+											<input type="checkbox" />
+										</label>
+									</td>
+								</tr>
+								<tr>
+									<td>Ethereum</td>
+									<td>
+										<label class="checkbox">
+											<input type="checkbox" checked />
+										</label>
+									</td>
+								</tr>
+								<tr>
+									<td>Ethereum classic</td>
+									<td>
+										<label class="checkbox">
+											<input type="checkbox" />
+										</label>
+									</td>
+								</tr>
+								<tr>
+									<td>Monero</td>
+									<td>
+										<label class="checkbox">
+											<input type="checkbox" checked />
+										</label>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>
