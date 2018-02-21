@@ -5,7 +5,7 @@
 		<title>Klient</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link href="style/bulma.css" rel="stylesheet" type="text/css" />
-		<link href="style/fontawesome-all.min.css" rel="stylesheet" type="text/css" />
+		<link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet" />
 	</head>
 	<body>
 		<!-- This div is where we will insert our UI -->
@@ -24,10 +24,13 @@
 						<h6 class="title is-5">From</h6>
 						<div class="field">
 							<p class="control has-icons-left">
-								<input class="input" type="text" placeholder="Filter" />
+								<input class="input is-danger" type="text" placeholder="Filter" />
 								<span class="icon is-small is-left">
 									<i class="fas fa-search"></i>
 								</span>
+							</p>
+							<p class="help is-danger">
+								The query doesn't match any currency
 							</p>
 						</div>
 						<table class="table is-fullwidth is-hoverable is-striped">
