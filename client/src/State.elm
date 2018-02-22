@@ -1,19 +1,26 @@
 module State exposing (init, update, subscriptions)
 
-import Types exposing
-    ( Model
-    , Msg
-    )
+import Types exposing (..)
+
+import Browse.State
+
+import Platform.Cmd
 
 init : (Model, Cmd Msg)
 init = (
-    { foo = 3
+    { browse = Browse.State.init
     }
     , Cmd.none
     )
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update _ m = (m, Cmd.none)
+update msg model =
+    case msg of
+        Browse subMsg ->
+            let
+                (subModel, subCmd) = Browse.State.update subMsg (.browse model)
+            in
+                ({model | browse = subModel}, Platform.Cmd.map Browse subCmd)
 
 subscriptions : Model -> Sub Msg
 subscriptions _ = Sub.none

@@ -2,7 +2,8 @@ module View exposing (root)
 
 import Html exposing (..)
 
-import Types exposing (Model, Msg)
+import Types exposing (..)
+import Browse.View
 
 root : Model -> Html Msg
-root _ = text "Barfoo"
+root model = map Browse (Browse.View.root (.browse model))

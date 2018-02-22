@@ -1,7 +1,10 @@
 module Types exposing (..)
 
+import Browse.Types
+
 type alias Model =
-    { foo : Int
+    { browse : Browse.Types.Model
     }
 
-type Msg = Foo | Bar
+type Msg =
+    Browse Browse.Types.Msg
