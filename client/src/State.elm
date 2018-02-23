@@ -15,7 +15,7 @@ init = (
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-    case msg of
+    case Debug.log "Message" msg of
         Browse subMsg ->
             let
                 (subModel, subCmd) = Browse.State.update subMsg (.browse model)

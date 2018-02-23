@@ -77,15 +77,19 @@ filterElements model =
 
 elementRow : Element -> Html Msg
 elementRow element =
-    tr []
-        [ td [] [text (.title element)]
-        , td []
-            [ label [class "checkbox"]
-                [ input
-                    [ type_ "checkbox"
-                    , checked (.shown element)
+    let
+        title = .title element
+    in
+        tr []
+            [ td [] [text title]
+            , td []
+                [ label [class "checkbox"]
+                    [ input
+                        [ type_ "checkbox"
+                        , checked (.shown element)
+                        , onClick (Toggle title)
+                        ]
+                        []
                     ]
-                    []
                 ]
             ]
-        ]

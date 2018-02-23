@@ -13,4 +13,4 @@ type alias Model =
 
 type Msg
     = SetQuery String
-    | Toggle Int
+    | Toggle String
