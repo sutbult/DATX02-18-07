@@ -7,7 +7,7 @@ import Browse.Filter.Part.State as PartState
 
 init : List String -> Model
 init elements =
-    { from = PartState.init "Form" elements
+    { from = PartState.init "From" elements
     , to = PartState.init "To" elements
     }
 
