@@ -5,10 +5,10 @@ import Browse.Filter.Types exposing (..)
 
 import Browse.Filter.Part.State as PartState
 
-init : List String -> Model
+init : (List String, List String) -> Model
 init elements =
-    { from = PartState.init "From" elements
-    , to = PartState.init "To" elements
+    { from = PartState.init "From" <| Tuple.first elements
+    , to = PartState.init "To" <| Tuple.second elements
     }
 
 update : Msg -> Model -> (Model, Cmd Msg)
