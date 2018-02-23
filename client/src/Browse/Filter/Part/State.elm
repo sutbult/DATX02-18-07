@@ -28,6 +28,10 @@ update msg model =
             in
                 ({model | elements = elements}, Cmd.none)
 
+        SetCurrencies currencies ->
+            -- TODO: Gör så att existerande valutor behåller sitt visningsvärde
+            ({model | elements = List.map toElement currencies}, Cmd.none)
+
 toggleElement : String -> List Element -> List Element
 toggleElement title =
     let

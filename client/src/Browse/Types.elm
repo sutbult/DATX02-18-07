@@ -11,3 +11,4 @@ type alias Model =
 type Msg
     = Bids Browse.Bids.Types.Msg
     | Filter Browse.Filter.Types.Msg
+    | SetBids (List Browse.Bids.Types.Bid)

@@ -14,4 +14,5 @@ type alias Model =
     { bids : List Bid
     }
 
-type alias Msg = Never
+type Msg =
+    SetBids (List Bid)

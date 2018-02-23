@@ -14,3 +14,4 @@ type alias Model =
 type Msg
     = SetQuery String
     | Toggle String
+    | SetCurrencies (List String)
