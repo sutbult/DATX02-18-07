@@ -34,7 +34,7 @@ queryField elements =
                         else
                             "input"
                     , type_ "text"
-                    , placeholder "filter"
+                    , placeholder "Filter"
                     , onInput SetQuery
                     ]
                     [
