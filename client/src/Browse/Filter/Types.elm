@@ -10,3 +10,13 @@ type alias Model =
 type Msg
     = From PartTypes.Msg
     | To PartTypes.Msg
+
+type alias Filter =
+    { from : List String
+    , to : List String
+    }
+
+getFilter : Model -> Filter
+getFilter model = Filter
+    (PartTypes.filterList <| (.elements << .from) model)
+    (PartTypes.filterList <| (.elements << .to) model)

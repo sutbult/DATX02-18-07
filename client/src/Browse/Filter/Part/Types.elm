@@ -15,3 +15,6 @@ type Msg
     = SetQuery String
     | Toggle String
     | SetCurrencies (List String)
+
+filterList : List Element -> List String
+filterList = List.map (.title) << List.filter (.shown)

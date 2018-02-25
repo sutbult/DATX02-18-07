@@ -24,7 +24,7 @@ root model =
             ]
         , tbody []
             <| List.map bidView
-            <| .bids model
+            <| filteredBids model
         ]
 
 bidView : Bid -> Html Msg
@@ -36,3 +36,6 @@ valueView value =
     [ td [] <| [ text <| .currency value]
     , td [] <| [ text <| toString <| .amount value]
     ]
+
+filteredBids : Model -> List Bid
+filteredBids model = .bids model
