@@ -1,4 +1,4 @@
-// const Ipfs = require('ipfs');
+const Ipfs = require('ipfs');
 // const Orbit = require('orbit_');
 
 // const ipfs = new Ipfs();

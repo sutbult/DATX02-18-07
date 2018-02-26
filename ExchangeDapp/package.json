@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "main": "main.js",
     "dependencies": {
+        "ipfs": "^0.27.7",
         "jquery": "^3.3.1"
     }
 }
