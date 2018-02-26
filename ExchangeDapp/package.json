@@ -1,12 +1,8 @@
 {
-    "name": "ExchangeDapp",
+    "name": "your-app",
     "version": "0.1.0",
     "main": "main.js",
     "dependencies": {
-        "electron": "^1.8.2",
         "jquery": "^3.3.1"
-    },
-    "devDependencies": {
-        "electron-rebuild": "^1.7.3"
     }
 }

@@ -1,7 +1,9 @@
 window.onload = function () {
     addDeployEvent();
     addUnlockEvent();
-    // addAcceptEvent();
+    
+    //console.log(orbit.connect('Haad'));
+    console.log("asd");
 }
 
 //import Jquery module
@@ -30,6 +32,9 @@ web3FirstChain.eth.getAccounts((err,acc) => {
 
 //this function gets called by addDeployEvent() when you press the deploy btn
 function prepareAndDeploy(){
+    
+
+
     var p_digest;
     //Will differ if you placed or accepted bid
     if(!document.getElementById('secret').value){
@@ -74,19 +79,6 @@ async function waitBlock(contract) {
         await sleep(4000);
     }
 }
-
-
-
-// //////////////////////////////Second blockchain logic
-// function addAcceptEvent(){
-//     const acceptBtn = document.getElementById('contract-accept');
-//     acceptBtn.addEventListener('click', accept);
-// }
-
-// function accept(){
-//     acceptBid(web3SecondChain.eth.coinbase, "MagnusBid");//Channel name should be acquired from database
-// }
-
 
 
 
