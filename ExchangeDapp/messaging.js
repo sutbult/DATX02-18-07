@@ -1,7 +1,7 @@
-const Ipfs = require('ipfs');
-const Orbit = require('orbit_');
+// const Ipfs = require('ipfs');
+// const Orbit = require('orbit_');
 
-const ipfs = new Ipfs();
+// const ipfs = new Ipfs();
 // const orbit = new Orbit(ipfs);
 
 const channel = 'AChannel';
