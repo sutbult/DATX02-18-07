@@ -5,8 +5,10 @@ import Browse.Bids.Types exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
-root : Model -> Html Msg
-root model =
+import Browse.Filter.Types exposing (Filter)
+
+root : Model -> Filter -> Html Msg
+root model filter =
     table [class "table is-fullwidth is-hoverable is-striped"]
         [ thead []
             [ tr []
@@ -24,7 +26,7 @@ root model =
             ]
         , tbody []
             <| List.map bidView
-            <| filteredBids model
+            <| filteredBids model filter
         ]
 
 bidView : Bid -> Html Msg
@@ -37,5 +39,10 @@ valueView value =
     , td [] <| [ text <| toString <| .amount value]
     ]
 
-filteredBids : Model -> List Bid
-filteredBids model = .bids model
+filteredBids : Model -> Filter -> List Bid
+filteredBids model filter = List.filter (filterBid filter) (.bids model)
+
+filterBid : Filter -> Bid -> Bool
+filterBid filter bid =
+    List.member (.currency <| .from bid) (.from filter) &&
+    List.member (.currency <| .to bid) (.to filter)
