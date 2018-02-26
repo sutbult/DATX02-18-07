@@ -9,24 +9,45 @@ import Browse.Filter.Types exposing (Filter)
 
 root : Model -> Filter -> Html Msg
 root model filter =
-    table [class "table is-fullwidth is-hoverable is-striped"]
-        [ thead []
-            [ tr []
-                [ th [] [text "From"]
-                , th [] []
-                , th [] [text "To"]
-                , th [] []
-                ]
-            , tr []
-                [ th [] [text "Currency"]
-                , th [] [text "Amount"]
-                , th [] [text "Currency"]
-                , th [] [text "Amount"]
-                ]
+    let
+        bids = filteredBids model filter
+    in
+        if List.isEmpty bids then
+            error
+        else
+            tableView bids
+
+error : Html Msg
+error =
+    article [class "message is-danger"]
+        [ div [class "message-body"]
+            [ p [] [text "Selected filter doesn't match any bids"]
             ]
+        ]
+
+tableView : List Bid -> Html Msg
+tableView bids =
+    table [class "table is-fullwidth is-hoverable is-striped"]
+        [ head
         , tbody []
-            <| List.map bidView
-            <| filteredBids model filter
+            <| List.map bidView bids
+        ]
+
+head : Html Msg
+head =
+    thead []
+        [ tr []
+            [ th [] [text "From"]
+            , th [] []
+            , th [] [text "To"]
+            , th [] []
+            ]
+        , tr []
+            [ th [] [text "Currency"]
+            , th [] [text "Amount"]
+            , th [] [text "Currency"]
+            , th [] [text "Amount"]
+            ]
         ]
 
 bidView : Bid -> Html Msg
