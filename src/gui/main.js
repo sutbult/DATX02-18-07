@@ -9,7 +9,13 @@ let mainWindow; // saves a global reference to mainWindow so it doesn't get garb
 
 app.on('ready', createWindow); // called when electron has initialized
 
-chokidar.watch(['ports.js', 'index.html', 'elm.js']).on('change', () => {
+const WATCH = [
+    'src/gui/ports.js',
+    'src/gui/index.html',
+    'src/gui/elm.js',
+];
+
+chokidar.watch(WATCH).on('change', () => {
     if(mainWindow) {
         mainWindow.reload();
     }

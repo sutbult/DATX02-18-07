@@ -1,29 +1,20 @@
 module State exposing (init, update, subscriptions)
 
 import Platform.Cmd
-import Task
 
 import Types exposing (..)
 import Breadcrumb.State
 import Browse.State
 import Browse.Types
-import Browse.Bids.Types exposing (Bid, Value)
+
+import Api
 
 init : (Model, Cmd Msg)
 init = (
     { browse = Browse.State.init
     , breadcrumb = Breadcrumb.State.init
-    }
-    -- TODO: Ersätt bluffladdning med riktig laddning av bud
-    , Platform.Cmd.map Browse
-        <| Task.perform Browse.Types.SetBids
-        <| Task.succeed
-            [ Bid (Value "Bitcoin" 0.01) (Value "Ethereum" 0.1)
-            , Bid (Value "Ethereum" 0.5) (Value "Monero" 5)
-            , Bid (Value "Ethereum" 0.1) (Value "Dogecoin" 9001)
-            , Bid (Value "Bitcoin" 0.02) (Value "Monero" 2)
-            , Bid (Value "Bitcoin cash" 0.3) (Value "Monero" 3)
-            ]
+    },
+    Api.getBids () -- Tillfällig placering
     )
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -42,4 +33,4 @@ update msg model =
                 ({model | browse = subModel}, Platform.Cmd.map Browse subCmd)
 
 subscriptions : Model -> Sub Msg
-subscriptions _ = Sub.none
+subscriptions _ = Sub.map Browse <| Api.getBidsCallback Browse.Types.SetBids -- Tillfällig placering
