@@ -5,10 +5,10 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "elm": "elm make src/Main.elm --output elm.js || true",
+    "elm": "elm make src/gui/elm/Main.elm --yes --output src/gui/elm.js || true",
     "elm:watch": "chokidar '**/*.elm' -c 'yarn elm'",
-    "start": "electron main.js",
-    "watch": "yarn start & yarn elm:watch & wait"
+    "start": "electron src/gui/main.js",
+    "watch": "yarn elm && (yarn start & yarn elm:watch & wait)"
   },
   "devDependencies": {
     "chokidar": "^2.0.0"
