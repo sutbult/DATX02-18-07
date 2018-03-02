@@ -1,12 +1,15 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.17;
 
 contract ERC20Partial {
-    mapping (address => uint256) public balanceOf;    
+    mapping (address => uint256) public balanceOf;
+    function name() public returns (string);
+    function symbol() public returns (string);
+    
     function transfer(address _to, uint _value) public returns (bool success);
     event Transfer(address indexed _from, address indexed _to, uint _value);
 }
 
-contract HTLC_ERC20O {
+contract HTLC_ERC20 {
 
 ////////////////
 //Global VARS//////////////////////////////////////////////////////////////////////////
@@ -16,8 +19,8 @@ contract HTLC_ERC20O {
     bytes32 public digest;
     address public dest;
     address private token;
-    uint public timeOut = 0;
-    address issuer;
+    uint public timeOut = now + 1 hours;
+    address issuer = msg.sender;
 
 /////////////
 //MODIFIERS////////////////////////////////////////////////////////////////////
@@ -32,10 +35,10 @@ contract HTLC_ERC20O {
 //Operations////////////////////////////////////////////////////////////////////////
 //////////////
 
-    function HTLC_ERC20O(bytes32 _digest, address _token, address _issuer) public {
+    function HTLC_ERC20(bytes32 _digest, address _dest, address _token) public payable {
         digest = _digest;
+        dest = _dest;
         token = _token;
-        issuer = _issuer;
     }
 
 /* public */
@@ -61,23 +64,14 @@ contract HTLC_ERC20O {
         ERC20Partial e = ERC20Partial(token);
         return e.balanceOf(this);
     }
-    
-    function lock() public {
-        assert(!isLocked());      
-        dest = msg.sender;
-        timeOut = now + 1 hours;
-    }
-    
-    function isLocked() constant public returns (bool) {
-        return now >= timeOut;
-    }
 
 /* only issuer */
     //if the time expires; the issuer can reclaim funds and destroy the contract
-    function refund() onlyIssuer public returns (bool result) {
+    function refund() onlyIssuer public returns(bool result) {
         require(now >= timeOut);
         transfer(issuer);
         selfdestruct(issuer);
         return true;
     }
 }
+

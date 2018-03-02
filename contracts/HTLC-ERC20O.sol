@@ -1,17 +1,9 @@
-pragma solidity ^0.4.18;
-
-interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; }
-
+pragma solidity ^0.4.17;
 
 contract ERC20Partial {
-    mapping (address => uint256) public balanceOf;
-    mapping (address => mapping (address => uint256)) public allowance;
-    
+    mapping (address => uint256) public balanceOf;    
     function transfer(address _to, uint _value) public returns (bool success);
-    function transferFrom(address _from, address _to, uint _value) public returns (bool success);
-    function approve(address _spender, uint _value) public returns (bool success);
     event Transfer(address indexed _from, address indexed _to, uint _value);
-    event Approval(address indexed _owner, address indexed _spender, uint _value);
 }
 
 contract HTLC_ERC20O {
@@ -89,26 +81,3 @@ contract HTLC_ERC20O {
         return true;
     }
 }
-
-contract HTLC_ERC20O_Factory is tokenRecipient {
-    
-    event Created(address _owner, address _contract);
-    
-    mapping (address => uint256) public balances;
-    
-    function bytesToBytes32(bytes b, uint offset) private pure returns (bytes32) {
-      bytes32 out;
-      for (uint i = 0; i < 32; i++) {
-        out |= bytes32(b[offset + i] & 0xFF) >> (i * 8);
-      }
-      return out;
-    }
-    
-    function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public {
-        HTLC_ERC20O h = new HTLC_ERC20O(bytesToBytes32(_extraData, 0), _token, _from);
-        ERC20Partial e = ERC20Partial(_token);
-        require(e.transferFrom(_from, h, _value));
-        Created(_from, h);
-    }
-}
-
