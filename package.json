@@ -8,7 +8,7 @@
     "elm": "elm make src/gui/elm/Main.elm --yes --output src/gui/elm.js || true",
     "elm:watch": "chokidar '**/*.elm' -c 'yarn elm'",
     "start": "electron src/gui/main.js",
-    "watch": "yarn elm && (yarn start & yarn elm:watch & wait)"
+    "watch": "npm run elm && (npm run start & npm run elm:watch & wait)"
   },
   "devDependencies": {
     "chokidar": "^2.0.0"
