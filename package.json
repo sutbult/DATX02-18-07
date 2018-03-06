@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "elm": "elm make src/gui/elm/Main.elm --yes --output src/gui/elm.js || true",
-    "elm:watch": "chokidar '**/*.elm' -c 'yarn elm'",
+    "elm:watch": "chokidar '**/*.elm' -c 'npm run elm'",
     "start": "electron src/gui/main.js",
     "watch": "npm run elm && (npm run start & npm run elm:watch & wait)"
   },
