@@ -23,6 +23,11 @@ $.getJSON('../../contracts/HTLC.json', (result) => {
     bytecode = '0x' + result.code;
 });
 
+function validateContract(runtime_code, address){
+    var chain_code = Web3.eth.getCode(address);
+    return "0x" + runtime_code == chain_code;
+}
+
 /**
  * This modules main function
  * @param {hex} from_adr -  adress the user wishes to send money from
