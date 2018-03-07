@@ -23,9 +23,14 @@ $.getJSON('../../contracts/HTLC.json', (result) => {
     bytecode = '0x' + result.code;
 });
 
+/** This function will validate the byte code handed in against the byte code on a certain address.
+ *  Remember that it's the runtime bytecode that needs to be compared, no the compiletime bytecode
+ *
+ *
+*/
 function validateContract(runtime_code, address){
     var chain_code = Web3.eth.getCode(address);
-    return "0x" + runtime_code == chain_code;
+    return '0x' + runtime_code == chain_code;
 }
 
 /**
