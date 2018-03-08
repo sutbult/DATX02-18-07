@@ -5,7 +5,8 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "elm": "node_modules/.bin/elm-make src/gui/elm/Main.elm --yes --output src/gui/elm.js || true",
+    "test": "npm run elm",
+    "elm": "node_modules/.bin/elm-make src/gui/elm/Main.elm --yes --output src/gui/elm.js",
     "elm:watch": "node_modules/.bin/chokidar '**/*.elm' -c 'npm run elm'",
     "start": "node_modules/.bin/electron src/gui/main.js",
     "watch": "npm run elm && (npm run start & npm run elm:watch & wait)"
