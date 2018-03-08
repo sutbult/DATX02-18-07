@@ -1,6 +1,8 @@
 /**Imports */
-window.$ = window.jQuery = require('jQuery');
+$ = window.jQuery = require('jQuery');
 const Web3 = require("web3");
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 
 /**Connect our application to Ethereum-servers
  * Current: web3FirstChain connects to an Ethereum blockchain using localhost 7545
@@ -21,12 +23,15 @@ $.getJSON('../../contracts/HTLC.json', (result) => {
     bytecode = '0x' + result.code;
 });
 
-/**get all accounts, this is functionality we should move out of this module */
-// var accounts = []    
-// web3FirstChain.eth.getAccounts((err,acc) => {
-//     console.log(acc);
-//     accounts.push(acc);
-// });
+/** This function will validate the byte code handed in against the byte code on a certain address.
+ *  Remember that it's the runtime bytecode that needs to be compared, no the compiletime bytecode
+ *
+ *
+*/
+function validateContract(runtime_code, address){
+    var chain_code = Web3.eth.getCode(address);
+    return '0x' + runtime_code == chain_code;
+}
 
 /**
  * This modules main function
@@ -66,7 +71,7 @@ function sleep(ms) {
 
 // wait until any miner has included the transaction
 // in a block to get the address of the contract
-async function waitBlock(contract) {
+(async (function waitBlock(contract) {
     while (true) {
         let receipt = web3FirstChain.eth.getTransactionReceipt(contract.transactionHash);
         if (receipt && receipt.contractAddress) {
@@ -76,9 +81,9 @@ async function waitBlock(contract) {
             break;
         }
         console.log("Waiting for a mined block to include your contract... currently in block " + web3FirstChain.eth.blockNumber);
-        await sleep(4000);
+        await(sleep(4000));
     }
-}
+}))();
 
 function addEvent(contract){
     var claimEvent = contract.Claim();
@@ -105,18 +110,3 @@ function unlock(hash, claim_adr){
     
     contractInstance.claim(hash);
 }
-
-
-// function addDeployEvent(){
-//     const deployBtn = document.getElementById('contract-deploy');
-//     deployBtn.addEventListener('click', prepareAndDeploy);
-// }
-
-// function addUnlockEvent(){
-//     const unlockBtn = document.getElementById('htlc-unlock');
-//     unlockBtn.addEventListener('click', unlock);
-// }
-
-// function status(txt) {
-//     document.getElementById('status').innerHTML = txt
-// }
