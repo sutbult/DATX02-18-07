@@ -5,15 +5,18 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "elm": "elm make src/gui/elm/Main.elm --yes --output src/gui/elm.js || true",
-    "elm:watch": "chokidar '**/*.elm' -c 'npm run elm'",
-    "start": "electron src/gui/main.js",
+    "elm": "node_modules/.bin/elm-make src/gui/elm/Main.elm --yes --output src/gui/elm.js || true",
+    "elm:watch": "node_modules/.bin/chokidar '**/*.elm' -c 'npm run elm'",
+    "start": "node_modules/.bin/electron src/gui/main.js",
     "watch": "npm run elm && (npm run start & npm run elm:watch & wait)"
   },
   "devDependencies": {
     "chokidar": "^2.0.0"
   },
   "dependencies": {
-    "bulma": "^0.6.2"
+    "bulma": "^0.6.2",
+    "chokidar-cli": "^1.2.0",
+    "electron": "^1.8.3",
+    "elm": "^0.18.0"
   }
 }
