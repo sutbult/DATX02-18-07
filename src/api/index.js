@@ -3,7 +3,9 @@
 
 // Adds a new bid to the decentralized database
 function addBid(bid, callback) {
-    // TODO: Implementera
+    // TODO: Implementera på riktigt
+    console.log("User adds this bid:\n" + JSON.stringify(bid, null, 4));
+    callback(null);
 }
 
 // Fetches all available bids from the decentralized database
@@ -33,7 +35,9 @@ function getBids(callback) {
 
 // Accepts a bid and starts the swapping process
 function acceptBid(bid, callback) {
-    // TODO: Implementera
+    // TODO: Implementera på riktigt
+    console.log("User accepts this bid:\n" + JSON.stringify(bid, null, 4));
+    callback(null);
 }
 
 module.exports = {
