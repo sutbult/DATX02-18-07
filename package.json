@@ -19,9 +19,6 @@
     "chokidar-cli": "^1.2.0",
     "electron": "^1.8.3",
     "elm": "^0.18.0",
-    "asyncawait": "^1.0.6",
-    "install": "^0.10.4",
-    "jquery": "^3.3.1",
     "web3": "^1.0.0-beta.30"
   }
 }
