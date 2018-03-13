@@ -5,16 +5,17 @@ import Platform.Cmd
 import Types exposing (..)
 import Breadcrumb.State
 import Browse.State
-import Browse.Types
-
-import Api
 
 init : (Model, Cmd Msg)
-init = (
-    { browse = Browse.State.init
+init =
+    let
+        (browseModel, browseCmd) = Browse.State.init
+    in
+        (
+    { browse = browseModel
     , breadcrumb = Breadcrumb.State.init
     },
-    Api.getBids () -- Tillfällig placering
+    Platform.Cmd.map Browse browseCmd
     )
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -33,4 +34,4 @@ update msg model =
                 ({model | browse = subModel}, Platform.Cmd.map Browse subCmd)
 
 subscriptions : Model -> Sub Msg
-subscriptions _ = Sub.map Browse <| Api.getBidsCallback Browse.Types.SetBids -- Tillfällig placering
+subscriptions _ = Sub.none

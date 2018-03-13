@@ -9,12 +9,12 @@ import Browse.Filter.Part.Types exposing (..)
 toElement : String -> Element
 toElement title = Element title True
 
-init : String -> List String -> Model
-init title elements =
+init : String -> List String -> (Model, Cmd Msg)
+init title elements = (
     { title = title
     , query = ""
     , elements = List.map toElement elements
-    }
+    }, Cmd.none)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =

@@ -5,11 +5,18 @@ import Browse.Filter.Types exposing (..)
 
 import Browse.Filter.Part.State as PartState
 
-init : (List String, List String) -> Model
+init : (List String, List String) -> (Model, Cmd Msg)
 init elements =
-    { from = PartState.init "From" <| Tuple.first elements
-    , to = PartState.init "To" <| Tuple.second elements
-    }
+    let
+        (fromModel, fromCmd) = PartState.init "From" <| Tuple.first elements
+        (toModel, toCmd) = PartState.init "To" <| Tuple.second elements
+    in
+        ( { from = fromModel, to = toModel}
+        , Cmd.batch
+            [ Platform.Cmd.map From fromCmd
+            , Platform.Cmd.map To toCmd
+            ]
+        )
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =

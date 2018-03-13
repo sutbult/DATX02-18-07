@@ -10,6 +10,10 @@ const apiRouter = express.Router();
 // Body management setup
 
 apiRouter.use((req, res, next) => {
+	console.log(req.url);
+	next();
+});
+apiRouter.use((req, res, next) => {
 	var body = [];
 	req.on('data', (chunk) => body.push(chunk));
 	req.on('end', () => {

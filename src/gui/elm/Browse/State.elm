@@ -8,16 +8,25 @@ import Browse.Filter.Types
 import Browse.Filter.Part.Types
 
 import Platform.Cmd
+import Browse.Rest exposing (getBids)
 
-init : Model
+init : (Model, Cmd Msg)
 init =
     let
         bids = []
         filterElements = getFilterElements bids
+        (bidsModel, bidsCmd) = BidsState.init bids
+        (filterModel, filterCmd) = FilterState.init filterElements
     in
-        { bids = BidsState.init bids
-        , filter = FilterState.init filterElements
-        }
+        (   { bids = bidsModel
+            , filter = filterModel
+            }
+        , Cmd.batch
+            [ Platform.Cmd.map Bids bidsCmd
+            , Platform.Cmd.map Filter filterCmd
+            , getBids
+            ]
+        )
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
