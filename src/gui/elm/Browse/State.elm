@@ -7,6 +7,8 @@ import Browse.Filter.State as FilterState
 import Browse.Filter.Types
 import Browse.Filter.Part.Types
 
+import Error.State as ErrorState
+
 import Platform.Cmd
 import Browse.Rest exposing (getBids)
 
@@ -17,13 +19,16 @@ init =
         filterElements = getFilterElements bids
         (bidsModel, bidsCmd) = BidsState.init bids
         (filterModel, filterCmd) = FilterState.init filterElements
+        (errorModel, errorCmd) = ErrorState.init
     in
         (   { bids = bidsModel
             , filter = filterModel
+            , error = errorModel
             }
         , Cmd.batch
             [ Platform.Cmd.map Bids bidsCmd
             , Platform.Cmd.map Filter filterCmd
+            , Platform.Cmd.map Error errorCmd
             , getBids
             ]
         )
@@ -42,6 +47,12 @@ update msg model =
                 (subModel, subCmd) = BidsState.update subMsg (.bids model)
             in
                 ({model | bids = subModel}, Platform.Cmd.map Bids subCmd)
+
+        Error subMsg ->
+            let
+                (subModel, subCmd) = ErrorState.update subMsg (.error model)
+            in
+                ({model | error = subModel}, Platform.Cmd.map Error subCmd)
 
         SetBids bids ->
             foldMsg update model
