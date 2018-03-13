@@ -21,10 +21,13 @@ const { exec } = require('child_process');
 
 
 /**@todo kill this child-process once parent is killed */
-const geth = exec('geth --light --testnet --ws --wsaddr 127.0.0.1 --wsport 7545 --port 30303');
+const geth = exec("geth --light --testnet --ws --wsaddr 127.0.0.1 --wsport 7545 --wsorigins='*' --port 30303");
 
 geth.stdout.on('data', (data) => {
   console.log(`stdout: ${data}`);
+});
+geth.stderr.on('data', (data) => {
+    console.log(`stderr: ${data}`);
 });
 geth.on('error', (err) => {
     console.log(err + " Install Geth");
