@@ -7,7 +7,6 @@ const { exec } = require('child_process');
 /**Geth related */
 // var options = {
 //     testnet: null,
-//     networkid: "1900",
 //     port: 30303, //Trying to connect from same network you need to change it up
 //     light: null,
 //     ws: null,
@@ -22,7 +21,7 @@ const { exec } = require('child_process');
 
 
 /**@todo kill this child-process once parent is killed */
-const geth = exec('geth --light --testnet --networkid 1900 --port 30303');
+const geth = exec('geth --light --testnet --ws --wsaddr 127.0.0.1 --wsport 7545 --port 30303');
 
 geth.stdout.on('data', (data) => {
   console.log(`stdout: ${data}`);
