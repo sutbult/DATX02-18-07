@@ -1,6 +1,42 @@
 /**Imports */
 const fs = require("fs");
 const Web3 = require("web3");
+// const geth = require("geth");
+const { exec } = require('child_process');
+
+/**Geth related */
+// var options = {
+//     testnet: null,
+//     networkid: "1900",
+//     port: 30303, //Trying to connect from same network you need to change it up
+//     light: null,
+//     ws: null,
+//     wsaddr: "127.0.0.1",
+//     wsport: 7545
+
+// };
+
+// geth.start(options, (err, res) => {
+//     if (err) return console.log(err + " \n Install Geth");
+// });
+
+
+/**@todo kill this child-process once parent is killed */
+const geth = exec('geth --light --testnet --networkid 1900 --port 30303');
+
+geth.stdout.on('data', (data) => {
+  console.log(`stdout: ${data}`);
+});
+geth.on('error', (err) => {
+    console.log(err + " Install Geth");
+});
+geth.on('close', (code) => {
+  console.log(`child process exited with code ${code}`);
+});
+
+
+
+
 
 /**Connect our application to Ethereum-servers
  * Current: web3FirstChain connects to an Ethereum blockchain using localhost 7545
@@ -23,8 +59,10 @@ var obj = JSON.parse(fs.readFileSync('./contracts/HTLC.json', 'utf8'));
 abi = obj.abi;
 bytecode = '0x' + obj.code;
 
-/** This function will validate the byte code handed in against the byte code on a certain address.
- *  Remember that it's the runtime bytecode that needs to be compared, no the compiletime bytecode
+
+
+/** This function will validate the stored byte code against the byte code on a certain address.
+ *  Remember that it's the runtime bytecode that needs to be compared, not the compiletime bytecode
  *
  *
 */

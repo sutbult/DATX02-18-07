@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "bulma": "^0.6.2",
+    "child_process": "^1.0.2",
     "chokidar-cli": "^1.2.0",
     "electron": "^1.8.3",
     "elm": "^0.18.0",
