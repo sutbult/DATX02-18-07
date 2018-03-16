@@ -7,10 +7,12 @@
   "scripts": {
     "test": "npm run elm",
     "daemon": "node src/api/server.js",
-    "elm": "node_modules/.bin/elm-package install && node_modules/.bin/elm-make src/gui/elm/Main.elm --yes --output src/gui/elm.js",
-    "elm:watch": "node_modules/.bin/chokidar '**/*.elm' -c 'npm run elm'",
+    "elm": "npm run elm:install && npm run elm:build",
+    "elm:build": "node_modules/.bin/elm-make src/gui/elm/Main.elm --yes --output src/gui/elm.js",
+    "elm:install": "node_modules/.bin/elm-package install --yes",
+    "elm:watch": "node_modules/.bin/chokidar '**/*.elm' -c 'npm run elm' & wait",
     "start": "node_modules/.bin/electron src/gui/main.js",
-    "watch": "npm run elm && (npm run start & npm run elm:watch & wait)"
+    "watch": "npm run elm && (npm run daemon & npm run start & npm run elm:watch)"
   },
   "devDependencies": {
     "chokidar": "^2.0.0"
