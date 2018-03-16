@@ -67,27 +67,26 @@ bytecode = '0x' + obj.code;
  *
 */
 
-async function validateContract(ethchain, runtime_code, abi, contract_address, self_address, value){
-    var res_code = await validateCode(ethchain, runtime_code, contract_address);
-    var res_val = await validateValue(ethchain, value, contract_address);
-    var res_dest = await validateDestination(ethchain, self_address, abi, contract_address);
+async function validateContract(ethchain, jsoncontract, contract_address, self_address, value_in_eth){
+    var res_code = await validateCode(ethchain, jsoncontract.runtime_bytecode, contract_address);
+    var res_val = await validateValue(ethchain, value_in_eth, contract_address);
+    var res_dest = await validateDestination(ethchain, jsoncontract.abi, self_address, contract_address);
     return res_code && res_val && res_dest
 }
 
-async function validateCode(ethchain, code, address){
-    chain_code = await ethchain.eth.getCode(address);
-    return code == chain_code;
+async function validateCode(ethchain, runtime_bytecode, contract_address){
+    chain_code = await ethchain.eth.getCode(contract_address);
+    return runtime_bytecode == chain_code;
 }
 
-async function validateDestination(ethchain, contract_abi, destination, contract_address) {
+async function validateDestination(ethchain, contract_abi, dest_address, contract_address) {
     var contract = new ethchain.eth.Contract(contract_abi, contract_address);
     var contract_dest = await contract.methods.dest().call();
-    console.log(contract_dest);
-    return destination == contract_dest;
+    return dest_address == contract_dest;
 }
 
-async function validateValue(ethchain, value_in_eth, address){
-    var balance = await ethchain.eth.getBalance(address);
+async function validateValue(ethchain, value_in_eth, contract_address){
+    var balance = await ethchain.eth.getBalance(contract_address);
     console.log(balance);
     return Web3.utils.toWei(value_in_eth) == balance;
 }
@@ -132,7 +131,6 @@ function prepareAndDeploy(ethchain, from_adr,p_secret, p_digest, p_dest, p_amoun
         addEvent(contract, receipt.blockNumber)
       });
 }
-
 
 function addEvent(contract, block){
     contract.events.Claim({fromBlock: "latest"}, function(error, event){console.log(event.returnValues._hash);});
