@@ -7,7 +7,7 @@
   "scripts": {
     "test": "npm run elm",
     "daemon": "node src/api/server.js",
-    "elm": "node_modules/.bin/elm-make src/gui/elm/Main.elm --yes --output src/gui/elm.js",
+    "elm": "node_modules/.bin/elm-package install && node_modules/.bin/elm-make src/gui/elm/Main.elm --yes --output src/gui/elm.js",
     "elm:watch": "node_modules/.bin/chokidar '**/*.elm' -c 'npm run elm'",
     "start": "node_modules/.bin/electron src/gui/main.js",
     "watch": "npm run elm && (npm run start & npm run elm:watch & wait)"
@@ -22,6 +22,6 @@
     "electron": "^1.8.3",
     "elm": "^0.18.0",
     "express": "^4.16.2",
-    "web3": "^1.0.0-beta.30"
+    "web3": "1.0.0-beta.30"
   }
 }
