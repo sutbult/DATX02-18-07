@@ -41,13 +41,13 @@ geth.on('close', (code) => {
 
 
 /**Connect our application to Ethereum-servers
- * Current: web3FirstChain connects to an Ethereum blockchain using localhost 7545
- *          web3SecondChain -||- on localhost 8545
+ * Current: "experimental" connects to an Ethereum blockchain using localhost 7545
+ *          "classic" -||- on localhost 8545
  * So if the chains are not using those localhosts, no connection
  * @todo recognise that two chains are running and connect to them
 */
 
-var experimental = new Web3('ws://127.0.0.1:7545');
+var experimental = new Web3('\\\\.\\pipe\\geth.ipc', require('net'));
 var classic =  new Web3('ws://127.0.0.1:8545');
 
 
@@ -61,16 +61,35 @@ var obj = JSON.parse(fs.readFileSync('./contracts/HTLC.json', 'utf8'));
 abi = obj.abi;
 bytecode = '0x' + obj.code;
 
-
-
 /** This function will validate the stored byte code against the byte code on a certain address.
  *  Remember that it's the runtime bytecode that needs to be compared, not the compiletime bytecode
  *
  *
 */
-function validateContract(runtime_code, address){
-    var chain_code = Web3.eth.getCode(address);
-    return '0x' + runtime_code == chain_code;
+
+async function validateContract(ethchain, runtime_code, abi, contract_address, self_address, value){
+    var res_code = await validateCode(ethchain, runtime_code, contract_address);
+    var res_val = await validateValue(ethchain, value, contract_address);
+    var res_dest = await validateDestination(ethchain, self_address, abi, contract_address);
+    return res_code && res_val && res_dest
+}
+
+async function validateCode(ethchain, code, address){
+    chain_code = await ethchain.eth.getCode(address);
+    return code == chain_code;
+}
+
+async function validateDestination(ethchain, contract_abi, destination, contract_address) {
+    var contract = new ethchain.eth.Contract(contract_abi, contract_address);
+    var contract_dest = await contract.methods.dest().call();
+    console.log(contract_dest);
+    return destination == contract_dest;
+}
+
+async function validateValue(ethchain, value_in_eth, address){
+    var balance = await ethchain.eth.getBalance(address);
+    console.log(balance);
+    return Web3.utils.toWei(value_in_eth) == balance;
 }
 
 /**
@@ -129,4 +148,4 @@ function unlock(ethchain, hash, from_adr, claim_adr){
     console.log("DEPLOYED");});
 }
 
-module.exports = {addEvent, experimental, classic, abi, bytecode, unlock, prepareAndDeploy, validateContract};
+module.exports = {addEvent, experimental, geth, obj, validateCode, validateContract, validateDestination, validateValue, classic, abi, bytecode, unlock, prepareAndDeploy, validateContract};
