@@ -142,7 +142,7 @@ async function getPastClaim(ethchain, jsoncontract, contract_address, from_block
       fromBlock: from_block,
       toBlock: 'latest'
     });
-    return events;
+    return events[0].returnValues._hash;
 }
 
 function unlock(ethchain, pre_image_hash, from_adr, claim_adr){
