@@ -128,22 +128,31 @@ function prepareAndDeploy(ethchain, from_adr,p_secret, p_digest, p_dest, p_amoun
         /**@todo send this information to other user */
         console.log("Contract deployed at " + receipt.blockNumber);
         contract.options.address = receipt.contractAddress;
-        addEvent(contract, receipt.blockNumber)
+        subscribeToClaim(contract, receipt.blockNumber)
       });
 }
 
-function addEvent(contract, block){
+function subscribeToClaim(contract, block){
     contract.events.Claim({fromBlock: "latest"}, function(error, event){console.log(event.returnValues._hash);});
 }
 
-function unlock(ethchain, hash, from_adr, claim_adr){
+async function getPastClaim(ethchain, jsoncontract, contract_address, from_block = 1){
+    var contract = new ethchain.eth.Contract(jsoncontract.abi, contract_address);
+    var events = await contract.getPastEvents('Claim', {
+      fromBlock: from_block,
+      toBlock: 'latest'
+    });
+    return events;
+}
+
+function unlock(ethchain, pre_image_hash, from_adr, claim_adr){
     /**@todo the account claiming the contract should be based on user input */
 
     var contract = new ethchain.eth.Contract(abi);
     contract.options.address = claim_adr;
     
-    contract.methods.claim(hash).send({from: from_adr}).on("receipt", function(receipt){
+    contract.methods.claim(pre_image_hash).send({from: from_adr}).on("receipt", function(receipt){
     console.log("DEPLOYED");});
 }
 
-module.exports = {addEvent, experimental, geth, obj, validateCode, validateContract, validateDestination, validateValue, classic, abi, bytecode, unlock, prepareAndDeploy, validateContract};
+module.exports = {subscribeToClaim, getPastClaim, experimental, geth, obj, validateCode, validateContract, validateDestination, validateValue, classic, abi, bytecode, unlock, prepareAndDeploy, validateContract};
