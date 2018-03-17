@@ -1,6 +1,6 @@
 **Get bids**
 ----
-  Fetches the bids which are available to the clients.
+  Fetches the bids from the database.
   
 * **URL**
 
