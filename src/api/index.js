@@ -34,6 +34,12 @@ function getBids(callback) {
 }
 
 // Accepts a bid and starts the swapping process
+/*
+    Har vi något system för att hantera referenser till bud? I så fall borde
+    denna ändpunkt ta emot en sådan referens istället för hela budet.
+
+    / Samuel
+*/
 function acceptBid(bid, callback) {
     // TODO: Implementera på riktigt
     console.log("User accepts this bid:\n" + JSON.stringify(bid, null, 4));
