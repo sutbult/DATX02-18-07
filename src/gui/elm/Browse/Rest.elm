@@ -52,6 +52,7 @@ decodeBids =
             (field "amount" float)
     in
         list <|
-            map2 Bid
+            map3 Bid
+                (field "id" string)
                 (field "from" decodeValue)
                 (field "to" decodeValue)

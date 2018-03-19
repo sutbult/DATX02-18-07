@@ -1,20 +1,21 @@
 **Get bids**
 ----
   Fetches the bids from the database.
-  
+
 * **URL**
 
   /api/getBids
 
 * **Method:**
-  
+
   `GET`
 
 * **Success Response:**
-  
+
   * **Code:** 200 <br />
     **Content:** `[
       {
+        id: "RandomID",
         from: {
           currency: "Bitcoin",
           amount: 10

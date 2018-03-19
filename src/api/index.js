@@ -10,8 +10,10 @@ async function addBid(bid) {
 // Fetches all available bids from the decentralized database
 async function getBids() {
     // TODO: Implementera på riktigt
+    var idCounter = 1;
     function Bid(fromCurrency, fromAmount, toCurrency, toAmount) {
         return {
+            id: "VeryRandomID" + idCounter++,
             from: {
                 currency: fromCurrency,
                 amount: fromAmount,

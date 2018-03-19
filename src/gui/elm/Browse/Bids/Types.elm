@@ -6,7 +6,8 @@ type alias Value =
     }
 
 type alias Bid =
-    { from : Value
+    { id : String
+    , from : Value
     , to : Value
     }
 
