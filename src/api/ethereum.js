@@ -26,19 +26,27 @@ const geth = exec("geth --light --testnet --ws --wsaddr 127.0.0.1 --wsport 7545 
 geth.stdout.on('data', (data) => {
   console.log(`stdout: ${data}`);
 });
+
 geth.stderr.on('data', (data) => {
     console.log(`stderr: ${data}`);
 });
+
 geth.on('error', (err) => {
     console.log(err + " Install Geth");
 });
+
 geth.on('close', (code) => {
   console.log(`child process exited with code ${code}`);
 });
 
-
-
-
+async function isConnected(ethchain){
+  try {
+    let a = await ethchain.eth.net.isListening();
+  } catch (e){
+    return false;
+  } 
+  return true;
+}
 
 /**Connect our application to Ethereum-servers
  * Current: "experimental" connects to an Ethereum blockchain using localhost 7545
@@ -47,7 +55,7 @@ geth.on('close', (code) => {
  * @todo recognise that two chains are running and connect to them
 */
 
-var experimental = new Web3('\\\\.\\pipe\\geth.ipc', require('net'));
+var experimental = new Web3('ws://127.0.0.1:7545');
 var classic =  new Web3('ws://127.0.0.1:8545');
 
 
@@ -67,10 +75,14 @@ bytecode = '0x' + obj.code;
  *
 */
 
-async function validateContract(ethchain, jsoncontract, contract_address, self_address, value_in_eth){
+async function validateContract(ethchain, jsoncontract, contract_address, self_address, value_in_eth, digest = null){
     var res_code = await validateCode(ethchain, jsoncontract.runtime_bytecode, contract_address);
     var res_val = await validateValue(ethchain, value_in_eth, contract_address);
     var res_dest = await validateDestination(ethchain, jsoncontract.abi, self_address, contract_address);
+    var res_digest = true;
+    if(digest != null){
+        res_digest = await validateDigest(ethchain, contract_abi, digest, contract_address);
+    }
     return res_code && res_val && res_dest
 }
 
@@ -83,6 +95,12 @@ async function validateDestination(ethchain, contract_abi, dest_address, contrac
     var contract = new ethchain.eth.Contract(contract_abi, contract_address);
     var contract_dest = await contract.methods.dest().call();
     return dest_address == contract_dest;
+}
+
+async function validateDigest(ethchain, contract_abi, digest, contract_address) {
+    var contract = new ethchain.eth.Contract(contract_abi, contract_address);
+    var contract_digest = await contract.methods.digest().call();
+    return digest = contact_digest;
 }
 
 async function validateValue(ethchain, value_in_eth, contract_address){
@@ -155,4 +173,4 @@ function unlock(ethchain, pre_image_hash, from_adr, claim_adr){
     console.log("DEPLOYED");});
 }
 
-module.exports = {subscribeToClaim, getPastClaim, experimental, geth, obj, validateCode, validateContract, validateDestination, validateValue, classic, abi, bytecode, unlock, prepareAndDeploy, validateContract};
+module.exports = {isConnected, subscribeToClaim, getPastClaim, experimental, geth, obj, validateCode, validateContract, validateDestination, validateValue, classic, abi, bytecode, unlock, prepareAndDeploy, validateContract};
