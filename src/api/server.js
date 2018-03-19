@@ -32,17 +32,17 @@ apiRouter.use((req, res, next) => {
 // Endpoints
 
 apiRouter.get("/getBids", (req, res, next) => {
-    api.getBids((error, bids) => {
+    api.getBids().then((bids) => {
         next(bids);
     });
 });
 apiRouter.post("/addBid", (req, res, next) => {
-    api.addBid(req.body, (error) => {
+    api.addBid(req.body).then(() => {
         next({});
     });
 });
 apiRouter.post("/acceptBid", (req, res, next) => {
-    api.acceptBid(req.body, (error) => {
+    api.acceptBid(req.body).then(() => {
         next({});
     });
 });
