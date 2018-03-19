@@ -35,9 +35,9 @@ async function getBids() {
 }
 
 // Accepts a bid and starts the swapping process
-async function acceptBid(bid, callback) {
+async function acceptBid(bidID, callback) {
     // TODO: Implementera på riktigt
-    console.log("User accepts this bid:\n" + JSON.stringify(bid, null, 4));
+    console.log("User accepts the bid with this ID: %s", bidID);
 }
 
 module.exports = {

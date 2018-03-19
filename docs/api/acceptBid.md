@@ -1,7 +1,7 @@
 **Accept bid**
 ----
   Called when a user accepts a bid existing in the database and triggers the swapping process.
-  
+
 * **URL**
 
   /api/acceptBid
@@ -12,16 +12,16 @@
 
 * **Data Params**
 
-  `{ "from": { "currency": "Bitcoin", "amount": 10 }, "to": { "currency": "Ethereum", "amount": 100 } }`
+  `{ "id": "RandomID" }`
 
 * **Success Response:**
-  
+
   * **Code:** 200 <br />
     **Content:** `{ }`
-  
+
 * **Sample Call:**
 
-  `curl http://localhost:51337/api/addBid -d '{ "from": { "currency": "Bitcoin", "amount": 10 }, "to": { "currency": "Ethereum", "amount": 100 } }'`
+  `curl http://localhost:51337/api/addBid -d '{ "id": "RandomID" }'`
 
 * **Notes:**
 

@@ -42,7 +42,7 @@ apiRouter.post("/addBid", (req, res, next) => {
     });
 });
 apiRouter.post("/acceptBid", (req, res, next) => {
-    api.acceptBid(req.body).then(() => {
+    api.acceptBid(req.body.id).then(() => {
         next({});
     });
 });
