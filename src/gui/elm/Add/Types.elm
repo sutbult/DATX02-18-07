@@ -5,6 +5,7 @@ type alias Model =
     , fromAmount : String
     , toCurrency : String
     , toAmount : String
+    , submitting : Bool
     }
 
 type Msg
@@ -12,3 +13,6 @@ type Msg
     | SetFromAmount String
     | SetToCurrency String
     | SetToAmount String
+    | Submit
+    | SubmitSuccess
+    | SubmitFailure

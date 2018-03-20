@@ -8,17 +8,27 @@ import Add.Types exposing (..)
 
 root : Model -> Html Msg
 root model =
-    div [class "columns"]
-        [ formBox
-            [ field "Currency" SetFromCurrency model.fromCurrency
-            , field "Amount" SetFromAmount model.fromAmount
-            ]
-        , arrowColumn
-        , formBox
-            [ field "Currency" SetToCurrency model.toCurrency
-            , field "Amount" SetToAmount model.toAmount
-            ]
+    div []
+        [ form model
+        , submit model.submitting
         ]
+
+form : Model -> Html Msg
+form model =
+    let
+        lfield = field model.submitting
+    in
+        div [class "columns"]
+            [ formBox
+                [ lfield "Currency" SetFromCurrency model.fromCurrency
+                , lfield "Amount" SetFromAmount model.fromAmount
+                ]
+            , arrowColumn
+            , formBox
+                [ lfield "Currency" SetToCurrency model.toCurrency
+                , lfield "Amount" SetToAmount model.toAmount
+                ]
+            ]
 
 formBox : List (Html Msg) -> Html Msg
 formBox content =
@@ -48,8 +58,8 @@ arrow hiddenOn arrowType =
             ] []
         ]
 
-field : String -> (String -> Msg) -> String -> Html Msg
-field title setter currentValue =
+field : Bool -> String -> (String -> Msg) -> String -> Html Msg
+field submitting title setter currentValue =
     div [class "field"]
         [ div [class "control"]
             [ input
@@ -58,6 +68,25 @@ field title setter currentValue =
                 , placeholder title
                 , onInput setter
                 , value currentValue
+                , disabled submitting
                 ] []
             ]
         ]
+
+submit : Bool -> Html Msg
+submit submitting =
+    let
+        classNameExtra =
+            if submitting then
+                " is-loading"
+            else
+                ""
+    in
+        div [style [("text-align", "right")]]
+            [ button
+                [ class <| "button is-link is-medium" ++ classNameExtra
+                , onClick Submit
+                ]
+                [ text "Add bid"
+                ]
+            ]

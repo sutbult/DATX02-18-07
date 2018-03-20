@@ -38,6 +38,8 @@ apiRouter.get("/getBids", (req, res, next) => {
 });
 apiRouter.post("/addBid", (req, res, next) => {
     api.addBid(req.body).then(() => {
+        // Avkommentera för konstgjord fördröjning
+        //setTimeout(() => next({}), 1000);
         next({});
     });
 });

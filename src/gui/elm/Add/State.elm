@@ -1,6 +1,12 @@
 module Add.State exposing (init, update, subscriptions)
 
 import Add.Types exposing (..)
+import Maybe exposing (..)
+import Bid.Types exposing
+    ( Bid
+    , Value
+    )
+import Add.Rest exposing (addBid)
 
 init : (Model, Cmd Msg)
 init =
@@ -8,6 +14,7 @@ init =
         , fromAmount = ""
         , toCurrency = ""
         , toAmount = ""
+        , submitting = False
         }
     , Cmd.none)
 
@@ -25,6 +32,43 @@ update msg model =
 
         SetToAmount value ->
             ({model | toAmount = value}, Cmd.none)
+
+        Submit ->
+            if not model.submitting then
+                case Debug.log "Bid" <| getBid model of
+                    Just bid ->
+                        ({model | submitting = True}, addBid bid)
+
+                    Nothing ->
+                        (model, Cmd.none)
+            else
+                (model, Cmd.none)
+
+        SubmitSuccess ->
+            ({ model
+                | fromCurrency = ""
+                , fromAmount = ""
+                , toCurrency = ""
+                , toAmount = ""
+                , submitting = False
+            }, Cmd.none)
+
+        SubmitFailure ->
+            (model, Cmd.none)
+
+getBid : Model -> Maybe Bid
+getBid model =
+    case String.toFloat model.fromAmount of
+        Ok fromAmount ->
+            case String.toFloat model.toAmount of
+                Ok toAmount ->
+                    Just <| Bid "0"
+                        (Value model.fromCurrency fromAmount)
+                        (Value model.toCurrency toAmount)
+                Err _ ->
+                    Nothing
+        Err _ ->
+            Nothing
 
 subscriptions : Model -> Sub Msg
 subscriptions _ = Sub.none
