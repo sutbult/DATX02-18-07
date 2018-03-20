@@ -66,9 +66,10 @@ console.log(classic.currentProvider);
 var erc20 = JSON.parse(fs.readFileSync('./contracts/ERC20Partial.json', 'utf8'));
 var abi;
 var bytecode;
-var htlc = JSON.parse(fs.readFileSync('./contracts/HTLC.json', 'utf8'));
-abi = htlc.abi;
-bytecode = '0x' + htlc.code;
+var htlc_ether = JSON.parse(fs.readFileSync('./contracts/HTLC.json', 'utf8'));
+var htlc_erc20 = JSON.parse(fs.readFileSync('./contracts/HTLC_ERC20.json', 'utf8'));
+abi = htlc_ether.abi;
+bytecode = '0x' + htlc_ether.code;
 
 /** This function will validate the stored byte code against the byte code on a certain address.
  *  Remember that it's the runtime bytecode that needs to be compared, not the compiletime bytecode
@@ -76,15 +77,29 @@ bytecode = '0x' + htlc.code;
  *
 */
 
-async function validateContract(ethchain, jsoncontract, contract_address, self_address, value_in_eth, digest = null){
+async function validateEtherContract(ethchain, jsoncontract, contract_address, self_address, value_in_eth, digest = null){
+    var res_cont = await validateContract(ethchain, jsoncontract, contract_address, self_address, digest);
+    var res_val = await validateERC20Value(ethchain, value_in_eth, contract_address);
+    return res_cont && res_val;
+}
+
+async function validateERC20Contract(ethchain, jsoncontract, contract_address, self_address, token_address, value_in_tokens, decimals = 18, digest = null){
+    var res_cont = await validateContract(ethchain, jsoncontract, contract_address, self_address, digest);
+    var res_val = await validateERC20Value(ethchain, value_in_tokens, token_address, contract_address, decimals);
+    console.log(res_val);
+    return res_cont && res_val;
+}
+
+async function validateContract(ethchain, jsoncontract, contract_address, self_address, digest = null){
     var res_code = await validateCode(ethchain, jsoncontract.runtime_bytecode, contract_address);
-    var res_val = await validateValue(ethchain, value_in_eth, contract_address);
+    console.log(res_code);
     var res_dest = await validateDestination(ethchain, jsoncontract.abi, self_address, contract_address);
+    console.log(res_dest);
     var res_digest = true;
     if(digest != null){
         res_digest = await validateDigest(ethchain, contract_abi, digest, contract_address);
     }
-    return res_code && res_val && res_dest
+    return res_code && res_dest && res_digest;
 }
 
 async function validateCode(ethchain, runtime_bytecode, contract_address){
@@ -180,4 +195,4 @@ function unlock(ethchain, pre_image_hash, from_adr, claim_adr){
     console.log("DEPLOYED");});
 }
 
-module.exports = {isConnected, subscribeToClaim, getPastClaim, experimental, geth, htlc, validateCode, validateContract, validateDestination, validateValue, validateERC20Value, classic, abi, bytecode, unlock, prepareAndDeploy, validateContract};
+module.exports = {isConnected, subscribeToClaim, getPastClaim, experimental, geth, htlc_ether, htlc_erc20, validateCode, validateEtherContract, validateERC20Contract, validateContract, validateDestination, validateValue, validateERC20Value, classic, abi, bytecode, unlock, prepareAndDeploy, validateContract};
