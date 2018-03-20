@@ -63,11 +63,12 @@ console.log(experimental.currentProvider);
 console.log(classic.currentProvider);
 
 /**Query for the compiled abi and bytecode */
+var erc20 = JSON.parse(fs.readFileSync('./contracts/ERC20Partial.json', 'utf8'));
 var abi;
 var bytecode;
-var obj = JSON.parse(fs.readFileSync('./contracts/HTLC.json', 'utf8'));
-abi = obj.abi;
-bytecode = '0x' + obj.code;
+var htlc = JSON.parse(fs.readFileSync('./contracts/HTLC.json', 'utf8'));
+abi = htlc.abi;
+bytecode = '0x' + htlc.code;
 
 /** This function will validate the stored byte code against the byte code on a certain address.
  *  Remember that it's the runtime bytecode that needs to be compared, not the compiletime bytecode
@@ -107,6 +108,12 @@ async function validateValue(ethchain, value_in_eth, contract_address){
     var balance = await ethchain.eth.getBalance(contract_address);
     console.log(balance);
     return Web3.utils.toWei(value_in_eth) == balance;
+}
+
+async function validateERC20Value(ethchain, value_in_tokens, token_address, contract_address, decimals = 18){
+    var token = new ethchain.eth.Contract(erc20.abi, token_address);
+    var balance = await token.methods.balanceOf(contract_address).call();
+    return value_in_tokens * Math.pow(10, decimals) == balance;
 }
 
 /**
@@ -173,4 +180,4 @@ function unlock(ethchain, pre_image_hash, from_adr, claim_adr){
     console.log("DEPLOYED");});
 }
 
-module.exports = {isConnected, subscribeToClaim, getPastClaim, experimental, geth, obj, validateCode, validateContract, validateDestination, validateValue, classic, abi, bytecode, unlock, prepareAndDeploy, validateContract};
+module.exports = {isConnected, subscribeToClaim, getPastClaim, experimental, geth, htlc, validateCode, validateContract, validateDestination, validateValue, validateERC20Value, classic, abi, bytecode, unlock, prepareAndDeploy, validateContract};
