@@ -8,6 +8,8 @@ import Navigation.View
 
 root : Model -> Html Msg
 root model =
-    div [class "container is-fullhd"]
-        [ Html.map ToNavigation (Navigation.View.root model.navigation)
+    section [class "section"]
+        [ div [class "container is-fullhd"]
+            [ Html.map ToNavigation (Navigation.View.root model.navigation)
+            ]
         ]
