@@ -9,23 +9,43 @@ import Add.Types exposing (..)
 root : Model -> Html Msg
 root model =
     div [class "columns"]
-        [ div [class "column is-two-fifths"]
-            [ div [class "box"]
-                [ field "Currency" SetFromCurrency model.fromCurrency
-                , field "Amount" SetFromAmount model.fromAmount
-                ]
+        [ formBox
+            [ field "Currency" SetFromCurrency model.fromCurrency
+            , field "Amount" SetFromAmount model.fromAmount
             ]
-        , div [class "column is-one-fifths"]
-            [ p [style [("font-size", "84px"), ("text-align", "center")]]
-                [ i [class "fas fa-long-arrow-alt-right"] []
-                ]
+        , arrowColumn
+        , formBox
+            [ field "Currency" SetToCurrency model.toCurrency
+            , field "Amount" SetToAmount model.toAmount
             ]
-        , div [class "column is-two-fifths"]
-            [ div [class "box"]
-                [ field "Currency" SetToCurrency model.toCurrency
-                , field "Amount" SetToAmount model.toAmount
-                ]
+        ]
+
+formBox : List (Html Msg) -> Html Msg
+formBox content =
+    div [class "column is-two-fifths"]
+        [ div [class "box"]
+            content
+        ]
+
+arrowColumn : Html Msg
+arrowColumn =
+    div [class "column is-one-fifths"]
+        [ arrow "mobile" "right"
+        , arrow "tablet" "down"
+        ]
+
+arrow : String -> String -> Html Msg
+arrow hiddenOn arrowType =
+    p
+        [ class <| "is-hidden-" ++ hiddenOn
+        , style
+            [ ("font-size", "84px")
+            , ("text-align", "center")
             ]
+        ]
+        [ i
+            [ class <| "fas fa-long-arrow-alt-" ++ arrowType
+            ] []
         ]
 
 field : String -> (String -> Msg) -> String -> Html Msg
