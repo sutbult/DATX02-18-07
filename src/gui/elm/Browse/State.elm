@@ -1,7 +1,8 @@
 module Browse.State exposing (init, update, subscriptions)
 
+import Browse.Bids.Types
 import Browse.Types exposing (..)
-import Browse.Bids.Types exposing (Value, Bid)
+import Bid.Types exposing (Value, Bid)
 import Browse.Bids.State as BidsState
 import Browse.Filter.State as FilterState
 import Browse.Filter.Types

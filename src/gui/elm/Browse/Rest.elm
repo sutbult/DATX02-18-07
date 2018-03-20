@@ -5,7 +5,7 @@ import Http
 import Browse.Types exposing (..)
 import Json.Decode exposing (..)
 
-import Browse.Bids.Types exposing
+import Bid.Types exposing
     ( Bid
     , Value
     )
@@ -24,7 +24,7 @@ getBids =
                 Err error ->
                     Error <| Error.Types.Display "Connection error" <| errorMessage error
     in
-        Debug.log "Bajs" <| Http.send onResponse request
+        Http.send onResponse request
 
 errorMessage : Http.Error -> String
 errorMessage error =

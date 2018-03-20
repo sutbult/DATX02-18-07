@@ -1,6 +1,7 @@
 module Browse.Bids.View exposing (root)
 
 import Browse.Bids.Types exposing (..)
+import Bid.Types exposing (Bid, Value)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

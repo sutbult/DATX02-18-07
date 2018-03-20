@@ -5,6 +5,7 @@ module Browse.Bids.State exposing
     )
 
 import Browse.Bids.Types exposing (..)
+import Bid.Types exposing (Bid)
 
 init : List Bid -> (Model, Cmd Msg)
 init bids = (Model bids, Cmd.none)

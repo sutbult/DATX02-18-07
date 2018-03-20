@@ -1,15 +1,6 @@
 module Browse.Bids.Types exposing (..)
 
-type alias Value =
-    { currency : String
-    , amount : Float
-    }
-
-type alias Bid =
-    { id : String
-    , from : Value
-    , to : Value
-    }
+import Bid.Types exposing (Bid)
 
 type alias Model =
     { bids : List Bid
