@@ -21,7 +21,7 @@ const { exec } = require('child_process');
 
 
 /**@todo kill this child-process once parent is killed */
-const geth = exec("geth --light --testnet --ws --wsaddr 127.0.0.1 --wsport 7545 --wsorigins='*' --port 30303");
+const geth = exec("geth --light --testnet --ws --wsaddr 127.0.0.1 --wsport 7545 --wsorigins='*' --port 30303 --wsapi personal,eth,web3");
 
 geth.stdout.on('data', (data) => {
   console.log(`stdout: ${data}`);
@@ -98,6 +98,10 @@ async function validateContract(ethchain, jsoncontract, contract_address, self_a
         res_digest = await validateDigest(ethchain, contract_abi, digest, contract_address);
     }
     return res_code && res_dest && res_digest;
+}
+
+async function unlockAccount(ethchain, account_address, account_password, time_in_ms = 10000){
+    ethchain.eth.personal.unlockAccount(account_address, account_password, time_in_ms);
 }
 
 async function validateCode(ethchain, runtime_bytecode, contract_address){
@@ -189,7 +193,7 @@ async function getPastClaim(ethchain, jsoncontract, contract_address, from_block
     return events[0].returnValues._hash;
 }
 
-function unlock(ethchain, pre_image_hash, from_adr, claim_adr){
+function claimContract(ethchain, pre_image_hash, from_adr, claim_adr){
     /**@todo the account claiming the contract should be based on user input */
 
     var contract = new ethchain.eth.Contract(abi);
@@ -199,4 +203,4 @@ function unlock(ethchain, pre_image_hash, from_adr, claim_adr){
     console.log("DEPLOYED");});
 }
 
-module.exports = {isConnected, subscribeToClaim, getPastClaim, experimental, geth, htlc_ether, htlc_erc20, validateCode, validateEtherContract, validateERC20Contract, validateContract, validateDestination, validateValue, validateERC20Value, classic, abi, bytecode, unlock, prepareAndDeploy, validateContract};
+module.exports = {isConnected, subscribeToClaim, unlockAccount, getPastClaim, experimental, geth, htlc_ether, htlc_erc20, validateCode, validateEtherContract, validateERC20Contract, validateContract, validateDestination, validateValue, validateERC20Value, classic, abi, bytecode, claimContract, prepareAndDeploy, validateContract};
