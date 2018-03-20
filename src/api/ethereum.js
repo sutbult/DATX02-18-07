@@ -85,16 +85,14 @@ async function validateEtherContract(ethchain, jsoncontract, contract_address, s
 
 async function validateERC20Contract(ethchain, jsoncontract, contract_address, self_address, token_address, value_in_tokens, decimals = 18, digest = null){
     var res_cont = await validateContract(ethchain, jsoncontract, contract_address, self_address, digest);
+    var res_address = await validateERC20Address(ethchain, jsoncontract.abi, token_address, contract_address);
     var res_val = await validateERC20Value(ethchain, value_in_tokens, token_address, contract_address, decimals);
-    console.log(res_val);
-    return res_cont && res_val;
+    return res_cont && res_val && res_address;
 }
 
 async function validateContract(ethchain, jsoncontract, contract_address, self_address, digest = null){
     var res_code = await validateCode(ethchain, jsoncontract.runtime_bytecode, contract_address);
-    console.log(res_code);
     var res_dest = await validateDestination(ethchain, jsoncontract.abi, self_address, contract_address);
-    console.log(res_dest);
     var res_digest = true;
     if(digest != null){
         res_digest = await validateDigest(ethchain, contract_abi, digest, contract_address);
@@ -116,7 +114,7 @@ async function validateDestination(ethchain, contract_abi, dest_address, contrac
 async function validateDigest(ethchain, contract_abi, digest, contract_address) {
     var contract = new ethchain.eth.Contract(contract_abi, contract_address);
     var contract_digest = await contract.methods.digest().call();
-    return digest = contact_digest;
+    return digest == contact_digest;
 }
 
 async function validateValue(ethchain, value_in_eth, contract_address){
@@ -129,6 +127,12 @@ async function validateERC20Value(ethchain, value_in_tokens, token_address, cont
     var token = new ethchain.eth.Contract(erc20.abi, token_address);
     var balance = await token.methods.balanceOf(contract_address).call();
     return value_in_tokens * Math.pow(10, decimals) == balance;
+}
+
+async function validateERC20Address(ethchain, contract_abi, token_address, contract_address){
+    var contract = new ethchain.eth.Contract(contract_abi, contract_address);
+    var contract_token = await contract.methods.addressToken().call();
+    return token_address == contract_token;
 }
 
 /**
