@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Navigation.Types exposing (..)
 
 import Browse.View
+import Add.View
 
 root : Model -> Html Msg
 root model =
@@ -22,7 +23,7 @@ viewSelector model =
             Html.map ToBrowse <| Browse.View.root model.models.browse
 
         Add ->
-            text "Add bid"
+            Html.map ToAdd <| Add.View.root model.models.add
 
 tabs : View -> Html Msg
 tabs shown =
