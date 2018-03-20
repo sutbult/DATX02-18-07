@@ -5,9 +5,11 @@ import Bid.Types exposing
     ( Bid
     , Value
     )
+import Bid.Rest exposing
+    ( encodeBid
+    )
 
 import Http
-import Json.Encode
 import Json.Decode
 
 addBid : Bid -> Cmd Msg
@@ -24,17 +26,3 @@ addBid bid =
                     SubmitFailure
     in
         Http.send onResponse request
-
-encodeBid : Bid -> Json.Encode.Value
-encodeBid bid =
-    Json.Encode.object
-        [ ("from", encodeValue bid.from)
-        , ("to", encodeValue bid.to)
-        ]
-
-encodeValue : Value -> Json.Encode.Value
-encodeValue value =
-    Json.Encode.object
-        [ ("currency", Json.Encode.string value.currency)
-        , ("amount", Json.Encode.float value.amount)
-        ]

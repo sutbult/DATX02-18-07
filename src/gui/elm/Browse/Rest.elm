@@ -9,6 +9,9 @@ import Bid.Types exposing
     ( Bid
     , Value
     )
+import Bid.Rest exposing
+    ( decodeBid
+    )
 
 import Error.Types
 
@@ -45,14 +48,4 @@ errorMessage error =
             "The response is incorrectly formatted. See '" ++ descr ++ "'"
 
 decodeBids : Decoder (List Bid)
-decodeBids =
-    let
-        decodeValue = map2 Value
-            (field "currency" string)
-            (field "amount" float)
-    in
-        list <|
-            map3 Bid
-                (field "id" string)
-                (field "from" decodeValue)
-                (field "to" decodeValue)
+decodeBids = list decodeBid
