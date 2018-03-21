@@ -22,4 +22,7 @@ update msg model =
                 ({model | navigation = subModel}, Platform.Cmd.map ToNavigation subCmd)
 
 subscriptions : Model -> Sub Msg
-subscriptions _ = Sub.none
+subscriptions model =
+    Sub.batch
+        [ Sub.map ToNavigation <| Navigation.State.subscriptions model.navigation
+        ]

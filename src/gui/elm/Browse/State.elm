@@ -69,7 +69,12 @@ update msg model =
                 ]
 
 subscriptions : Model -> Sub Msg
-subscriptions model = Sub.none
+subscriptions model =
+    Sub.batch
+        [ Sub.map Filter <| FilterState.subscriptions model.filter
+        , Sub.map Bids <| BidsState.subscriptions model.bids
+        , Sub.map Error <| ErrorState.subscriptions model.error
+        ]
 
 getFilterElements : List Bid -> (List String, List String)
 getFilterElements bid =

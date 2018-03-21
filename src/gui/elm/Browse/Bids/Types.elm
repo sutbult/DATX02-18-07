@@ -6,6 +6,7 @@ type alias Model =
     { bids : List Bid
     , modal : Maybe Bid
     , processing : Bool
+    , sseID : Int
     }
 
 type Msg
@@ -14,3 +15,5 @@ type Msg
     | CancelModal
     | AcceptBid Bid
     | EndProcessingBid
+    | GetSSEId Int
+    | Noop

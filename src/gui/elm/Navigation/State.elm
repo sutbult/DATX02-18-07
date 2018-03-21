@@ -51,4 +51,8 @@ update msg model =
                 ({model | models = newModels}, Platform.Cmd.map ToAdd subCmd)
 
 subscriptions : Model -> Sub Msg
-subscriptions _ = Sub.none
+subscriptions model =
+    Sub.batch
+        [ Sub.map ToBrowse <| Browse.State.subscriptions model.models.browse
+        , Sub.map ToAdd <| Add.State.subscriptions model.models.add
+        ]

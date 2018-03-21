@@ -29,10 +29,11 @@ encodeValue value =
         ]
 
 
-encodeBidId : Bid -> Json.Encode.Value
-encodeBidId bid =
+encodeBidId : Bid -> Int -> Json.Encode.Value
+encodeBidId bid sseID =
     Json.Encode.object
         [ ("id", Json.Encode.string bid.id)
+        , ("clientID", Json.Encode.int sseID)
         ]
 
 

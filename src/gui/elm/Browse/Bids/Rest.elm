@@ -12,11 +12,11 @@ import Bid.Rest exposing
 import Http
 import Json.Decode
 
-acceptBid : Bid -> Cmd Msg
-acceptBid bid =
+acceptBid : Bid -> Int -> Cmd Msg
+acceptBid bid sseID =
     let
-        body = Http.jsonBody <| encodeBidId bid
+        body = Http.jsonBody <| encodeBidId bid sseID
         request = Http.post "http://localhost:51337/api/acceptBid" body (Json.Decode.succeed ())
-        onResponse _ = EndProcessingBid
+        onResponse _ = Noop
     in
         Http.send onResponse request
