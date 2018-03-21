@@ -3,13 +3,15 @@ module Wallet.State exposing (init, update, subscriptions)
 import Bid.Types exposing (Value)
 import Wallet.Types exposing (..)
 
+import Wallet.Rest exposing (getWallet)
+
 init : (Model, Cmd Msg)
 init = (
     { accounts =
         [ Value "Bitcoin" 1337
         , Value "Ethereum" 9001
         ]
-    }, Cmd.none)
+    }, getWallet)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =

@@ -44,8 +44,24 @@ async function acceptBid(bidID, callback) {
     console.log("User accepts the bid with this ID: %s", bidID);
 }
 
+// Fetches all accounts associated with the user
+async function getWallet() {
+    function Account(currency, amount) {
+        return {
+            currency: currency,
+            amount: amount,
+        };
+    }
+    return [
+        Account("Bitcoin", 1000),
+        Account("Ethereum", 10000),
+        Account("Dogecoin", 1000000000), // Wow, such wealth, many monies
+    ];
+}
+
 module.exports = {
     addBid,
     getBids,
     acceptBid,
+    getWallet,
 };

@@ -2,6 +2,7 @@ module Bid.Rest exposing
     ( encodeBid
     , encodeBidId
     , decodeBid
+    , decodeValue
     )
 
 import Bid.Types exposing

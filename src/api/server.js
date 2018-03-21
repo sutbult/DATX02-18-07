@@ -53,6 +53,11 @@ apiRouter.post("/acceptBid", (req, res, next) => {
     });
 	next({});
 });
+apiRouter.get("/getWallet", (req, res, next) => {
+	api.getWallet().then((accounts) => {
+		next(accounts);
+	});
+});
 
 
 // Server stuff
