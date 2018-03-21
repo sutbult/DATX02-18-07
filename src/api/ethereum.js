@@ -71,11 +71,6 @@ var htlc_erc20 = JSON.parse(fs.readFileSync('./contracts/HTLC_ERC20.json', 'utf8
 abi = htlc_ether.abi;
 bytecode = '0x' + htlc_ether.code;
 
-/** This function will validate the stored byte code against the byte code on a certain address.
- *  Remember that it's the runtime bytecode that needs to be compared, not the compiletime bytecode
- *
- *
-*/
 
 async function validateEtherContract(ethchain, jsoncontract, contract_address, self_address, value_in_eth, digest = null){
     var res_cont = await validateContract(ethchain, jsoncontract, contract_address, self_address, digest);
@@ -104,35 +99,54 @@ async function unlockAccount(ethchain, account_address, account_password, time_i
     ethchain.eth.personal.unlockAccount(account_address, account_password, time_in_ms);
 }
 
+
+/** This function will validate the stored byte code against the byte code on a certain address.
+ *  Remember that it's the runtime bytecode that needs to be compared, not the compiletime bytecode
+*/
 async function validateCode(ethchain, runtime_bytecode, contract_address){
     chain_code = await ethchain.eth.getCode(contract_address);
     return runtime_bytecode == chain_code;
 }
 
+/** This function will validate that the destination on a contract is correct.
+* Assuming you are validating, it should be yourself.
+*/
 async function validateDestination(ethchain, contract_abi, dest_address, contract_address) {
     var contract = new ethchain.eth.Contract(contract_abi, contract_address);
     var contract_dest = await contract.methods.dest().call();
     return dest_address == contract_dest;
 }
 
+/** This function validates that the digest on a contract is correct.
+ *  This is only necessary for one party.
+*/
 async function validateDigest(ethchain, contract_abi, digest, contract_address) {
     var contract = new ethchain.eth.Contract(contract_abi, contract_address);
     var contract_digest = await contract.methods.digest().call();
     return digest == contact_digest;
 }
 
+/** This function validates that the ether value of a contract is correct.
+ *  Only works on normal HTLC (With Ether)
+*/
 async function validateValue(ethchain, value_in_eth, contract_address){
     var balance = await ethchain.eth.getBalance(contract_address);
     console.log(balance);
     return Web3.utils.toWei(value_in_eth) == balance;
 }
 
+/** This function validates that the ERC20 token value of a contract is correct.
+ *  Only works on ERC20-HTLC!
+*/
 async function validateERC20Value(ethchain, value_in_tokens, token_address, contract_address, decimals = 18){
     var token = new ethchain.eth.Contract(erc20.abi, token_address);
     var balance = await token.methods.balanceOf(contract_address).call();
     return value_in_tokens * Math.pow(10, decimals) == balance;
 }
 
+/** This function validates that the contract sends the correct token when claimed.
+ *  Only works on ERC20-HTLC!
+*/
 async function validateERC20Address(ethchain, contract_abi, token_address, contract_address){
     var contract = new ethchain.eth.Contract(contract_abi, contract_address);
     var contract_token = await contract.methods.addressToken().call();
@@ -171,8 +185,6 @@ function prepareAndDeploy(ethchain, from_adr,p_secret, p_digest, p_dest, p_amoun
     var contractInstance = contract.deploy({data: bytecode, arguments: [digest, p_dest]});
     contractInstance.send({from: from_adr, gasPrice: gasEstimate.toString(), gas: gasEstimate, value: 0})
       .once('receipt', function (receipt){
-        ethchain.eth.getBlockNumber().then((number) => console.log("Waiting for a mined block to include your contract... currently in block " + number + receipt.contractAddress));
-        console.log("i'm here");
         /**@todo send this information to other user */
         console.log("Contract deployed at " + receipt.blockNumber);
         contract.options.address = receipt.contractAddress;
