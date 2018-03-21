@@ -4,6 +4,7 @@ import Browse.Bids.Types exposing (..)
 import Bid.Types exposing (Bid, Value)
 
 import Html exposing (..)
+import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 
 import Browse.Filter.Types exposing (Filter)
@@ -18,25 +19,58 @@ root model filter =
         else
             div []
                 [ tableView bids
-                --, bidModal (Bid "0" (Value "Bitcoin" 0.02) (Value "Ethereum" 0.2))
+                , bidModalMaybe model.modal
                 ]
+
+
+-- Bid modal
+
+bidModalMaybe : Maybe Bid -> Html Msg
+bidModalMaybe mbid =
+    case mbid of
+        Just bid ->
+            bidModal bid
+
+        Nothing ->
+            div [] []
 
 bidModal : Bid -> Html Msg
 bidModal bid =
     div [class "modal is-active"]
-        [ div [class "modal-background"] []
-        , div [class "modal-content", style [("max-width", "300px")]]
-            [ div [class "box", style [("text-align", "center")]]
-                [ table [class "table", style [("display", "inline")]]
+        [ div
+            [ class "modal-background"
+            , onClick CancelModal
+            ]
+            []
+        , div
+            [ class "modal-content"
+            , style [("max-width", "300px")]
+            ]
+            [ div
+                [ class "box"
+                , style [("text-align", "center")]
+                ]
+                [ table
+                    [ class "table"
+                    , style [("display", "inline")]
+                    ]
                     [ tbody []
                         <| valueRows "From" bid.from
                         ++ valueRows "To" bid.to
                     ]
-                , div [class "buttons is-right", style [("margin-top", "20px")]]
-                    [ button [class "button"]
+                , div
+                    [ class "buttons is-right"
+                    , style [("margin-top", "20px")]
+                    ]
+                    [ button
+                        [ class "button"
+                        , onClick CancelModal
+                        ]
                         [ text "Cancel"
                         ]
-                    , button [class "button is-link"]
+                    , button
+                        [ class "button is-link"
+                        ]
                         [ text "Accept bid"
                         ]
                     ]
@@ -45,9 +79,11 @@ bidModal bid =
         , button
             [ class "modal-close is-large"
             , attribute "aria-label" "close"
+            , onClick CancelModal
             ]
             []
         ]
+
 
 valueRows : String -> Value -> List (Html Msg)
 valueRows title value =
@@ -82,6 +118,8 @@ valueRows title value =
         ]
 
 
+-- Error
+
 error : Html Msg
 error =
     article [class "message is-danger"]
@@ -89,6 +127,9 @@ error =
             [ p [] [text "Selected filter doesn't match any bids"]
             ]
         ]
+
+
+-- Table
 
 tableView : List Bid -> Html Msg
 tableView bids =
@@ -117,7 +158,9 @@ head =
 
 bidView : Bid -> Html Msg
 bidView bid =
-    tr [] <| valueView (.from bid) ++ valueView (.to bid)
+    tr [onClick (DisplayModal bid)]
+        <| valueView (.from bid)
+        ++ valueView (.to bid)
 
 valueView : Value -> List (Html Msg)
 valueView value =
