@@ -37,6 +37,8 @@ ipfs.once('ready', async function() {
   // load local cached db
   await globaldb.load();
 
+  db;
+
 });
 
 async function createChannel(channelName) {
@@ -45,6 +47,7 @@ async function createChannel(channelName) {
 
 /*
 Bid should be JSON in form of jsonObject = {
+    "step" : "1",
     "from" : "CURRENCY",
     "fromAmount" : int,
     "to":"CURRENCY",
@@ -69,6 +72,7 @@ async function addBid(bid){
 /*
   Just send address and channel
   jsonObject = {
+      "step" : "2",
       "adress" : adressString,
       "channel" : channelString
     };
@@ -78,8 +82,66 @@ async function acceptBid(bid){
   channels.push(db); //create channel
   await db.load();
   await db.add(bid.address);
+  //Also let everybody know that the bid is taken.
 }
 
+/*
+  Just send address and channel
+  jsonObject = {
+      "step" : "3",
+      "channel" : channelString,
+      "digest" : digestString,
+      "contractAddress" : contractAddressString
+    };
+*/
+async function pushContractInfo(contractInfo) {
+  //db has already been created, how to we access it?
+  //Need to add check to confirm that we have received the correct JsonObject
+  newJson = {
+    "step" : "3",
+    "digest" : contractInfo.digest,
+    "contractAddress" : contractInfo.contractAddress
+  };
+  await db.add(newJson);
+}
+
+/*
+  Just send address and channel
+  jsonObject = {
+      "step" : "4",
+      "channel" : channelString,
+      "contractAddress" : contractAddressString
+    };
+*/
+async function pushContractInfo(contractInfo) {
+  //db has already been created, how to we access it?
+  //Need to add check to confirm that we have received the correct JsonObject
+  newJson = {
+    "step" : "4",
+    "contractAddress" : contractInfo.contractAddress
+  };
+  await db.add(newJson);
+}
+
+
+/*
+What's left? Add functionality to take continiously take down the new information
+*/
+
+function processInfo(contractInfo) {
+  if(contractInfo.step == 1) {
+
+  } else if(contractInfo.step == 2) {
+
+  } else if(contractInfo.step == 3) {
+
+  } else if(contractInfo.step == 4) {
+
+  } else {
+
+  }
+
+}
 
 
 function getBid(amount){
