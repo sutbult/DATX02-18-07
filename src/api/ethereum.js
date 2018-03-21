@@ -68,6 +68,14 @@ async function unlockAccount(ethchain, account_address, account_password, time_i
     console.log(account);
 }
 
+async function readDigest(ethchain, contract_address){
+    var contract, contract_digest;
+    
+    contract = new ethchain.eth.Contract(htlc_ether, contract_address);
+    contract_digest = await contract.methods.digest().call();
+    return contract_digest;
+}
+
 /**  This function will validate an Ether HTLC contract
 *  @param {string} digest - The digest of the contract, if there is any (only for second contracts)
 *  @param {string} self_address - The destination of the contract, ie: yourself
@@ -102,10 +110,10 @@ async function validateContract(ethchain, jsoncontract, contract_address, self_a
     var res_code, res_dest, res_digest;
     
     res_code = await validateCode(ethchain, jsoncontract.runtime_bytecode, contract_address);
-    res_dest = await validateDestination(ethchain, jsoncontract.abi, self_address, contract_address);
+    res_dest = await validateDestination(ethchain, self_address, contract_address);
     res_digest = true;
     if(digest != null){
-        res_digest = await validateDigest(ethchain, contract_abi, digest, contract_address);
+        res_digest = await validateDigest(ethchain, digest, contract_address);
     }
     return res_code && res_dest && res_digest;
 }
@@ -123,10 +131,10 @@ async function validateCode(ethchain, runtime_bytecode, contract_address){
 /** This function will validate that the destination on a contract is correct.
 * Assuming you are validating, it should be yourself.
 */
-async function validateDestination(ethchain, contract_abi, dest_address, contract_address) {
+async function validateDestination(ethchain, dest_address, contract_address) {
     var contract, contract_dest;
     
-    contract = new ethchain.eth.Contract(contract_abi, contract_address);
+    contract = new ethchain.eth.Contract(htlc_ether, contract_address);
     contract_dest = await contract.methods.dest().call();
     return dest_address == contract_dest;
 }
@@ -134,12 +142,12 @@ async function validateDestination(ethchain, contract_abi, dest_address, contrac
 /** This function validates that the digest on a contract is correct.
  *  This is only necessary for one party.
 */
-async function validateDigest(ethchain, contract_abi, digest, contract_address) {
+async function validateDigest(ethchain, digest, contract_address) {
     var contract, contract_digest;
     
-    contract = new ethchain.eth.Contract(contract_abi, contract_address);
+    contract = new ethchain.eth.Contract(htlc_ether, contract_address);
     contract_digest = await contract.methods.digest().call();
-    return digest == contact_digest;
+    return digest == contract_digest;
 }
 
 /** This function validates that the ether value of a contract is correct.
