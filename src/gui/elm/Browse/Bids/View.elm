@@ -16,7 +16,71 @@ root model filter =
         if List.isEmpty bids then
             error
         else
-            tableView bids
+            div []
+                [ tableView bids
+                --, bidModal (Bid "0" (Value "Bitcoin" 0.02) (Value "Ethereum" 0.2))
+                ]
+
+bidModal : Bid -> Html Msg
+bidModal bid =
+    div [class "modal is-active"]
+        [ div [class "modal-background"] []
+        , div [class "modal-content", style [("max-width", "300px")]]
+            [ div [class "box", style [("text-align", "center")]]
+                [ table [class "table", style [("display", "inline")]]
+                    [ tbody []
+                        <| valueRows "From" bid.from
+                        ++ valueRows "To" bid.to
+                    ]
+                , div [class "buttons is-right", style [("margin-top", "20px")]]
+                    [ button [class "button"]
+                        [ text "Cancel"
+                        ]
+                    , button [class "button is-link"]
+                        [ text "Accept bid"
+                        ]
+                    ]
+                ]
+            ]
+        , button
+            [ class "modal-close is-large"
+            , attribute "aria-label" "close"
+            ]
+            []
+        ]
+
+valueRows : String -> Value -> List (Html Msg)
+valueRows title value =
+    let
+        ltd =
+            td
+                [ style
+                    [ ("border-color", "white")
+                    ]
+                ]
+        heading ltitle =
+            ltd
+                [ strong []
+                    [ text ltitle
+                    ]
+                ]
+    in
+        [ tr []
+            [ heading title
+            , heading "Currency"
+            , ltd
+                [ text value.currency
+                ]
+            ]
+        , tr []
+            [ ltd []
+            , heading "Amount"
+            , ltd
+                [ text <| toString value.amount
+                ]
+            ]
+        ]
+
 
 error : Html Msg
 error =
