@@ -45,6 +45,8 @@ apiRouter.post("/addBid", (req, res, next) => {
 });
 apiRouter.post("/acceptBid", (req, res, next) => {
     api.acceptBid(req.body.id).then(() => {
+        // Avkommentera för konstgjord fördröjning
+        //setTimeout(() => next({}), 1000);
         next({});
     });
 });

@@ -19,8 +19,35 @@ root model filter =
         else
             div []
                 [ tableView bids
-                , bidModalMaybe model.modal
+                , modal model
                 ]
+
+
+modal : Model -> Html Msg
+modal model =
+    if model.processing then
+        processingModal
+    else
+        bidModalMaybe model.modal
+
+
+processingModal : Html Msg
+processingModal =
+    div [class "modal is-active"]
+        [ div
+            [ class "modal-background"
+            ]
+            []
+        , div
+            [ class "modal-content"
+            ]
+            [ div [class "box", style [("text-align", "center")]]
+                [ p []
+                    [ text "Processing transaction"
+                    ]
+                ]
+            ]
+        ]
 
 
 -- Bid modal
@@ -70,6 +97,7 @@ bidModal bid =
                         ]
                     , button
                         [ class "button is-link"
+                        , onClick (AcceptBid bid)
                         ]
                         [ text "Accept bid"
                         ]
