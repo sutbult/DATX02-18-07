@@ -63,7 +63,7 @@ getBid model =
         Ok fromAmount ->
             case String.toFloat model.toAmount of
                 Ok toAmount ->
-                    Just <| Bid "0"
+                    Just <| Bid "0" Bid.Types.Active
                         (Value model.fromCurrency fromAmount)
                         (Value model.toCurrency toAmount)
                 Err _ ->

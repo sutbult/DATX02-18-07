@@ -8,6 +8,7 @@ module Bid.Rest exposing
 import Bid.Types exposing
     ( Bid
     , Value
+    , Status
     )
 
 import Json.Encode
@@ -40,13 +41,35 @@ encodeBidId bid sseID =
 
 decodeBid : Json.Decode.Decoder Bid
 decodeBid =
-    Json.Decode.map3 Bid
+    Json.Decode.map4 Bid
         (Json.Decode.field "id" Json.Decode.string)
+        (Json.Decode.field "status" decodeStatus)
         (Json.Decode.field "from" decodeValue)
         (Json.Decode.field "to" decodeValue)
+
+
+decodeStatus : Json.Decode.Decoder Status
+decodeStatus =
+    Json.Decode.map toStatus Json.Decode.string
 
 
 decodeValue : Json.Decode.Decoder Value
 decodeValue = Json.Decode.map2 Value
     (Json.Decode.field "currency" Json.Decode.string)
     (Json.Decode.field "amount" Json.Decode.float)
+
+
+toStatus : String -> Status
+toStatus str =
+    case str of
+        "ACTIVE" ->
+            Bid.Types.Active
+
+        "PENDING" ->
+            Bid.Types.Pending
+
+        "FINISHED" ->
+            Bid.Types.Finished
+
+        _ ->
+            Bid.Types.Finished

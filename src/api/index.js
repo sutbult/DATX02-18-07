@@ -22,9 +22,13 @@ async function addBid(bid) {
 // Temporär
 function BidFactory() {
     var idCounter = 1;
-    function Bid(fromCurrency, fromAmount, toCurrency, toAmount) {
+    function Bid(fromCurrency, fromAmount, toCurrency, toAmount, status) {
+        if(!status) {
+            status = "ACTIVE";
+        }
         return {
             id: "VeryRandomID" + idCounter++,
+            status: status,
             from: {
                 currency: fromCurrency,
                 amount: fromAmount,
@@ -81,8 +85,9 @@ async function getWallet() {
 async function getUserBids() {
     var Bid = BidFactory();
     return [
-        Bid("Dogecoin",     1000,   "Ethereum", 0.1),
-        Bid("Bitcoin cash", 0.5,    "Bitcoin",  0.1),
+        Bid("Dogecoin",     1000,   "Ethereum", 0.1, "ACTIVE"),
+        Bid("Bitcoin cash", 0.5,    "Bitcoin",  0.1, "PENDING"),
+        Bid("Bitcoin",      0.5,    "Dogecoin", 100, "FINISHED"),
     ];
 }
 
