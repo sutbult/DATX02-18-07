@@ -19,7 +19,7 @@ root model filter =
             error
         else
             div []
-                [ bidList DisplayModal bids
+                [ bidList False DisplayModal bids
                 , modal model
                 ]
 

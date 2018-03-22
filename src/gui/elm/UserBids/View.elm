@@ -9,7 +9,7 @@ import UserBids.Types exposing (..)
 root : Model -> Html Msg
 root model =
     div []
-        [ bidList (const Noop) model.bids
+        [ bidList True (const Noop) model.bids
         ]
 
 
