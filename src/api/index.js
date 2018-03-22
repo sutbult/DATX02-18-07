@@ -4,13 +4,24 @@ const api = require("./OrbitDBHandler.js");
 
 // Adds a new bid to the decentralized database
 async function addBid(bid) {
-    // TODO: Implementera på riktigt
-    console.log("User adds this bid:\n" + JSON.stringify(bid, null, 4));
+  var jsonObject = {
+      "step" : "1",
+      "from" : "CURRENCY",
+      "fromAmount" : '5',
+      "to":"CURRENCY",
+      "toAmount" : '5',
+      "address" : 'test',
+      "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
+    };
+    console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));
+    api.addBid(jsonObject)
+
 }
 
 // Fetches all available bids from the decentralized database
 async function getBids() {
     // Detta fungerar inte
+    //addBid('test')
     //return api.getBid(5)
 
     // TODO: Implementera på riktigt

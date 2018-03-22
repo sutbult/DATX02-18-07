@@ -39,8 +39,11 @@ ipfs.once('ready', async function() {
   try {
     orbitdb = new OrbitDB(ipfs)
     globaldb = await orbitdb.feed('/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db');
+    await globaldb.load()
     messagedb = await orbitdb.feed('/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message')
+    await messagedb.load()
     console.log(globaldb.address.toString())
+    console.log(messagedb.address.toString())
 } catch (e) {
   console.error(e)
 }
@@ -68,11 +71,13 @@ async function addBid(bid){
   //bid to json
   //var bidJSON = JSON.stringify(bid);
   //await globaldb.add(bidJSON);
+
   await globaldb.add(bid);
-  db = await orbitdb.feed(bid.channel);
-  channels.push(db); //create channel
-  await db.load();
-  await db.add(bid.address);
+//  db = await orbitdb.feed(bid.channel);
+  console.log(bid.channel)
+//  channels.push(db); //create channel
+  await messagedb.load();
+  await messagedb.add(bid.address);
 }
 
 /*
@@ -149,9 +154,19 @@ function processInfo(contractInfo) {
 
 }
 
-
+var jsonObject = {
+    "step" : "1",
+    "from" : "CURRENCY",
+    "fromAmount" : '5',
+    "to":"CURRENCY",
+    "toAmount" : '5',
+    "address" : 'test',
+    "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
+  };
 
 async function getBid(amount){
+  var message = messagedb.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
+  console.log("Message" + message)
   await globaldb.add('test')
   var bids = globaldb.iterator({ limit: 5 }).collect().map((e) => e.payload.value)
   return JSON.stringify(bids, null, 2)
