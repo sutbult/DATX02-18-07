@@ -58,6 +58,11 @@ apiRouter.get("/getWallet", (req, res, next) => {
 		next(accounts);
 	});
 });
+apiRouter.get("/getUserBids", (req, res, next) => {
+	api.getUserBids().then((bids) => {
+		next(bids);
+	});
+});
 
 
 // Server stuff

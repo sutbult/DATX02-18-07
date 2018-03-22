@@ -18,13 +18,9 @@ async function addBid(bid) {
 
 }
 
-// Fetches all available bids from the decentralized database
-async function getBids() {
-    // Detta fungerar inte
-    //addBid('test')
-    //return api.getBid(5)
 
-    // TODO: Implementera på riktigt
+// Temporär
+function BidFactory() {
     var idCounter = 1;
     function Bid(fromCurrency, fromAmount, toCurrency, toAmount) {
         return {
@@ -39,6 +35,17 @@ async function getBids() {
             }
         }
     }
+    return Bid;
+}
+
+// Fetches all available bids from the decentralized database
+async function getBids() {
+    // Detta fungerar inte
+    //addBid('test')
+    //return api.getBid(5)
+
+    // TODO: Implementera på riktigt
+    var Bid = BidFactory();
     return [
         Bid("Bitcoin",      0.01,   "Ethereum",     0.1     ),
         Bid("Ethereum",     0.5,    "Monero",       5       ),
@@ -70,9 +77,19 @@ async function getWallet() {
     ];
 }
 
+// Fetches all bids associated with the user
+async function getUserBids() {
+    var Bid = BidFactory();
+    return [
+        Bid("Dogecoin",     1000,   "Ethereum", 0.1),
+        Bid("Bitcoin cash", 0.5,    "Bitcoin",  0.1),
+    ];
+}
+
 module.exports = {
     addBid,
     getBids,
     acceptBid,
     getWallet,
+    getUserBids,
 };
