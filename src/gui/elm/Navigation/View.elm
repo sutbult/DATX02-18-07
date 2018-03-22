@@ -9,6 +9,7 @@ import Navigation.Types exposing (..)
 import Browse.View
 import Add.View
 import Wallet.View
+import UserBids.View
 
 root : Model -> Html Msg
 root model =
@@ -29,6 +30,10 @@ viewSelector model =
         Wallet ->
             Html.map ToWallet <| Wallet.View.root model.models.wallet
 
+        UserBids ->
+            Html.map ToUserBids <| UserBids.View.root model.models.userBids
+
+
 tabs : View -> Html Msg
 tabs shown =
     div [class "tabs is-centered"]
@@ -37,8 +42,10 @@ tabs shown =
                 [ (Add, "Add bid")
                 , (Browse, "Browse bids")
                 , (Wallet, "Your wallets")
+                , (UserBids, "Your bids")
                 ]
         ]
+
 
 tab : View -> (View, String) -> Html Msg
 tab shown (view, title) =
