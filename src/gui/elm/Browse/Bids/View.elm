@@ -2,6 +2,7 @@ module Browse.Bids.View exposing (root)
 
 import Browse.Bids.Types exposing (..)
 import Bid.Types exposing (Bid, Value)
+import Bid.View exposing (bidList)
 
 import Html exposing (..)
 import Html.Events exposing (..)
@@ -18,7 +19,7 @@ root model filter =
             error
         else
             div []
-                [ tableView bids
+                [ bidList DisplayModal bids
                 , modal model
                 ]
 
@@ -157,44 +158,7 @@ error =
         ]
 
 
--- Table
-
-tableView : List Bid -> Html Msg
-tableView bids =
-    table [class "table is-fullwidth is-hoverable is-striped"]
-        [ head
-        , tbody []
-            <| List.map bidView bids
-        ]
-
-head : Html Msg
-head =
-    thead []
-        [ tr []
-            [ th [] [text "From"]
-            , th [] []
-            , th [] [text "To"]
-            , th [] []
-            ]
-        , tr []
-            [ th [] [text "Currency"]
-            , th [] [text "Amount"]
-            , th [] [text "Currency"]
-            , th [] [text "Amount"]
-            ]
-        ]
-
-bidView : Bid -> Html Msg
-bidView bid =
-    tr [onClick (DisplayModal bid)]
-        <| valueView (.from bid)
-        ++ valueView (.to bid)
-
-valueView : Value -> List (Html Msg)
-valueView value =
-    [ td [] <| [ text <| .currency value]
-    , td [] <| [ text <| toString <| .amount value]
-    ]
+-- Filter
 
 filteredBids : Model -> Filter -> List Bid
 filteredBids model filter = List.filter (filterBid filter) (.bids model)
