@@ -4,21 +4,16 @@ module Browse.Filter.Part.State exposing
     , subscriptions
     )
 
-import Dict exposing (..)
+import Dict
 
 import Browse.Filter.Part.Types exposing (..)
 
 
-toDict : List String -> ElementDict
-toDict =
-    fromList << List.map (\c -> (c, True))
-
-
-init : String -> List String -> (Model, Cmd Msg)
-init title elements = (
+init : String -> (Model, Cmd Msg)
+init title = (
     { title = title
     , query = ""
-    , elements = toDict elements
+    , elements = Dict.empty
     }, Cmd.none)
 
 
@@ -35,8 +30,19 @@ update msg model =
                 ({model | elements = elements}, Cmd.none)
 
         SetCurrencies currencies ->
-            -- TODO: Gör så att existerande valutor behåller sitt visningsvärde
-            ({model | elements = toDict currencies}, Cmd.none)
+            ({model
+                | elements = combineCurrencies currencies model.elements
+            }, Cmd.none)
+
+
+combineCurrencies : List String -> ElementDict -> ElementDict
+combineCurrencies currencies elements =
+    let
+        reducer element =
+            Dict.update element <|
+                Just << Maybe.withDefault True
+    in
+        List.foldl reducer elements currencies
 
 
 toggleElement : String -> ElementDict -> ElementDict

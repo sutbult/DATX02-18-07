@@ -16,10 +16,8 @@ import Browse.Rest exposing (getBids)
 init : (Model, Cmd Msg)
 init =
     let
-        bids = []
-        filterElements = getFilterElements bids
-        (bidsModel, bidsCmd) = BidsState.init bids
-        (filterModel, filterCmd) = FilterState.init filterElements
+        (bidsModel, bidsCmd) = BidsState.init []
+        (filterModel, filterCmd) = FilterState.init
         (errorModel, errorCmd) = ErrorState.init
     in
         (   { bids = bidsModel
