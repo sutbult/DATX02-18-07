@@ -16,6 +16,7 @@
     **Content:** `[
       {
         id: "RandomID",
+        status: "ACTIVE",
         from: {
           currency: "Bitcoin",
           amount: 10
