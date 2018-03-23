@@ -6,7 +6,11 @@ import Bid.Types exposing
     ( Bid
     , Value
     )
-import Add.Rest exposing (addBid)
+import Add.Rest exposing
+    ( addBid
+    , getCurrencies
+    )
+
 
 init : (Model, Cmd Msg)
 init =
@@ -15,8 +19,10 @@ init =
         , toCurrency = ""
         , toAmount = ""
         , submitting = False
+        , currencies = []
         }
-    , Cmd.none)
+    , getCurrencies)
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -57,6 +63,10 @@ update msg model =
         SubmitFailure ->
             (model, Cmd.none)
 
+        SetCurrencies currencies ->
+            ({model | currencies = currencies}, Cmd.none)
+
+
 getBid : Model -> Maybe Bid
 getBid model =
     case String.toFloat model.fromAmount of
@@ -70,6 +80,7 @@ getBid model =
                     Nothing
         Err _ ->
             Nothing
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ = Sub.none
