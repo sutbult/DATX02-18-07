@@ -45,13 +45,18 @@ apiRouter.post("/addBid", (req, res, next) => {
     });
 });
 apiRouter.post("/acceptBid", (req, res, next) => {
-    api.acceptBid(req.body.id).then(() => {
-		sendSSE(req.body.clientID, {
-			cmd: "acceptBidResponse",
-			status: "ok",
-		});
-    });
-	next({});
+    if(req.body.clientID < 0) {
+        next(400);
+    }
+    else {
+        api.acceptBid(req.body.id).then(() => {
+            sendSSE(req.body.clientID, {
+                cmd: "acceptBidResponse",
+                status: "ok",
+            });
+        });
+        next({});
+    }
 });
 apiRouter.get("/getWallet", (req, res, next) => {
 	api.getWallet().then((accounts) => {
@@ -94,17 +99,17 @@ function setupSSE() {
 	sse.on("connection", (client) => {
 		sseClients.push(client);
 		const id = sseClients.length - 1;
-		if(id) {
-			sendSSE(id, {
-				cmd: "ack",
-				clientID: id,
-			});
-		}
+		sendSSE(id, {
+			cmd: "ack",
+			clientID: id,
+		});
 	});
 }
 function sendSSE(id, data) {
 	const client = sseClients[id];
-	client.send(JSON.stringify(data));
+	if(client) {
+		client.send(JSON.stringify(data));
+	}
 }
 
 const app = express();
