@@ -91,10 +91,23 @@ async function getUserBids() {
     ];
 }
 
+// Fetches the currencies which is available for the user to create bids with
+async function getCurrencies() {
+    return [
+        "Bitcoin",
+        "Bitcoin cash",
+        "Ethereum",
+        "Ethereum classic",
+        "Monero",
+        "Dogecoin"
+    ];
+}
+
 module.exports = {
     addBid,
     getBids,
     acceptBid,
     getWallet,
     getUserBids,
+    getCurrencies,
 };

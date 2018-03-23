@@ -68,6 +68,11 @@ apiRouter.get("/getUserBids", (req, res, next) => {
 		next(bids);
 	});
 });
+apiRouter.get("/getCurrencies", (req, res, next) => {
+	api.getCurrencies().then((currencies) => {
+		next(currencies);
+	});
+});
 
 
 // Server stuff
