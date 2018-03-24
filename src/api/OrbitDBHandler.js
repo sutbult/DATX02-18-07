@@ -70,7 +70,7 @@ async function addBid(bid){
   //await globaldb.add(bidJSON);
   await globaldb.add(bid);
   db = await orbitdb.feed(bid.channel);
-  channels.push(db); //create channel
+  //channels.push(db); //create channel
   await db.load();
   await db.add(bid.address);
 }
