@@ -73,18 +73,15 @@ async function addBid(bid){
   //await globaldb.add(bidJSON);
 
   await globaldb.add(bid);
-<<<<<<< HEAD
-  db = await orbitdb.feed(bid.channel);
+  //db = await orbitdb.feed(bid.channel);
   //channels.push(db); //create channel
-  await db.load();
-  await db.add(bid.address);
-=======
+  //await db.load();
+  //await db.add(bid.address);
 //  db = await orbitdb.feed(bid.channel);
   console.log(bid.channel)
 //  channels.push(db); //create channel
   await messagedb.load();
   await messagedb.add(bid.address);
->>>>>>> 53838d55bf50a047b44a9d976243e6f6d0ba6e90
 }
 
 /*
@@ -160,7 +157,7 @@ function processInfo(contractInfo) {
   }
 
 }
-
+/*
 var jsonObject = {
     "step" : "1",
     "from" : "CURRENCY",
@@ -170,7 +167,7 @@ var jsonObject = {
     "address" : 'test',
     "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
   };
-
+*/
 async function getBid(amount){
   var message = messagedb.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
   console.log("Message" + message)
