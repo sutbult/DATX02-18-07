@@ -5,11 +5,11 @@ import Browse.Filter.Types exposing (..)
 
 import Browse.Filter.Part.State as PartState
 
-init : (List String, List String) -> (Model, Cmd Msg)
-init elements =
+init : (Model, Cmd Msg)
+init =
     let
-        (fromModel, fromCmd) = PartState.init "From" <| Tuple.first elements
-        (toModel, toCmd) = PartState.init "To" <| Tuple.second elements
+        (fromModel, fromCmd) = PartState.init "From"
+        (toModel, toCmd) = PartState.init "To"
     in
         ( { from = fromModel, to = toModel}
         , Cmd.batch

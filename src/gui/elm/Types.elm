@@ -1,13 +1,10 @@
 module Types exposing (..)
 
-import Browse.Types
-import Breadcrumb.Types
+import Navigation.Types
 
 type alias Model =
-    { browse : Browse.Types.Model
-    , breadcrumb : Breadcrumb.Types.Model
+    { navigation : Navigation.Types.Model
     }
 
 type Msg
-    = Browse Browse.Types.Msg
-    | Breadcrumb Breadcrumb.Types.Msg
+    = ToNavigation Navigation.Types.Msg

@@ -1,7 +1,8 @@
 module Browse.State exposing (init, update, subscriptions)
 
+import Browse.Bids.Types
 import Browse.Types exposing (..)
-import Browse.Bids.Types exposing (Value, Bid)
+import Bid.Types exposing (Value, Bid)
 import Browse.Bids.State as BidsState
 import Browse.Filter.State as FilterState
 import Browse.Filter.Types
@@ -15,10 +16,8 @@ import Browse.Rest exposing (getBids)
 init : (Model, Cmd Msg)
 init =
     let
-        bids = []
-        filterElements = getFilterElements bids
-        (bidsModel, bidsCmd) = BidsState.init bids
-        (filterModel, filterCmd) = FilterState.init filterElements
+        (bidsModel, bidsCmd) = BidsState.init []
+        (filterModel, filterCmd) = FilterState.init
         (errorModel, errorCmd) = ErrorState.init
     in
         (   { bids = bidsModel
@@ -68,7 +67,12 @@ update msg model =
                 ]
 
 subscriptions : Model -> Sub Msg
-subscriptions model = Sub.none
+subscriptions model =
+    Sub.batch
+        [ Sub.map Filter <| FilterState.subscriptions model.filter
+        , Sub.map Bids <| BidsState.subscriptions model.bids
+        , Sub.map Error <| ErrorState.subscriptions model.error
+        ]
 
 getFilterElements : List Bid -> (List String, List String)
 getFilterElements bid =

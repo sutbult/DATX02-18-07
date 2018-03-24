@@ -1,10 +1,10 @@
 **Get bids**
 ----
-  Fetches the bids from the database.
+  Fetches all bids associated with the user.
 
 * **URL**
 
-  /api/getBids
+  /api/getUserBids
 
 * **Method:**
 
@@ -30,4 +30,4 @@
 
 * **Sample Call:**
 
-  `curl http://localhost:51337/api/getBids`
+  `curl http://localhost:51337/api/getUserBids`

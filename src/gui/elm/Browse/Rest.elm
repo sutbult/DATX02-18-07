@@ -5,9 +5,12 @@ import Http
 import Browse.Types exposing (..)
 import Json.Decode exposing (..)
 
-import Browse.Bids.Types exposing
+import Bid.Types exposing
     ( Bid
     , Value
+    )
+import Bid.Rest exposing
+    ( decodeBid
     )
 
 import Error.Types
@@ -24,7 +27,7 @@ getBids =
                 Err error ->
                     Error <| Error.Types.Display "Connection error" <| errorMessage error
     in
-        Debug.log "Bajs" <| Http.send onResponse request
+        Http.send onResponse request
 
 errorMessage : Http.Error -> String
 errorMessage error =
@@ -45,14 +48,4 @@ errorMessage error =
             "The response is incorrectly formatted. See '" ++ descr ++ "'"
 
 decodeBids : Decoder (List Bid)
-decodeBids =
-    let
-        decodeValue = map2 Value
-            (field "currency" string)
-            (field "amount" float)
-    in
-        list <|
-            map3 Bid
-                (field "id" string)
-                (field "from" decodeValue)
-                (field "to" decodeValue)
+decodeBids = list decodeBid

@@ -1,19 +1,19 @@
 module Browse.Bids.Types exposing (..)
 
-type alias Value =
-    { currency : String
-    , amount : Float
-    }
-
-type alias Bid =
-    { id : String
-    , from : Value
-    , to : Value
-    }
+import Bid.Types exposing (Bid)
 
 type alias Model =
     { bids : List Bid
+    , modal : Maybe Bid
+    , processing : Bool
+    , sseID : Int
     }
 
-type Msg =
-    SetBids (List Bid)
+type Msg
+    = SetBids (List Bid)
+    | DisplayModal Bid
+    | CancelModal
+    | AcceptBid Bid
+    | EndProcessingBid
+    | GetSSEId Int
+    | Noop

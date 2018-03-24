@@ -6,6 +6,8 @@ import Html.Events exposing (..)
 
 import Browse.Filter.Part.Types exposing (..)
 
+import Dict
+
 root : Model -> Html Msg
 root model =
     let
@@ -17,10 +19,12 @@ root model =
             , elementTable elements
             ]
 
+
 title : String -> Html Msg
 title label = h6 [class "title is-5"] (List.singleton (text label))
 
-queryField : List Element -> Html Msg
+
+queryField : List (String, Bool) -> Html Msg
 queryField elements =
     let
         empty = List.isEmpty elements
@@ -52,7 +56,8 @@ queryField elements =
                     text ""
             ]
 
-elementTable : List Element -> Html Msg
+
+elementTable : List (String, Bool) -> Html Msg
 elementTable elements =
     if List.isEmpty elements then
         text ""
@@ -67,29 +72,28 @@ elementTable elements =
             , tbody [] (List.map elementRow elements)
             ]
 
-filterElements : Model -> List Element
+
+filterElements : Model -> List (String, Bool)
 filterElements model =
     let
         query = String.toLower (.query model)
-        predicate = (String.contains query << String.toLower << (.title))
+        predicate = String.contains query << String.toLower << Tuple.first
     in
-        List.filter predicate (.elements model)
+        List.filter predicate <| Dict.toList model.elements
 
-elementRow : Element -> Html Msg
-elementRow element =
-    let
-        title = .title element
-    in
-        tr []
-            [ td [] [text title]
-            , td []
-                [ label [class "checkbox"]
-                    [ input
-                        [ type_ "checkbox"
-                        , checked (.shown element)
-                        , onClick (Toggle title)
-                        ]
-                        []
+
+elementRow : (String, Bool) -> Html Msg
+elementRow (title, shown) =
+    tr []
+        [ td [] [text title]
+        , td []
+            [ label [class "checkbox"]
+                [ input
+                    [ type_ "checkbox"
+                    , checked shown
+                    , onClick (Toggle title)
                     ]
+                    []
                 ]
             ]
+        ]

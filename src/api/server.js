@@ -1,6 +1,7 @@
 
 const http = require("http");
 const express = require("express");
+var SSE = require('sse');
 
 const api = require("./index.js");
 
@@ -38,13 +39,34 @@ apiRouter.get("/getBids", (req, res, next) => {
 });
 apiRouter.post("/addBid", (req, res, next) => {
     api.addBid(req.body).then(() => {
+        // Avkommentera för konstgjord fördröjning
+        //setTimeout(() => next({}), 1000);
         next({});
     });
 });
 apiRouter.post("/acceptBid", (req, res, next) => {
-    api.acceptBid(req.body.id).then(() => {
+    if(req.body.clientID < 0) {
+        next(400);
+    }
+    else {
+        api.acceptBid(req.body.id).then(() => {
+            sendSSE(req.body.clientID, {
+                cmd: "acceptBidResponse",
+                status: "ok",
+            });
+        });
         next({});
-    });
+    }
+});
+apiRouter.get("/getWallet", (req, res, next) => {
+	api.getWallet().then((accounts) => {
+		next(accounts);
+	});
+});
+apiRouter.get("/getUserBids", (req, res, next) => {
+	api.getUserBids().then((bids) => {
+		next(bids);
+	});
 });
 
 
@@ -71,10 +93,30 @@ apiRouter.use((prev, req, res, next) => {
     res.end();
 });
 
+var sseClients = [];
+function setupSSE() {
+	var sse = new SSE(server);
+	sse.on("connection", (client) => {
+		sseClients.push(client);
+		const id = sseClients.length - 1;
+		sendSSE(id, {
+			cmd: "ack",
+			clientID: id,
+		});
+	});
+}
+function sendSSE(id, data) {
+	const client = sseClients[id];
+	if(client) {
+		client.send(JSON.stringify(data));
+	}
+}
+
 const app = express();
 app.use("/api", apiRouter);
 
 const server = http.createServer(app);
 server.listen(51337, "localhost", () => {
     console.log("Daemon is now running");
+	setupSSE();
 });
