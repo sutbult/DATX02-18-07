@@ -53,9 +53,7 @@ update msg model =
 
         SubmitSuccess ->
             ({ model
-                | fromCurrency = ""
-                , fromAmount = ""
-                , toCurrency = ""
+                | fromAmount = ""
                 , toAmount = ""
                 , submitting = False
             }, Cmd.none)

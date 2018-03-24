@@ -13,7 +13,7 @@ async function addBid(bid) {
       "address" : 'test',
       "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
     };
-    console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));
+    console.log("User adds this bid:\n" + JSON.stringify(bid, null, 4));
     api.addBid(jsonObject)
 
 }

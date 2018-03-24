@@ -16,17 +16,18 @@ root model =
 form : Model -> Html Msg
 form model =
     let
-        lfield = field model.submitting
+        lamountField = amountField model.submitting
+        lcurrencySelector = currencySelector model.submitting model.currencies
     in
         div [class "columns"]
             [ formBox
-                [ lfield "Currency" SetFromCurrency model.fromCurrency
-                , lfield "Amount" SetFromAmount model.fromAmount
+                [ lcurrencySelector SetFromCurrency model.fromCurrency
+                , lamountField SetFromAmount model.fromAmount
                 ]
             , arrowColumn
             , formBox
-                [ lfield "Currency" SetToCurrency model.toCurrency
-                , lfield "Amount" SetToAmount model.toAmount
+                [ lcurrencySelector SetToCurrency model.toCurrency
+                , lamountField SetToAmount model.toAmount
                 ]
             ]
 
@@ -58,20 +59,47 @@ arrow hiddenOn arrowType =
             ] []
         ]
 
-field : Bool -> String -> (String -> Msg) -> String -> Html Msg
-field submitting title setter currentValue =
+
+fullWidth : Attribute Msg
+fullWidth = style [("width", "100%")]
+
+
+currencySelector : Bool -> List String -> (String -> Msg) -> String -> Html Msg
+currencySelector submitting options setter currentValue =
+    let
+        optionView currency =
+            option
+                [ value currency
+                , fullWidth
+                , selected (currency == currentValue)
+                ]
+                [ text currency
+                ]
+    in
+        div [class "field"]
+            [ div [class "control"]
+                [ div [class "select", fullWidth]
+                    [ select [fullWidth, onInput setter]
+                        <| List.map optionView options
+                    ]
+                ]
+            ]
+
+amountField : Bool -> (String -> Msg) -> String -> Html Msg
+amountField submitting setter currentValue =
     div [class "field"]
         [ div [class "control"]
             [ input
                 [ class "input"
                 , type_ "text"
-                , placeholder title
+                , placeholder "Amount"
                 , onInput setter
                 , value currentValue
                 , disabled submitting
                 ] []
             ]
         ]
+
 
 submit : Bool -> Html Msg
 submit submitting =
