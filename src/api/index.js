@@ -95,8 +95,8 @@ async function getUserBids() {
 async function getCurrencies() {
     return [
         "Bitcoin",
-        "Bitcoin cash",
         "Ethereum",
+        "Bitcoin cash",
         "Ethereum classic",
         "Monero",
         "Dogecoin"

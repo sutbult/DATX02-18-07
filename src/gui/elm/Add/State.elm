@@ -62,7 +62,31 @@ update msg model =
             (model, Cmd.none)
 
         SetCurrencies currencies ->
-            ({model | currencies = currencies}, Cmd.none)
+            ({model
+                | currencies = currencies
+                , fromCurrency = firstOption currencies
+                , toCurrency = secondOption currencies
+            }, Cmd.none)
+
+
+firstOption : List String -> String
+firstOption currencies =
+    case currencies of
+        [] ->
+            ""
+
+        (currency::_) ->
+            currency
+
+
+secondOption : List String -> String
+secondOption currencies =
+    case currencies of
+        (_::currency::_) ->
+            currency
+
+        _ ->
+            firstOption currencies
 
 
 getBid : Model -> Maybe Bid
