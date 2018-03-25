@@ -6,10 +6,9 @@ const OrbitDB = require('orbit-db')
 //1st: lägger upp ett kontrakt, skickar digest och konstraktsadress.
 //2nd: skickar konstraktsadress
 
-
+var orbitdb
 var globaldb
 var messagedb
-let orbitdb
 var db
 var channels = []
 
@@ -51,7 +50,12 @@ ipfs.once('ready', async function() {
 });
 
 async function createChannel(channelName) {
-  return await orbitdb.feed(channelName);
+  try{
+    return await orbitdb.feed(channelName);
+  }
+  catch (e) {
+    console.error(e)
+  }
 }
 
 /*
@@ -73,11 +77,19 @@ async function addBid(bid){
   //await globaldb.add(bidJSON);
 
   await globaldb.add(bid);
+  //db = await orbitdb.feed(bid.channel);
+  //channels.push(db); //create channel
+  //await db.load();
+  //await db.add(bid.address);
 //  db = await orbitdb.feed(bid.channel);
-  console.log(bid.channel)
+
+
+/*  console.log(bid.channel)
 //  channels.push(db); //create channel
   await messagedb.load();
   await messagedb.add(bid.address);
+  checkForStep(2);
+  */
 }
 
 /*
@@ -91,9 +103,22 @@ async function addBid(bid){
 async function acceptBid(bid){
   db = await orbitdb.feed(bid.channel);
   channels.push(db); //create channel
+
   await db.load();
+  var message = db.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
+  processInfo(message);
   await db.add(bid.address);
   //Also let everybody know that the bid is taken.
+  checkForStep(3);
+}
+
+function checkForStep(step) {
+  var message = db.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
+  while(message.step != step) {
+    var message = db.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
+  }
+
+  processInfo(message);
 }
 
 /*
@@ -125,7 +150,7 @@ async function pushContractInfo(contractInfo) {
     };
 */
 async function pushContractInfo(contractInfo) {
-  //db has already been created, how to we access it?
+  //db has already been created, how do we access it?
   //Need to add check to confirm that we have received the correct JsonObject
   newJson = {
     "step" : "4",
@@ -141,19 +166,22 @@ What's left? Add functionality to take continiously take down the new informatio
 
 function processInfo(contractInfo) {
   if(contractInfo.step == 1) {
-
+    //return step 1, prompt user to continue
   } else if(contractInfo.step == 2) {
-
+    //return step 2, prompt user to continue
   } else if(contractInfo.step == 3) {
-
+    //return step 3, prompt user to continue
   } else if(contractInfo.step == 4) {
-
+    //return step 4, prompt user to continue
   } else {
 
   }
 
 }
 
+
+
+/*
 var jsonObject = {
     "step" : "1",
     "from" : "CURRENCY",
@@ -163,13 +191,14 @@ var jsonObject = {
     "address" : 'test',
     "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
   };
-
+*/
 async function getBid(amount){
   var message = messagedb.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
   console.log("Message" + message)
-  await globaldb.add('test')
+//  await globaldb.add(jsonObject)
   var bids = globaldb.iterator({ limit: 5 }).collect().map((e) => e.payload.value)
-  return JSON.stringify(bids, null, 2)
+  //return JSON.stringify(bids, null, 2)
+  return bids
 }
 
 module.exports = {

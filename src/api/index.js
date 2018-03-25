@@ -4,7 +4,7 @@ const api = require("./OrbitDBHandler.js");
 
 // Adds a new bid to the decentralized database
 async function addBid(bid) {
-  var jsonObject = {
+  /*var jsonObject = {
       "step" : "1",
       "from" : "CURRENCY",
       "fromAmount" : '5',
@@ -13,9 +13,8 @@ async function addBid(bid) {
       "address" : 'test',
       "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
     };
-    console.log("User adds this bid:\n" + JSON.stringify(bid, null, 4));
-    api.addBid(jsonObject)
-
+    console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));*/
+    api.addBid(bid)
 }
 
 
@@ -46,10 +45,10 @@ function BidFactory() {
 async function getBids() {
     // Detta fungerar inte
     //addBid('test')
-    //return api.getBid(5)
+    return api.getBid(5)
 
     // TODO: Implementera på riktigt
-    var Bid = BidFactory();
+/*    var Bid = BidFactory();
     return [
         Bid("Bitcoin",      0.01,   "Ethereum",     0.1     ),
         Bid("Ethereum",     0.5,    "Monero",       5       ),
@@ -57,7 +56,7 @@ async function getBids() {
         Bid("Bitcoin",      0.02,   "Monero",       2       ),
         Bid("Bitcoin cash", 0.3,    "Monero",       3       ),
         Bid("Dogecoin",     100,    "Monero",       3       ),
-    ];
+    ];*/
 }
 
 // Accepts a bid and starts the swapping process
