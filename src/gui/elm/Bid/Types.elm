@@ -16,3 +16,18 @@ type alias Bid =
     , from : Value
     , to : Value
     }
+
+
+-- Easy constructor for Bid
+createBid
+    :  String
+    -> Status
+    -> String
+    -> Float
+    -> String
+    -> Float
+    -> Bid
+createBid id status fromCurrency fromAmount toCurrency toAmount =
+    Bid id status
+        (Value fromCurrency fromAmount)
+        (Value toCurrency toAmount)

@@ -5,6 +5,7 @@ import Maybe exposing (..)
 import Bid.Types exposing
     ( Bid
     , Value
+    , createBid
     )
 import Add.Rest exposing
     ( addBid
@@ -42,6 +43,7 @@ update msg model =
         Submit ->
             if not model.submitting then
                 -- TODO: Skriv ut fel tydligt vad som är fel
+                -- Gör #36 först
                 case Debug.log "Bid" <| getBid model of
                     Just bid ->
                         ({model | submitting = True}, addBid bid)
@@ -91,17 +93,11 @@ secondOption currencies =
 
 getBid : Model -> Maybe Bid
 getBid model =
-    case String.toFloat model.fromAmount of
-        Ok fromAmount ->
-            case String.toFloat model.toAmount of
-                Ok toAmount ->
-                    Just <| Bid "0" Bid.Types.Active
-                        (Value model.fromCurrency fromAmount)
-                        (Value model.toCurrency toAmount)
-                Err _ ->
-                    Nothing
-        Err _ ->
-            Nothing
+    Maybe.map4 (createBid "0" Bid.Types.Active)
+        (Just model.fromCurrency)
+        (Result.toMaybe <| String.toFloat model.fromAmount)
+        (Just model.toCurrency)
+        (Result.toMaybe <| String.toFloat model.toAmount)
 
 
 subscriptions : Model -> Sub Msg
