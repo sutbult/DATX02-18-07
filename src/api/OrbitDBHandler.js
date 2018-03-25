@@ -6,10 +6,9 @@ const OrbitDB = require('orbit-db')
 //1st: lägger upp ett kontrakt, skickar digest och konstraktsadress.
 //2nd: skickar konstraktsadress
 
-
+var orbitdb
 var globaldb
 var messagedb
-let orbitdb
 var db
 var channels = []
 
@@ -51,7 +50,12 @@ ipfs.once('ready', async function() {
 });
 
 async function createChannel(channelName) {
-  return await orbitdb.feed(channelName);
+  try{
+    return await orbitdb.feed(channelName);
+  }
+  catch (e) {
+    console.error(e)
+  }
 }
 
 /*
@@ -78,11 +82,14 @@ async function addBid(bid){
   //await db.load();
   //await db.add(bid.address);
 //  db = await orbitdb.feed(bid.channel);
-  console.log(bid.channel)
+
+
+/*  console.log(bid.channel)
 //  channels.push(db); //create channel
   await messagedb.load();
   await messagedb.add(bid.address);
   checkForStep(2);
+  */
 }
 
 /*
@@ -172,6 +179,8 @@ function processInfo(contractInfo) {
 
 }
 
+
+
 /*
 var jsonObject = {
     "step" : "1",
@@ -186,9 +195,10 @@ var jsonObject = {
 async function getBid(amount){
   var message = messagedb.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
   console.log("Message" + message)
-  await globaldb.add('test')
+//  await globaldb.add(jsonObject)
   var bids = globaldb.iterator({ limit: 5 }).collect().map((e) => e.payload.value)
-  return JSON.stringify(bids, null, 2)
+  //return JSON.stringify(bids, null, 2)
+  return bids
 }
 
 module.exports = {
