@@ -37,11 +37,11 @@ ipfs.once('ready', async function() {
 
   try {
     orbitdb = new OrbitDB(ipfs)
-    globaldb = await orbitdb.feed('/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db');
-    await globaldb.load()
+  //  globaldb = await orbitdb.feed('/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db');
+//    await globaldb.load()
     messagedb = await orbitdb.feed('/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message')
     await messagedb.load()
-    console.log(globaldb.address.toString())
+  //  console.log(globaldb.address.toString())
     console.log(messagedb.address.toString())
 } catch (e) {
   console.error(e)
@@ -51,12 +51,20 @@ ipfs.once('ready', async function() {
 
 async function createChannel(channelName) {
   try{
-    return await orbitdb.feed(channelName);
+    ipfs.on('ready', async function(){
+      var returnDB = await orbitdb.feed(channelName)
+      return returnDB
+
+    })
+
   }
   catch (e) {
     console.error(e)
   }
 }
+
+
+//console.log(test)
 
 /*
 Bid should be JSON in form of jsonObject = {
@@ -71,12 +79,13 @@ Bid should be JSON in form of jsonObject = {
 
   Can only push one bid at a time at the moment
 */
-async function addBid(bid){
+async function addBid(bid, db){
   //bid to json
   //var bidJSON = JSON.stringify(bid);
   //await globaldb.add(bidJSON);
-
-  await globaldb.add(bid);
+  var db = await orbitdb.feed(db)
+  await db.load()
+  await db.add(bid);
   //db = await orbitdb.feed(bid.channel);
   //channels.push(db); //create channel
   //await db.load();
@@ -192,11 +201,14 @@ var jsonObject = {
     "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
   };
 */
-async function getBid(amount){
+async function getBid(amount, address){
+    var test = await orbitdb.feed('/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db')
+    await test.load()
+
   var message = messagedb.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
   console.log("Message" + message)
 //  await globaldb.add(jsonObject)
-  var bids = globaldb.iterator({ limit: 5 }).collect().map((e) => e.payload.value)
+  var bids = test.iterator({ limit: 5 }).collect().map((e) => e.payload.value)
   //return JSON.stringify(bids, null, 2)
   return bids
 }
@@ -204,4 +216,5 @@ async function getBid(amount){
 module.exports = {
   addBid,
   getBid,
+  createChannel
 }

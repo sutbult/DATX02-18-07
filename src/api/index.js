@@ -1,4 +1,5 @@
-const api = require("./OrbitDBHandler.js");
+const db = require("./DBHandler.js");
+const messenger = require("./OrbitDBHandler")
 
 // Exempel på funktioner som mycket väl kan finnas med i denna modul
 
@@ -14,7 +15,7 @@ async function addBid(bid) {
       "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
     };
     console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));*/
-    api.addBid(bid)
+    db.addBid(bid)
 }
 
 
@@ -45,7 +46,7 @@ function BidFactory() {
 async function getBids() {
     // Detta fungerar inte
     //addBid('test')
-    return api.getBid(5)
+    return db.getBid(5)
 
     // TODO: Implementera på riktigt
 /*    var Bid = BidFactory();
