@@ -42,8 +42,15 @@ ipfs.once('ready', async function() {
     await globaldb.load()
     messagedb = await orbitdb.feed('/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message')
     await messagedb.load()
+    messagdb = await orbitdb.feed('testsfds')
+    await messagdb.load()
     console.log(globaldb.address.toString())
     console.log(messagedb.address.toString())
+    console.log(messagdb.address.toString())
+    messagdb.add('lol');
+    await messagdb.load();
+    var message = messagdb.iterator({ limit: 3 }).collect().map((e) => e.payload.value)
+    console.log("Message" + message)
 } catch (e) {
   console.error(e)
 }
