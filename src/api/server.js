@@ -1,4 +1,3 @@
-
 const http = require("http");
 const express = require("express");
 var SSE = require('sse');
@@ -66,6 +65,11 @@ apiRouter.get("/getWallet", (req, res, next) => {
 apiRouter.get("/getUserBids", (req, res, next) => {
 	api.getUserBids().then((bids) => {
 		next(bids);
+	});
+});
+apiRouter.get("/getCurrencies", (req, res, next) => {
+	api.getCurrencies().then((currencies) => {
+		next(currencies);
 	});
 });
 

@@ -5,8 +5,13 @@ import Maybe exposing (..)
 import Bid.Types exposing
     ( Bid
     , Value
+    , createBid
     )
-import Add.Rest exposing (addBid)
+import Add.Rest exposing
+    ( addBid
+    , getCurrencies
+    )
+
 
 init : (Model, Cmd Msg)
 init =
@@ -15,8 +20,10 @@ init =
         , toCurrency = ""
         , toAmount = ""
         , submitting = False
+        , currencies = []
         }
-    , Cmd.none)
+    , getCurrencies)
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -36,6 +43,7 @@ update msg model =
         Submit ->
             if not model.submitting then
                 -- TODO: Skriv ut fel tydligt vad som är fel
+                -- Gör #36 först
                 case Debug.log "Bid" <| getBid model of
                     Just bid ->
                         ({model | submitting = True}, addBid bid)
@@ -47,9 +55,7 @@ update msg model =
 
         SubmitSuccess ->
             ({ model
-                | fromCurrency = ""
-                , fromAmount = ""
-                , toCurrency = ""
+                | fromAmount = ""
                 , toAmount = ""
                 , submitting = False
             }, Cmd.none)
@@ -57,19 +63,42 @@ update msg model =
         SubmitFailure ->
             (model, Cmd.none)
 
+        SetCurrencies currencies ->
+            ({model
+                | currencies = currencies
+                , fromCurrency = firstOption currencies
+                , toCurrency = secondOption currencies
+            }, Cmd.none)
+
+
+firstOption : List String -> String
+firstOption currencies =
+    case currencies of
+        [] ->
+            ""
+
+        (currency::_) ->
+            currency
+
+
+secondOption : List String -> String
+secondOption currencies =
+    case currencies of
+        (_::currency::_) ->
+            currency
+
+        _ ->
+            firstOption currencies
+
+
 getBid : Model -> Maybe Bid
 getBid model =
-    case String.toFloat model.fromAmount of
-        Ok fromAmount ->
-            case String.toFloat model.toAmount of
-                Ok toAmount ->
-                    Just <| Bid "0" Bid.Types.Active
-                        (Value model.fromCurrency fromAmount)
-                        (Value model.toCurrency toAmount)
-                Err _ ->
-                    Nothing
-        Err _ ->
-            Nothing
+    Maybe.map4 (createBid "0" Bid.Types.Active)
+        (Just model.fromCurrency)
+        (Result.toMaybe <| String.toFloat model.fromAmount)
+        (Just model.toCurrency)
+        (Result.toMaybe <| String.toFloat model.toAmount)
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ = Sub.none

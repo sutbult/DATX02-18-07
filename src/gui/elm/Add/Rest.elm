@@ -12,6 +12,22 @@ import Bid.Rest exposing
 import Http
 import Json.Decode
 
+
+getCurrencies : Cmd Msg
+getCurrencies =
+    let
+        request = Http.get "http://localhost:51337/api/getCurrencies" decodeCurrencies
+        onResponse request =
+            case request of
+                Ok currencies ->
+                    SetCurrencies currencies
+
+                Err _ ->
+                    SetCurrencies []
+    in
+        Http.send onResponse request
+
+
 addBid : Bid -> Cmd Msg
 addBid bid =
     let
@@ -26,3 +42,7 @@ addBid bid =
                     SubmitFailure
     in
         Http.send onResponse request
+
+
+decodeCurrencies : Json.Decode.Decoder (List String)
+decodeCurrencies = Json.Decode.list Json.Decode.string
