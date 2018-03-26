@@ -11,7 +11,7 @@ root model =
     div []
         [ test
         , form model
-        , submit model.submitting
+        , submit model
         ]
 
 
@@ -160,11 +160,11 @@ amountField submitting setter currency currentValue =
             ]
 
 
-submit : Bool -> Html Msg
-submit submitting =
+submit : Model -> Html Msg
+submit model =
     let
         classNameExtra =
-            if submitting then
+            if model.submitting then
                 " is-loading"
             else
                 ""
@@ -173,7 +173,20 @@ submit submitting =
             [ button
                 [ class <| "button is-link is-medium" ++ classNameExtra
                 , onClick Submit
+                , disabled
+                    <| not
+                    <| isJust
+                    <| getBid model
                 ]
                 [ text "Add bid"
                 ]
             ]
+
+isJust : Maybe a -> Bool
+isJust maybe =
+    case maybe of
+        Just _ ->
+            True
+
+        Nothing ->
+            False
