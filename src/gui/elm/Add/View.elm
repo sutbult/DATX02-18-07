@@ -9,9 +9,38 @@ import Add.Types exposing (..)
 root : Model -> Html Msg
 root model =
     div []
-        [ form model
+        [ test
+        , form model
         , submit model.submitting
         ]
+
+
+test : Html Msg
+test =
+    let
+        cases =
+            [ ("Bitcoin", "")
+            , ("Bitcoin", "1")
+            , ("Ethereum", "1")
+            , ("Bitcoin", "1.1")
+            , ("Ethereum", "1.1")
+            , ("Ethereum", "1.1.1")
+            , ("Ethereum", "1.1e1")
+            , ("Ethereum", "1e1.1")
+            , ("Ethereum", "-1")
+            , ("Ethereum", "e1")
+            , ("Dogecoin", "2")
+            ]
+        caseView (currency, amount) =
+            p []
+                [ text
+                    <| toString
+                    <| amountStatus currency amount
+                ]
+    in
+        div []
+            <| List.map caseView cases
+
 
 form : Model -> Html Msg
 form model =
