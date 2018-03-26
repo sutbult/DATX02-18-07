@@ -21,7 +21,9 @@ test =
         cases =
             [ ("Bitcoin", "")
             , ("Bitcoin", "1")
+            , ("Bitcoin", "12")
             , ("Ethereum", "1")
+            , ("Ethereum", "21")
             , ("Bitcoin", "1.1")
             , ("Ethereum", "1.1")
             , ("Ethereum", "1.1.1")
@@ -30,6 +32,9 @@ test =
             , ("Ethereum", "-1")
             , ("Ethereum", "e1")
             , ("Dogecoin", "2")
+            , ("Bitcoin", "0")
+            , ("Bitcoin", "0.0")
+            , ("Bitcoin", ".0")
             ]
         caseView (currency, amount) =
             p []
@@ -51,12 +56,12 @@ form model =
         div [class "columns"]
             [ formBox
                 [ lcurrencySelector SetFromCurrency model.fromCurrency
-                , lamountField SetFromAmount model.fromAmount
+                , lamountField SetFromAmount model.fromCurrency model.fromAmount
                 ]
             , arrowColumn
             , formBox
                 [ lcurrencySelector SetToCurrency model.toCurrency
-                , lamountField SetToAmount model.toAmount
+                , lamountField SetToAmount model.toCurrency model.toAmount
                 ]
             ]
 
@@ -114,20 +119,43 @@ currencySelector submitting options setter currentValue =
                 ]
             ]
 
-amountField : Bool -> (String -> Msg) -> String -> Html Msg
-amountField submitting setter currentValue =
-    div [class "field"]
-        [ div [class "control"]
-            [ input
-                [ class "input"
-                , type_ "text"
-                , placeholder "Amount"
-                , onInput setter
-                , value currentValue
-                , disabled submitting
-                ] []
+amountField
+    :  Bool
+    -> (String -> Msg)
+    -> String
+    -> String
+    -> Html Msg
+amountField submitting setter currency currentValue =
+    let
+        (extraClass, info) =
+            case amountStatus currency currentValue of
+                None ->
+                    ("", "")
+
+                Error ->
+                    ("is-danger", "Must be a positive numerical value")
+
+                Success amount unit ->
+                    ("is-success", amount ++ " " ++ unit)
+    in
+        div [class "field"]
+            [ div [class "control"]
+                [ input
+                    [ class <| "input " ++ extraClass
+                    , type_ "text"
+                    , placeholder "Amount"
+                    , onInput setter
+                    , value currentValue
+                    , disabled submitting
+                    ] []
+                ]
+                , p
+                    [ class <| "help " ++ extraClass
+                    , style [("text-align", "right")]
+                    ]
+                    [ text info
+                    ]
             ]
-        ]
 
 
 submit : Bool -> Html Msg

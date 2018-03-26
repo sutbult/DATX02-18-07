@@ -42,8 +42,8 @@ amountStatus currency amount =
                     (padding, unit) = baseUnit currency
                     value =
                         String.concat
-                            [ base
-                            , padZeroes padding <| dec
+                            [ padZeroes False 1 <| base
+                            , padZeroes True padding <| dec
                             ]
                 in
                     Success value unit
@@ -76,9 +76,12 @@ amountRegexMatch amount =
         Nothing
 
 
-padZeroes : Int -> String -> String
-padZeroes n str =
-    str ++ String.repeat (n - String.length str) "0"
+padZeroes : Bool -> Int -> String -> String
+padZeroes limit n str =
+    if limit then
+        String.left n <| padZeroes False n str
+    else
+        str ++ String.repeat (n - String.length str) "0"
 
 
 baseUnit : String -> (Int, String)
