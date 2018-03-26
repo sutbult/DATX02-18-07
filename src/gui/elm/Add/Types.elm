@@ -4,6 +4,12 @@ import Regex exposing (..)
 import Maybe exposing (..)
 
 
+import Bid.Types exposing
+    ( Bid
+    , createBid
+    )
+
+
 type alias Model =
     { fromCurrency : String
     , fromAmount : String
@@ -31,10 +37,28 @@ type AmountStatus
     | Success String String
 
 
+getBid : Model -> Maybe Bid
+getBid model =
+    case
+        ( amountStatus model.fromCurrency model.fromAmount
+        , amountStatus model.toCurrency model.toAmount
+        ) of
+            (Success fromAmount _, Success toAmount _) ->
+                Maybe.map4 (createBid "0" Bid.Types.Active)
+                    (Just model.fromCurrency)
+                    (Result.toMaybe <| String.toFloat fromAmount)
+                    (Just model.toCurrency)
+                    (Result.toMaybe <| String.toFloat toAmount)
+            _ ->
+                Nothing
+
+
 amountStatus : String -> String -> AmountStatus
 amountStatus currency amount =
     if String.isEmpty amount then
         None
+    else if String.isEmpty currency then
+        Error
     else
         case amountRegexMatch amount of
             Just (base, dec) ->
