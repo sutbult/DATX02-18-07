@@ -37,8 +37,8 @@ ipfs.once('ready', async function() {
 
   try {
     orbitdb = new OrbitDB(ipfs)
-  //  globaldb = await orbitdb.feed('/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db');
-//    await globaldb.load()
+    globaldb = await orbitdb.feed('/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db');
+    await globaldb.load()
     messagedb = await orbitdb.feed('/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message')
     await messagedb.load()
     messagdb = await orbitdb.feed('testsfds')
