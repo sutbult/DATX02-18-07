@@ -15,6 +15,7 @@ root model =
         ]
 
 
+-- TODO: Implementera som enhetstester
 test : Html Msg
 test =
     let
@@ -35,6 +36,7 @@ test =
             , ("Bitcoin", "0")
             , ("Bitcoin", "0.0")
             , ("Bitcoin", ".0")
+            , ("Bitcoin", "000000000001.00001")
             ]
         caseView (currency, amount) =
             p []

@@ -41,7 +41,7 @@ amountStatus currency amount =
                 let
                     (padding, unit) = baseUnit currency
                     value =
-                        String.concat
+                        removeInitialZeroes <| String.concat
                             [ padZeroes False 1 <| base
                             , padZeroes True padding <| dec
                             ]
@@ -57,17 +57,25 @@ amountRegex : Regex
 amountRegex = regex "^(\\d*)(?:\\.(\\d*)){0,1}$"
 
 
+zeroRegex : Regex
+zeroRegex = regex "^0*$"
+
+
 amountRegexMatch : String -> Maybe (String, String)
 amountRegexMatch amount =
     if contains amountRegex amount then
         case find All amountRegex amount of
             res::[] ->
                 case res.submatches of
-                    base::dec::[] ->
-                        Just
-                            ( withDefault "" base
-                            , withDefault "" dec
-                            )
+                    mbase::mdec::[] ->
+                        let
+                            base = withDefault "" mbase
+                            dec = withDefault "" mdec
+                        in
+                            if not <| contains zeroRegex (base ++ dec) then
+                                Just (base, dec)
+                            else
+                                Nothing
                     _ ->
                         Nothing
             _ ->
@@ -82,6 +90,15 @@ padZeroes limit n str =
         String.left n <| padZeroes False n str
     else
         str ++ String.repeat (n - String.length str) "0"
+
+
+-- TODO: Implementera med reguljära uttryck istället
+removeInitialZeroes : String -> String
+removeInitialZeroes str =
+    if String.startsWith "0" str then
+        removeInitialZeroes (String.dropLeft 1 str)
+    else
+        str
 
 
 baseUnit : String -> (Int, String)
