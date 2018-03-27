@@ -8,6 +8,8 @@ import Add.Types exposing (..)
 
 import Bid.Types exposing
     ( Value
+    , AmountStatus(..)
+    , amountStatus
     )
 
 root : Model -> Html Msg

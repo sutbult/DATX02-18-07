@@ -1,14 +1,28 @@
-module Bid.Types exposing (..)
+module Bid.Types exposing
+    ( Status(..)
+    , Value
+    , Bid
+    , AmountStatus(..)
+    , createBid
+    , baseUnit
+    , amountStatus
+    , amountString
+    )
+
+import Regex exposing (..)
+import Maybe exposing (..)
 
 type Status
     = Active
     | Pending
     | Finished
 
+
 type alias Value =
     { currency : String
     , amount : String
     }
+
 
 type alias Bid =
     { id : String
@@ -16,6 +30,12 @@ type alias Bid =
     , from : Value
     , to : Value
     }
+
+
+type AmountStatus
+    = None
+    | Error
+    | Success String String
 
 
 -- Easy constructor for Bid
@@ -49,13 +69,35 @@ baseUnit currency =
             (0, String.toLower currency)
 
 
+amountStatus : Value -> AmountStatus
+amountStatus value =
+    if String.isEmpty value.amount then
+        None
+    else if String.isEmpty value.currency then
+        Error
+    else
+        case amountRegexMatch value.amount of
+            Just (base, dec) ->
+                let
+                    (padding, unit) = baseUnit value.currency
+                    amountValue =
+                        removeInitialZeroes <| String.concat
+                            [ padZeroes False 1 <| base
+                            , padZeroes True padding <| dec
+                            ]
+                in
+                    Success amountValue unit
+            Nothing ->
+                Error
+
+
 amountString : Value -> String
 amountString account =
     let
         (basePow, _) = baseUnit account.currency
         amount = account.amount
         base = padZeroes False 1 <| String.dropRight basePow amount
-        dec = removeInitialZeroes <| String.right basePow amount
+        dec = removeLastZeroes <| String.right basePow amount
         separator =
             if String.isEmpty dec then
                 ""
@@ -63,6 +105,46 @@ amountString account =
                 "."
     in
         base ++ separator ++ dec
+
+
+amountRegex : Regex
+amountRegex = regex "^(\\d*)(?:\\.(\\d*)){0,1}$"
+
+
+zeroRegex : Regex
+zeroRegex = regex "^0*$"
+
+
+amountRegexMatch : String -> Maybe (String, String)
+amountRegexMatch amount =
+    if contains amountRegex amount then
+        case find All amountRegex amount of
+            res::[] ->
+                case res.submatches of
+                    mbase::mdec::[] ->
+                        let
+                            base = withDefault "" mbase
+                            dec = withDefault "" mdec
+                        in
+                            if not <| contains zeroRegex (base ++ dec) then
+                                Just (base, dec)
+                            else
+                                Nothing
+                    _ ->
+                        Nothing
+            _ ->
+                Nothing
+    else
+        Nothing
+
+
+-- TODO: Implementera med reguljära uttryck istället
+removeInitialZeroes : String -> String
+removeInitialZeroes str =
+    if String.startsWith "0" str then
+        removeInitialZeroes (String.dropLeft 1 str)
+    else
+        str
 
 
 padZeroes : Bool -> Int -> String -> String
@@ -74,10 +156,9 @@ padZeroes limit n str =
 
 
 -- TODO: Implementera med reguljära uttryck istället
--- Se också Add.Types
-removeInitialZeroes : String -> String
-removeInitialZeroes str =
+removeLastZeroes : String -> String
+removeLastZeroes str =
     if String.endsWith "0" str then
-        removeInitialZeroes (String.dropRight 1 str)
+        removeLastZeroes (String.dropRight 1 str)
     else
         str
