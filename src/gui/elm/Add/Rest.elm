@@ -25,8 +25,8 @@ getCurrencies =
 addBid : Bid -> Cmd Msg
 addBid bid =
     Rest.post
-        "addBid"
         (encodeBid bid)
+        "addBid"
         (Json.Decode.succeed ())
         (\_ -> SubmitSuccess)
         SubmitFailure

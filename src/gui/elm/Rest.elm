@@ -4,7 +4,7 @@ module Rest exposing
     )
 
 import Json.Encode
-import Json.Decode
+import Json.Decode exposing (Decoder)
 
 import Http
 import Error.Types
@@ -20,36 +20,34 @@ get
     -> (res -> msg)
     -> (Error.Types.Msg -> msg)
     -> Cmd msg
-get path decoder onSuccess onError =
-    let
-        url = apiAddress ++ path
-        request = Http.get url decoder
-    in
-        performRequest request onSuccess onError
+get = performRequest Http.get
 
 
 post
-    :  String
-    -> Json.Encode.Value
+    :  Json.Encode.Value
+    -> String
     -> Json.Decode.Decoder res
     -> (res -> msg)
     -> (Error.Types.Msg -> msg)
     -> Cmd msg
-post path req decoder onSuccess onError =
+post req =
     let
-        url = apiAddress ++ path
         body = Http.jsonBody req
-        request = Http.post url body decoder
     in
-        performRequest request onSuccess onError
+        performRequest (flip Http.post body)
+
 
 performRequest
-    :  Http.Request res
+    :  (String -> Decoder res -> Http.Request res)
+    -> String
+    -> Decoder res
     -> (res -> msg)
     -> (Error.Types.Msg -> msg)
     -> Cmd msg
-performRequest request onSuccess onError =
+performRequest toRequest path decoder onSuccess onError =
     let
+        url = apiAddress ++ path
+        request = toRequest url decoder
         onResponse response =
             case response of
                 Ok result ->
