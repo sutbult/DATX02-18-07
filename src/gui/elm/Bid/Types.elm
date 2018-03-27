@@ -69,17 +69,17 @@ baseUnit currency =
             (0, String.toLower currency)
 
 
-amountStatus : Value -> AmountStatus
-amountStatus value =
-    if String.isEmpty value.amount then
+amountStatus : String -> String -> AmountStatus
+amountStatus currency amount =
+    if String.isEmpty amount then
         None
-    else if String.isEmpty value.currency then
+    else if String.isEmpty currency then
         Error
     else
-        case amountRegexMatch value.amount of
+        case amountRegexMatch amount of
             Just (base, dec) ->
                 let
-                    (padding, unit) = baseUnit value.currency
+                    (padding, unit) = baseUnit currency
                     amountValue =
                         removeInitialZeroes <| String.concat
                             [ padZeroes False 1 <| base

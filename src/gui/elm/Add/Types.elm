@@ -36,8 +36,8 @@ type Msg
 getBid : Model -> Maybe Bid
 getBid model =
     case
-        ( amountStatus <| Value model.fromCurrency model.fromAmount
-        , amountStatus <| Value model.toCurrency model.toAmount
+        ( amountStatus model.fromCurrency model.fromAmount
+        , amountStatus model.toCurrency model.toAmount
         ) of
             (Success fromAmount _, Success toAmount _) ->
                 Maybe.map4 (createBid "0" Bid.Types.Active)
