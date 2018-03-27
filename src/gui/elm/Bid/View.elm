@@ -1,4 +1,6 @@
-module Bid.View exposing (bidList)
+module Bid.View exposing
+    ( bidList
+    )
 
 import Html exposing (..)
 import Html.Events

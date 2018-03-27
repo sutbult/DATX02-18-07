@@ -1,4 +1,8 @@
-module Wallet.State exposing (init, update, subscriptions)
+module Wallet.State exposing
+    ( init
+    , update
+    , subscriptions
+    )
 
 import Wallet.Types exposing (..)
 
