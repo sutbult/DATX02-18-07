@@ -7,6 +7,7 @@ import Maybe exposing (..)
 import Bid.Types exposing
     ( Bid
     , createBid
+    , baseUnit
     )
 
 
@@ -46,9 +47,9 @@ getBid model =
             (Success fromAmount _, Success toAmount _) ->
                 Maybe.map4 (createBid "0" Bid.Types.Active)
                     (Just model.fromCurrency)
-                    (Result.toMaybe <| String.toFloat fromAmount)
+                    (Just fromAmount)
                     (Just model.toCurrency)
-                    (Result.toMaybe <| String.toFloat toAmount)
+                    (Just toAmount)
             _ ->
                 Nothing
 
@@ -117,22 +118,10 @@ padZeroes limit n str =
 
 
 -- TODO: Implementera med reguljära uttryck istället
+-- Se också Wallet.View
 removeInitialZeroes : String -> String
 removeInitialZeroes str =
     if String.startsWith "0" str then
         removeInitialZeroes (String.dropLeft 1 str)
     else
         str
-
-
-baseUnit : String -> (Int, String)
-baseUnit currency =
-    case currency of
-        "Bitcoin" ->
-            (8, "satoshi")
-
-        "Ethereum" ->
-            (18, "wei")
-
-        _ ->
-            (0, String.toLower currency)

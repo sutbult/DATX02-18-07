@@ -7,7 +7,7 @@ type Status
 
 type alias Value =
     { currency : String
-    , amount : Float
+    , amount : String
     }
 
 type alias Bid =
@@ -23,11 +23,24 @@ createBid
     :  String
     -> Status
     -> String
-    -> Float
     -> String
-    -> Float
+    -> String
+    -> String
     -> Bid
 createBid id status fromCurrency fromAmount toCurrency toAmount =
     Bid id status
         (Value fromCurrency fromAmount)
         (Value toCurrency toAmount)
+
+
+baseUnit : String -> (Int, String)
+baseUnit currency =
+    case currency of
+        "Bitcoin" ->
+            (8, "satoshi")
+
+        "Ethereum" ->
+            (18, "wei")
+
+        _ ->
+            (0, String.toLower currency)

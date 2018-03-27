@@ -2,11 +2,7 @@ module Add.State exposing (init, update, subscriptions)
 
 import Add.Types exposing (..)
 import Maybe exposing (..)
-import Bid.Types exposing
-    ( Bid
-    , Value
-    , createBid
-    )
+
 import Add.Rest exposing
     ( addBid
     , getCurrencies
@@ -89,15 +85,6 @@ secondOption currencies =
 
         _ ->
             firstOption currencies
-
-
-getBid : Model -> Maybe Bid
-getBid model =
-    Maybe.map4 (createBid "0" Bid.Types.Active)
-        (Just model.fromCurrency)
-        (Result.toMaybe <| String.toFloat model.fromAmount)
-        (Just model.toCurrency)
-        (Result.toMaybe <| String.toFloat model.toAmount)
 
 
 subscriptions : Model -> Sub Msg
