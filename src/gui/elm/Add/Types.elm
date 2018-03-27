@@ -1,5 +1,17 @@
 module Add.Types exposing (..)
 
+import Maybe exposing (..)
+
+
+import Bid.Types exposing
+    ( Bid
+    , Value
+    , createBid
+    , amountStatus
+    , AmountStatus(Success)
+    )
+
+
 type alias Model =
     { fromCurrency : String
     , fromAmount : String
@@ -8,6 +20,7 @@ type alias Model =
     , submitting : Bool
     , currencies : List String
     }
+
 
 type Msg
     = SetFromCurrency String
@@ -18,3 +31,20 @@ type Msg
     | SubmitSuccess
     | SubmitFailure
     | SetCurrencies (List String)
+
+
+getBid : Model -> Maybe Bid
+getBid model =
+    case
+        ( amountStatus False model.fromCurrency model.fromAmount
+        , amountStatus False model.toCurrency model.toAmount
+        ) of
+            (Success fromAmount _, Success toAmount _) ->
+                Just
+                    <| createBid "0" Bid.Types.Active
+                        model.fromCurrency
+                        fromAmount
+                        model.toCurrency
+                        toAmount
+            _ ->
+                Nothing

@@ -75,9 +75,9 @@ async function getWallet() {
         };
     }
     return [
-        Account("Bitcoin", 1000),
-        Account("Ethereum", 10000),
-        Account("Dogecoin", 1000000000), // Wow, such wealth, many monies
+        Account("Bitcoin",  "100000000000"              ),
+        Account("Ethereum", "10000000000000000000010"   ),
+        Account("Dogecoin", "1000000000"                ), // Wow, such wealth, many monies
     ];
 }
 
@@ -85,9 +85,9 @@ async function getWallet() {
 async function getUserBids() {
     var Bid = BidFactory();
     return [
-        Bid("Dogecoin",     1000,   "Ethereum", 0.1, "ACTIVE"),
-        Bid("Bitcoin cash", 0.5,    "Bitcoin",  0.1, "PENDING"),
-        Bid("Bitcoin",      0.5,    "Dogecoin", 100, "FINISHED"),
+        Bid("Dogecoin",     "1000",     "Ethereum", "100000000000000000",   "ACTIVE"),
+        Bid("Bitcoin cash", "50000000", "Bitcoin",  "10000000",             "PENDING"),
+        Bid("Bitcoin",      "50000000", "Dogecoin", "100",                  "FINISHED"),
     ];
 }
 

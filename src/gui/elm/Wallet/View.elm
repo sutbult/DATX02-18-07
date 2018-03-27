@@ -5,6 +5,11 @@ import Html.Attributes exposing (..)
 
 import Wallet.Types exposing (..)
 
+import Bid.Types exposing
+    ( baseUnit
+    , amountString
+    )
+
 root : Model -> Html Msg
 root model =
     table [class "table is-fullwidth is-hoverable is-striped"]
@@ -29,6 +34,6 @@ accountView account =
             [ text account.currency
             ]
         , td []
-            [ text <| toString account.amount
+            [ text <| amountString account
             ]
         ]

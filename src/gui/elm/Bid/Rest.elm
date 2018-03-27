@@ -27,7 +27,7 @@ encodeValue : Value -> Json.Encode.Value
 encodeValue value =
     Json.Encode.object
         [ ("currency", Json.Encode.string value.currency)
-        , ("amount", Json.Encode.float value.amount)
+        , ("amount", Json.Encode.string value.amount)
         ]
 
 
@@ -56,7 +56,7 @@ decodeStatus =
 decodeValue : Json.Decode.Decoder Value
 decodeValue = Json.Decode.map2 Value
     (Json.Decode.field "currency" Json.Decode.string)
-    (Json.Decode.field "amount" Json.Decode.float)
+    (Json.Decode.field "amount" Json.Decode.string)
 
 
 toStatus : String -> Status
