@@ -15,8 +15,7 @@ import Bid.Types exposing
 root : Model -> Html Msg
 root model =
     div []
-        [ test
-        , form model
+        [ form model
         , submit model
         ]
 
