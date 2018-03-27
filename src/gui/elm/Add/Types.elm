@@ -1,6 +1,7 @@
 module Add.Types exposing (..)
 
 import Maybe exposing (..)
+import Error.Types
 
 
 import Bid.Types exposing
@@ -19,6 +20,7 @@ type alias Model =
     , toAmount : String
     , submitting : Bool
     , currencies : List String
+    , error : Error.Types.Model
     }
 
 
@@ -29,8 +31,9 @@ type Msg
     | SetToAmount String
     | Submit
     | SubmitSuccess
-    | SubmitFailure
+    | SubmitFailure Error.Types.Msg
     | SetCurrencies (List String)
+    | ToError Error.Types.Msg
 
 
 getBid : Model -> Maybe Bid

@@ -11,6 +11,7 @@ import Bid.Rest exposing
 
 import Http
 import Json.Decode
+import Error.Types
 
 
 getCurrencies : Cmd Msg
@@ -22,10 +23,30 @@ getCurrencies =
                 Ok currencies ->
                     SetCurrencies currencies
 
-                Err _ ->
-                    SetCurrencies []
+                Err error ->
+                    ToError <| Error.Types.Display "Connection error" <| errorMessage error
     in
         Http.send onResponse request
+
+
+-- Kopia från Browse.Rest
+errorMessage : Http.Error -> String
+errorMessage error =
+    case error of
+        Http.BadUrl url ->
+            "The given URL ''" ++ url ++ "'' is incorrect."
+
+        Http.NetworkError ->
+            "The client cannot connect to the blockchain server."
+
+        Http.Timeout ->
+            "The request timed out."
+
+        Http.BadStatus response ->
+            "The server responded with the status " ++ toString response.status.code ++ "."
+
+        Http.BadPayload descr _ ->
+            "The response is incorrectly formatted. See '" ++ descr ++ "'"
 
 
 addBid : Bid -> Cmd Msg
@@ -38,8 +59,8 @@ addBid bid =
                 Ok _ ->
                     SubmitSuccess
 
-                Err _ ->
-                    SubmitFailure
+                Err error ->
+                    SubmitFailure <| Error.Types.Display "Connection error" <| errorMessage error
     in
         Http.send onResponse request
 
