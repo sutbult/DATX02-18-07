@@ -40,10 +40,11 @@ getBid model =
         , amountStatus model.toCurrency model.toAmount
         ) of
             (Success fromAmount _, Success toAmount _) ->
-                Maybe.map4 (createBid "0" Bid.Types.Active)
-                    (Just model.fromCurrency)
-                    (Just fromAmount)
-                    (Just model.toCurrency)
-                    (Just toAmount)
+                Just
+                    <| createBid "0" Bid.Types.Active
+                        model.fromCurrency
+                        fromAmount
+                        model.toCurrency
+                        toAmount
             _ ->
                 Nothing
