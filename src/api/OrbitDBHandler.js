@@ -76,10 +76,14 @@ async function createChannel(channelName) {
 /*
 Bid should be JSON in form of jsonObject = {
     "step" : "1",
-    "from" : "CURRENCY",
-    "fromAmount" : int,
-    "to":"CURRENCY",
-    "toAmount" : int,
+    "from" : {
+        "currency": "CURRENCY",
+        "amount" : "AMOUNT"
+    },
+    "to": {
+        "currency": "CURRENCY",
+        "amount" : "AMOUNT"
+    },
     "address" : adressString,
     "channel" : channelString
   };
