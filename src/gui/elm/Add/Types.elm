@@ -6,6 +6,7 @@ import Maybe exposing (..)
 
 import Bid.Types exposing
     ( Bid
+    , Value
     , createBid
     , baseUnit
     , padZeroes
@@ -42,8 +43,8 @@ type AmountStatus
 getBid : Model -> Maybe Bid
 getBid model =
     case
-        ( amountStatus model.fromCurrency model.fromAmount
-        , amountStatus model.toCurrency model.toAmount
+        ( amountStatus <| Value model.fromCurrency model.fromAmount
+        , amountStatus <| Value model.toCurrency model.toAmount
         ) of
             (Success fromAmount _, Success toAmount _) ->
                 Maybe.map4 (createBid "0" Bid.Types.Active)
@@ -55,24 +56,24 @@ getBid model =
                 Nothing
 
 
-amountStatus : String -> String -> AmountStatus
-amountStatus currency amount =
-    if String.isEmpty amount then
+amountStatus : Value -> AmountStatus
+amountStatus value =
+    if String.isEmpty value.amount then
         None
-    else if String.isEmpty currency then
+    else if String.isEmpty value.currency then
         Error
     else
-        case amountRegexMatch amount of
+        case amountRegexMatch value.amount of
             Just (base, dec) ->
                 let
-                    (padding, unit) = baseUnit currency
-                    value =
+                    (padding, unit) = baseUnit value.currency
+                    amountValue =
                         removeInitialZeroes <| String.concat
                             [ padZeroes False 1 <| base
                             , padZeroes True padding <| dec
                             ]
                 in
-                    Success value unit
+                    Success amountValue unit
             Nothing ->
                 Error
 

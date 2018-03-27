@@ -6,6 +6,10 @@ import Html.Attributes exposing (..)
 
 import Add.Types exposing (..)
 
+import Bid.Types exposing
+    ( Value
+    )
+
 root : Model -> Html Msg
 root model =
     div []
@@ -42,7 +46,7 @@ test =
             p []
                 [ text
                     <| toString
-                    <| amountStatus currency amount
+                    <| amountStatus <| Value currency amount
                 ]
     in
         div []
@@ -130,7 +134,7 @@ amountField
 amountField submitting setter currency currentValue =
     let
         (extraClass, info) =
-            case amountStatus currency currentValue of
+            case amountStatus <| Value currency currentValue of
                 None ->
                     ("", "")
 
