@@ -8,6 +8,7 @@ import Bid.Types exposing
     ( Bid
     , Value
     , Status
+    , amountString
     )
 
 
@@ -66,7 +67,7 @@ bidView showStatus onClick bid =
 valueView : Value -> List (Html msg)
 valueView value =
     [ td [] <| [ text value.currency]
-    , td [] <| [ text <| toString value.amount]
+    , td [] <| [ text <| amountString value]
     ]
 
 

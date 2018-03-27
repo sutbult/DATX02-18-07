@@ -8,6 +8,7 @@ import Bid.Types exposing
     ( Bid
     , createBid
     , baseUnit
+    , padZeroes
     )
 
 
@@ -107,14 +108,6 @@ amountRegexMatch amount =
                 Nothing
     else
         Nothing
-
-
-padZeroes : Bool -> Int -> String -> String
-padZeroes limit n str =
-    if limit then
-        String.left n <| padZeroes False n str
-    else
-        str ++ String.repeat (n - String.length str) "0"
 
 
 -- TODO: Implementera med reguljära uttryck istället
