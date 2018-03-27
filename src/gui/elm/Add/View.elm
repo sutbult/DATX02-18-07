@@ -48,7 +48,7 @@ test =
             p []
                 [ text
                     <| toString
-                    <| amountStatus currency amount
+                    <| amountStatus True currency amount
                 ]
     in
         div []
@@ -136,7 +136,7 @@ amountField
 amountField submitting setter currency currentValue =
     let
         (extraClass, info) =
-            case amountStatus currency currentValue of
+            case amountStatus True currency currentValue of
                 None ->
                     ("", "")
 

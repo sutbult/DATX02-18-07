@@ -36,8 +36,8 @@ type Msg
 getBid : Model -> Maybe Bid
 getBid model =
     case
-        ( amountStatus model.fromCurrency model.fromAmount
-        , amountStatus model.toCurrency model.toAmount
+        ( amountStatus False model.fromCurrency model.fromAmount
+        , amountStatus False model.toCurrency model.toAmount
         ) of
             (Success fromAmount _, Success toAmount _) ->
                 Just

@@ -69,8 +69,8 @@ baseUnit currency =
             (0, String.toLower currency)
 
 
-amountStatus : String -> String -> AmountStatus
-amountStatus currency amount =
+amountStatus : Bool -> String -> String -> AmountStatus
+amountStatus withFormatting currency amount =
     if String.isEmpty amount then
         None
     else if String.isEmpty currency then
@@ -85,8 +85,13 @@ amountStatus currency amount =
                             [ padZeroes False 1 <| base
                             , padZeroes True padding <| dec
                             ]
+                    formattedValue =
+                        if withFormatting then
+                            formatNumber amountValue
+                        else
+                            amountValue
                 in
-                    Success amountValue unit
+                    Success formattedValue unit
             Nothing ->
                 Error
 
@@ -96,8 +101,13 @@ amountString account =
     let
         (basePow, _) = baseUnit account.currency
         amount = account.amount
-        base = padZeroes False 1 <| String.dropRight basePow amount
-        dec = removeLastZeroes <| String.right basePow amount
+        base =
+            formatNumber
+            <| padZeroes False 1
+            <| String.dropRight basePow amount
+        dec =
+            removeLastZeroes
+            <| String.right basePow amount
         separator =
             if String.isEmpty dec then
                 ""
@@ -109,6 +119,19 @@ amountString account =
 
 amountRegex : Regex
 amountRegex = regex "^(\\d*)(?:\\.(\\d*)){0,1}$"
+
+
+formatNumber : String -> String
+formatNumber str =
+    let
+        steps = 3
+        fst = String.dropRight steps str
+        snd = String.right steps str
+    in
+        if String.isEmpty fst then
+            snd
+        else
+            formatNumber fst ++ "'" ++ snd
 
 
 zeroRegex : Regex
