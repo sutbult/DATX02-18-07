@@ -123,7 +123,7 @@ function checkForStep(step) {
       "contractAddress" : contractAddressString
     };
 */
-async function pushContractInfo(contractInfo) {
+async function pushDigestInfo(contractInfo) {
 
   await db.add(contactInfo);
 
