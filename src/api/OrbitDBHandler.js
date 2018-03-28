@@ -8,7 +8,6 @@ const OrbitDB = require('orbit-db')
 
 var orbitdb
 var globaldb
-var messagedb
 var db
 var channels = []
 
@@ -178,19 +177,17 @@ var jsonObject = {
   };
 */
 async function getBid(amount, address){
-    var test = await orbitdb.feed('/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db')
+    var test = await orbitdb.feed('test')
     await test.load()
-
-  var message = messagedb.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-  console.log("Message" + message)
-//  await globaldb.add(jsonObject)
-  var bids = test.iterator({ limit: 5 }).collect().map((e) => e.payload.value)
-  //return JSON.stringify(bids, null, 2)
-  return bids
+    test.add("test")
+    var bids = test.iterator({ limit: 5 }).collect().map((e) => e.payload.value)
+    return bids
 }
 
 module.exports = {
   addBid,
   getBid,
+  acceptBid,
+  checkForStep,
   createChannel
 }
