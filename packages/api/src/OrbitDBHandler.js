@@ -7,7 +7,6 @@ const OrbitDB = require('orbit-db')
 //2nd: skickar konstraktsadress
 
 var orbitdb
-var globaldb
 var db
 var channels = []
 
@@ -36,8 +35,6 @@ ipfs.once('ready', async function() {
 
   try {
     orbitdb = new OrbitDB(ipfs)
-    globaldb = await orbitdb.feed('/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db');
-    await globaldb.load()
 } catch (e) {
   console.error(e)
 }
@@ -78,9 +75,9 @@ Bid should be JSON in form of jsonObject = {
 
   Can only push one bid at a time at the moment
 */
-async function addBid(bid, db){ //remove db?
-  await globaldb.add(bid);
-  globaldb.load(); //necessary?
+async function addBid(bid, address){
+  var test = await orbitdb.feed(address)
+  await test.add(bid);
   var db = await orbitdb.feed(bid.channel)
   await db.load()
   await db.add(bid.address);
@@ -177,10 +174,11 @@ var jsonObject = {
   };
 */
 async function getBid(amount, address){
-    var test = await orbitdb.feed('test')
-    await test.load()
-    test.add("test")
-    var bids = test.iterator({ limit: 5 }).collect().map((e) => e.payload.value)
+  console.log('here first')
+    var db = await orbitdb.feed(address)
+    console.log('gets here')
+    await db.load()
+    var bids = db.iterator({ limit: 5 }).collect().map((e) => e.payload.value)
     return bids
 }
 
