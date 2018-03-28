@@ -1,0 +1,20 @@
+{
+    "name": "gui",
+    "devDependencies": {
+        "chokidar": "^2.0.0"
+    },
+    "scripts": {
+        "start": "npm run electron:start & npm run elm:watch",
+        "elm:installBuild": "npm run elm:install && npm run elm:build",
+        "elm:install": "node_modules/.bin/elm-package install --yes",
+        "elm:build": "node_modules/.bin/elm-make src/Main.elm --yes --output elm.js",
+        "elm:watch": "node_modules/.bin/chokidar '**/*.elm' -c 'npm run elm:build' & wait",
+        "electron:start": "node_modules/.bin/electron main.js"
+    },
+    "dependencies": {
+        "bulma": "^0.6.2",
+        "chokidar-cli": "^1.2.0",
+        "electron": "^1.8.3",
+        "elm": "^0.18.0"
+    }
+}

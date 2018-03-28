@@ -14,9 +14,9 @@ app.on('ready', () => {
 });
 
 const WATCH = [
-    'src/gui/ports.js',
-    'src/gui/index.html',
-    'src/gui/elm.js',
+    'ports.js',
+    'index.html',
+    'elm.js',
 ];
 
 chokidar.watch(WATCH).on('change', () => {
