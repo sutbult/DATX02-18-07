@@ -1,33 +1,14 @@
 {
-  "name": "DATX02-18-07",
-  "version": "0.0.1",
-  "main": "index.js",
-  "license": "UNLICENSED",
-  "private": true,
-  "scripts": {
-    "test": "npm run elm",
-    "daemon": "node src/api/server.js",
-    "elm": "npm run elm:install && npm run elm:build",
-    "elm:build": "node_modules/.bin/elm-make src/gui/elm/Main.elm --yes --output src/gui/elm.js",
-    "elm:install": "node_modules/.bin/elm-package install --yes",
-    "elm:watch": "node_modules/.bin/chokidar '**/*.elm' -c 'npm run elm' & wait",
-    "start": "node_modules/.bin/electron src/gui/main.js",
-    "watch": "npm run elm && (npm run daemon & npm run start & npm run elm:watch)"
-  },
-  "devDependencies": {
-    "chokidar": "^2.0.0"
-  },
-  "dependencies": {
-    "bulma": "^0.6.2",
-    "child_process": "^1.0.2",
-    "chokidar-cli": "^1.2.0",
-    "electron": "^1.8.3",
-    "elm": "^0.18.0",
-    "express": "^4.16.2",
-    "ipfs": "0.28.2",
-    "npm": "^5.8.0",
-    "orbit-db": "0.19.7",
-    "sse": "^0.0.8",
-    "web3": "1.0.0-beta.30"
-  }
+    "name": "DATX02-18-07",
+    "version": "0.0.1",
+    "license": "UNLICENSED",
+    "private": true,
+    "scripts": {
+        "postinstall": "lerna bootstrap",
+        "test": "lerna run elm:installBuild",
+        "debug": "lerna run elm:installBuild && lerna run start --parallel"
+    },
+    "devDependencies": {
+        "lerna": "^2.9.0"
+    }
 }
