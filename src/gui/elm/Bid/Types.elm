@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-module Bid.Types exposing (..)
-=======
 module Bid.Types exposing
     ( Status(..)
     , Value
@@ -14,7 +11,6 @@ module Bid.Types exposing
 
 import Regex exposing (..)
 import Maybe exposing (..)
->>>>>>> 8a3f0819346211f5e901d1ad5dee6bc3ee6951ae
 
 type Status
     = Active
@@ -55,8 +51,6 @@ createBid id status fromCurrency fromAmount toCurrency toAmount =
     Bid id status
         (Value fromCurrency fromAmount)
         (Value toCurrency toAmount)
-<<<<<<< HEAD
-=======
 
 
 baseUnit : String -> (Int, String)
@@ -191,4 +185,3 @@ removeLastZeroes str =
         removeLastZeroes (String.dropRight 1 str)
     else
         str
->>>>>>> 8a3f0819346211f5e901d1ad5dee6bc3ee6951ae
