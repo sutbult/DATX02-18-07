@@ -1,18 +1,6 @@
 const orbitDB = require("./OrbitDBHandler.js")
+const headless = require("./Headless.js")
 var db = '/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db'
-/*try {
-// db = orbitDB.createChannel('/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db')
- db = createDB('/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db')
-
-catch (e) {
-  console.error(e)
-}*/
-
-async function createDB(dbName){
-  db = orbitDB.createChannel(dbName)
-//  console.log(db.address.toString())
-  return db
-}
 
 async function getBid(amount){
   var bids = orbitDB.getBid(amount, db)
