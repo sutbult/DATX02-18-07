@@ -48,16 +48,18 @@ async function getBids() {
     //addBid('test')
     return db.getBid(5)
 
+    /*
     // TODO: Implementera på riktigt
-/*    var Bid = BidFactory();
+    var Bid = BidFactory();
     return [
-        Bid("Bitcoin",      0.01,   "Ethereum",     0.1     ),
-        Bid("Ethereum",     0.5,    "Monero",       5       ),
-        Bid("Ethereum",     0.1,    "Dogecoin",     9001    ),
-        Bid("Bitcoin",      0.02,   "Monero",       2       ),
-        Bid("Bitcoin cash", 0.3,    "Monero",       3       ),
-        Bid("Dogecoin",     100,    "Monero",       3       ),
-    ];*/
+        Bid("Bitcoin",      "1000000",              "Ethereum",     "100000000000000000"),
+        Bid("Ethereum",     "500000000000000000",   "Monero",       "5"                 ),
+        Bid("Ethereum",     "100000000000000000",   "Dogecoin",     "9001"              ),
+        Bid("Bitcoin",      "2000000",              "Monero",       "2"                 ),
+        Bid("Bitcoin cash", "3000000",              "Monero",       "3"                 ),
+        Bid("Dogecoin",     "100",                  "Monero",       "3"                 ),
+    ];
+    */
 }
 
 // Accepts a bid and starts the swapping process
@@ -75,9 +77,9 @@ async function getWallet() {
         };
     }
     return [
-        Account("Bitcoin", 1000),
-        Account("Ethereum", 10000),
-        Account("Dogecoin", 1000000000), // Wow, such wealth, many monies
+        Account("Bitcoin",  "100000000000"              ),
+        Account("Ethereum", "10000000000000000000010"   ),
+        Account("Dogecoin", "1000000000"                ), // Wow, such wealth, many monies
     ];
 }
 
@@ -85,9 +87,9 @@ async function getWallet() {
 async function getUserBids() {
     var Bid = BidFactory();
     return [
-        Bid("Dogecoin",     1000,   "Ethereum", 0.1, "ACTIVE"),
-        Bid("Bitcoin cash", 0.5,    "Bitcoin",  0.1, "PENDING"),
-        Bid("Bitcoin",      0.5,    "Dogecoin", 100, "FINISHED"),
+        Bid("Dogecoin",     "1000",     "Ethereum", "100000000000000000",   "ACTIVE"),
+        Bid("Bitcoin cash", "50000000", "Bitcoin",  "10000000",             "PENDING"),
+        Bid("Bitcoin",      "50000000", "Dogecoin", "100",                  "FINISHED"),
     ];
 }
 

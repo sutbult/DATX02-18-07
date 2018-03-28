@@ -1,6 +1,9 @@
 module Browse.Bids.Types exposing (..)
 
-import Bid.Types exposing (Bid)
+import Bid.Types exposing
+    ( Bid
+    )
+import Error.Types
 
 type alias Model =
     { bids : List Bid
@@ -17,3 +20,5 @@ type Msg
     | EndProcessingBid
     | GetSSEId Int
     | Noop
+    | AcceptFailure Error.Types.Msg
+    | ToError Error.Types.Msg

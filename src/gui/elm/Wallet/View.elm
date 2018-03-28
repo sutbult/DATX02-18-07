@@ -4,9 +4,22 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 
 import Wallet.Types exposing (..)
+import Error.View
+
+import Bid.Types exposing
+    ( baseUnit
+    , amountString
+    )
 
 root : Model -> Html Msg
 root model =
+    div []
+        [ Html.map ToError <| Error.View.root model.error
+        , walletTable model
+        ]
+
+walletTable : Model -> Html Msg
+walletTable model =
     table [class "table is-fullwidth is-hoverable is-striped"]
         [ head
         , tbody []
@@ -29,6 +42,6 @@ accountView account =
             [ text account.currency
             ]
         , td []
-            [ text <| toString account.amount
+            [ text <| amountString account
             ]
         ]

@@ -2,11 +2,8 @@ module Add.State exposing (init, update, subscriptions)
 
 import Add.Types exposing (..)
 import Maybe exposing (..)
-import Bid.Types exposing
-    ( Bid
-    , Value
-    , createBid
-    )
+import Error.State
+
 import Add.Rest exposing
     ( addBid
     , getCurrencies
@@ -15,14 +12,22 @@ import Add.Rest exposing
 
 init : (Model, Cmd Msg)
 init =
-    (   { fromCurrency = ""
-        , fromAmount = ""
-        , toCurrency = ""
-        , toAmount = ""
-        , submitting = False
-        , currencies = []
-        }
-    , getCurrencies)
+    let
+        (errorModel, errorCmd) = Error.State.init
+    in
+        (   { fromCurrency = ""
+            , fromAmount = ""
+            , toCurrency = ""
+            , toAmount = ""
+            , submitting = False
+            , currencies = []
+            , error = errorModel
+            }
+        , Cmd.batch
+            [ getCurrencies
+            , Cmd.map ToError errorCmd
+            ]
+        )
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -60,8 +65,8 @@ update msg model =
                 , submitting = False
             }, Cmd.none)
 
-        SubmitFailure ->
-            (model, Cmd.none)
+        SubmitFailure error ->
+            update (ToError error) {model | submitting = False}
 
         SetCurrencies currencies ->
             ({model
@@ -69,6 +74,12 @@ update msg model =
                 , fromCurrency = firstOption currencies
                 , toCurrency = secondOption currencies
             }, Cmd.none)
+
+        ToError subMsg ->
+            let
+                (subModel, subCmd) = Error.State.update subMsg model.error
+            in
+                ({model | error = subModel}, Cmd.map ToError subCmd)
 
 
 firstOption : List String -> String
@@ -89,15 +100,6 @@ secondOption currencies =
 
         _ ->
             firstOption currencies
-
-
-getBid : Model -> Maybe Bid
-getBid model =
-    Maybe.map4 (createBid "0" Bid.Types.Active)
-        (Just model.fromCurrency)
-        (Result.toMaybe <| String.toFloat model.fromAmount)
-        (Just model.toCurrency)
-        (Result.toMaybe <| String.toFloat model.toAmount)
 
 
 subscriptions : Model -> Sub Msg
