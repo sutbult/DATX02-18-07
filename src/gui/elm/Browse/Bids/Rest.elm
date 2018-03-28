@@ -9,17 +9,18 @@ import Bid.Rest exposing
     ( encodeBidId
     )
 
-import Http
 import Json.Decode
+import Rest
+
 
 acceptBid : Bid -> Int -> Cmd Msg
 acceptBid bid sseID =
     if sseID >= 0 then
-        let
-            body = Http.jsonBody <| encodeBidId bid sseID
-            request = Http.post "http://localhost:51337/api/acceptBid" body (Json.Decode.succeed ())
-            onResponse _ = Noop
-        in
-            Http.send onResponse request
+        Rest.post
+            (encodeBidId bid sseID)
+            "acceptBid"
+            (Json.Decode.succeed ())
+            (\_ -> Noop)
+            AcceptFailure
     else
         Cmd.none

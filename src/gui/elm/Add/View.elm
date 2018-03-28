@@ -4,8 +4,8 @@ import Html exposing (..)
 import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 
+import Error.View
 import Add.Types exposing (..)
-
 import Bid.Types exposing
     ( Value
     , AmountStatus(..)
@@ -15,7 +15,8 @@ import Bid.Types exposing
 root : Model -> Html Msg
 root model =
     div []
-        [ form model
+        [ Html.map ToError (Error.View.root (.error model))
+        , form model
         , submit model
         ]
 

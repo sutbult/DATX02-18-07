@@ -2,10 +2,22 @@ module UserBids.State exposing (..)
 
 import UserBids.Types exposing (..)
 import UserBids.Rest exposing (getUserBids)
+import Error.State
 
 
 init : (Model, Cmd Msg)
-init = ({bids = []}, getUserBids)
+init =
+    let
+        (errorModel, errorCmd) = Error.State.init
+    in
+        (   { bids = []
+            , error = errorModel
+            }
+        , Cmd.batch
+            [ getUserBids
+            , Cmd.map ToError errorCmd
+            ]
+        )
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -16,6 +28,12 @@ update msg model =
 
         SetBids bids ->
             ({model | bids = bids}, Cmd.none)
+
+        ToError subMsg ->
+            let
+                (subModel, subCmd) = Error.State.update subMsg model.error
+            in
+                ({model | error = subModel}, Cmd.map ToError subCmd)
 
 
 subscriptions : Model -> Sub Msg

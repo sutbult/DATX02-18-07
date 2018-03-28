@@ -1,7 +1,11 @@
 module Browse.Bids.View exposing (root)
 
 import Browse.Bids.Types exposing (..)
-import Bid.Types exposing (Bid, Value)
+import Bid.Types exposing
+    ( Bid
+    , Value
+    , amountString
+    )
 import Bid.View exposing (bidList)
 
 import Html exposing (..)
@@ -141,7 +145,7 @@ valueRows title value =
             [ ltd []
             , heading "Amount"
             , ltd
-                [ text <| toString value.amount
+                [ text <| amountString value
                 ]
             ]
         ]

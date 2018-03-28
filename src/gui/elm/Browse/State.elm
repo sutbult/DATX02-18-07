@@ -32,6 +32,17 @@ init =
             ]
         )
 
+
+mapBidsCmd : Browse.Bids.Types.Msg -> Msg
+mapBidsCmd msg =
+    case msg of
+        Browse.Bids.Types.ToError error ->
+            Error error
+
+        subMsg ->
+            Bids subMsg
+
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
@@ -45,7 +56,7 @@ update msg model =
             let
                 (subModel, subCmd) = BidsState.update subMsg (.bids model)
             in
-                ({model | bids = subModel}, Platform.Cmd.map Bids subCmd)
+                ({model | bids = subModel}, Platform.Cmd.map mapBidsCmd subCmd)
 
         Error subMsg ->
             let
