@@ -80,27 +80,26 @@ async function readDigest(ethchain, contract_address){
 *  @param {string} digest - The digest of the contract, if there is any (only for second contracts)
 *  @param {string} self_address - The destination of the contract, ie: yourself
 */
-async function validateEtherContract(ethchain, contract_address, self_address, value_in_eth, digest = null){
+async function validateEtherContract(ethchain, contract_address, self_address, value_in_wei, digest = null){
     var res_cont, res_val;
     
     res_cont = await validateContract(ethchain, htlc_ether, contract_address, self_address, digest);
-    res_val = await validateERC20Value(ethchain, value_in_eth, contract_address);
+    res_val = await validateERC20Value(ethchain, value_in_wei, contract_address);
     return res_cont && res_val;
 }
 
 /**  This function will validate a ERC20 HTLC contract
-*  @param {int} decimals - The number of decimals for the token (default is 18)
 *  @param {string} token_address - The address of the token
-*  @param {string} value_in_tokens - The number of tokens, with decimals, so "1" token is 1 * 10^18 with 18 decimals.
+*  @param {string} value_in_tokens - The number of tokens, without decimals, so fix decimals before putting something in!
 *  @param {string} digest - The digest of the contract, if there is any (only for second contracts)
 *  @param {string} self_address - The destination of the contract, ie: yourself
 */
-async function validateERC20Contract(ethchain, contract_address, self_address, token_address, value_in_tokens, decimals = 18, digest = null){
+async function validateERC20Contract(ethchain, contract_address, self_address, token_address, value_in_tokens, digest = null){
     var res_cont, res_address, res_val;
     
     res_cont = await validateContract(ethchain, htlc_erc20, contract_address, self_address, digest);
     res_address = await validateERC20Address(ethchain, htlc_erc20.abi, token_address, contract_address);
-    res_val = await validateERC20Value(ethchain, value_in_tokens, token_address, contract_address, decimals);
+    res_val = await validateERC20Value(ethchain, value_in_tokens, token_address, contract_address);
     return res_cont && res_val && res_address;
 }
 
@@ -153,22 +152,22 @@ async function validateDigest(ethchain, digest, contract_address) {
 /** This function validates that the ether value of a contract is correct.
  *  Only works on normal HTLC (With Ether)
 */
-async function validateValue(ethchain, value_in_eth, contract_address){
+async function validateValue(ethchain, value_in_wei, contract_address){
     var balance;
     
     balance = await ethchain.eth.getBalance(contract_address);
-    return Web3.utils.toWei(value_in_eth) == balance;
+    return value_in_wei == balance;
 }
 
 /** This function validates that the ERC20 token value of a contract is correct.
  *  Only works on ERC20-HTLC!
 */
-async function validateERC20Value(ethchain, value_in_tokens, token_address, contract_address, decimals = 18){
+async function validateERC20Value(ethchain, value_in_tokens, token_address, contract_address){
     var token, balance;
     
     token = new ethchain.eth.Contract(erc20.abi, token_address);
     balance = await token.methods.balanceOf(contract_address).call();
-    return tokensNoDecimals(value_in_tokens, decimals) == balance;
+    return value_in_tokens == balance;
 }
 
 /** This function validates that the contract sends the correct token when claimed.
@@ -188,11 +187,12 @@ async function validateERC20Address(ethchain, contract_abi, token_address, contr
  */
 
 async function sendERC20Contract(ethchain, from_address, secret = null, digest = null, destination, value_in_tokens, token_address){
-    var args, gen_digest;
+    var args, gen_digest, contract_address;
     
     gen_digest = generateDigest(ethchain, secret, digest);
     args = [gen_digest, destination, token_address];
-    sendContract(ethchain, htlc_erc20, args, from_address, gen_digest, 0);
+    contract_address = await sendContract(ethchain, htlc_erc20, args, from_address, gen_digest, 0);
+    sendTokensToContract(ethchain, contract_address, token_address, value_in_tokens);
 }
 
 async function sendEtherContract(ethchain, from_address, secret, digest, destination, value_in_eth){
@@ -221,14 +221,15 @@ async function sendContract(ethchain, jsoncontract, args, from_address, digest, 
     console.log(gas_estimate);
     console.log(from_address);
     console.log(ether);
-    contract_instance.send({from: from_address, gasPrice: gas_estimate.toString(), gas: gas_estimate, value: 0})
-        .once('receipt', function (receipt){
-        /**@todo send this information to other user */
-        console.log("Contract deployed in block " + receipt.blockNumber);
-        console.log("Contract deployed at address " + receipt.contractAddress);
-        contract.options.address = receipt.contractAddress;
-        subscribeToClaim(contract, receipt.blockNumber);
-      });     
+    var receipt = await contract_instance.send({from: from_address, gasPrice: gas_estimate.toString(), gas: gas_estimate, value: 0});
+    
+    /**@todo send this information to other user */
+    console.log("Contract deployed in block " + receipt.blockNumber);
+    console.log("Contract deployed at address " + receipt.contractAddress);
+    contract.options.address = receipt.contractAddress;
+    subscribeToClaim(contract, receipt.blockNumber);
+    
+    return receipt.contractAddress;
     /**@todo send this information to other user */
 
 }
@@ -243,14 +244,18 @@ function generateDigest(ethchain, secret, digest){
     }
 }
 
-async function sendTokensToContract(ethchain, contract_address, token_address, value_in_tokens, decimals = 18){
+
+/**  This function will validate a ERC20 HTLC contract
+*  @param {string} value_in_tokens - The number of tokens, without decimals, so fix decimals before putting something in!
+*/
+async function sendTokensToContract(ethchain, contract_address, token_address, value_in_tokens){
     var token, gas_estimate;
     
     gas_estimate =  4712386; 
     token = new ethchain.eth.Contract(erc20.abi, token_address);
     return token
         .methods
-        .transfer(contract_address, tokensNoDecimals(value_in_tokens, decimals))
+        .transfer(contract_address, value_in_tokens)
         .send({from: from_address, gasPrice: gasEstimate.toString(), gas: gasEstimate, value: 0});
 }
  

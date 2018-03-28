@@ -39,17 +39,6 @@ ipfs.once('ready', async function() {
     orbitdb = new OrbitDB(ipfs)
     globaldb = await orbitdb.feed('/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db');
     await globaldb.load()
-    messagedb = await orbitdb.feed('/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message')
-    await messagedb.load()
-    messagdb = await orbitdb.feed('testsfds')
-    await messagdb.load()
-    console.log(globaldb.address.toString())
-    console.log(messagedb.address.toString())
-    console.log(messagdb.address.toString())
-    messagdb.add('lol');
-    await messagdb.load();
-    var message = messagdb.iterator({ limit: 3 }).collect().map((e) => e.payload.value)
-    console.log("Message" + message)
 } catch (e) {
   console.error(e)
 }
@@ -90,26 +79,13 @@ Bid should be JSON in form of jsonObject = {
 
   Can only push one bid at a time at the moment
 */
-async function addBid(bid, db){
-  //bid to json
-  //var bidJSON = JSON.stringify(bid);
-  //await globaldb.add(bidJSON);
-  var db = await orbitdb.feed(db)
+async function addBid(bid, db){ //remove db?
+  await globaldb.add(bid);
+  globaldb.load(); //necessary?
+  var db = await orbitdb.feed(bid.channel)
   await db.load()
-  await db.add(bid);
-  //db = await orbitdb.feed(bid.channel);
-  //channels.push(db); //create channel
-  //await db.load();
-  //await db.add(bid.address);
-//  db = await orbitdb.feed(bid.channel);
-
-
-/*  console.log(bid.channel)
-//  channels.push(db); //create channel
-  await messagedb.load();
-  await messagedb.add(bid.address);
-  checkForStep(2);
-  */
+  await db.add(bid.address);
+  processInfo(checkForStep(2));
 }
 
 /*
@@ -122,14 +98,12 @@ async function addBid(bid, db){
 */
 async function acceptBid(bid){
   db = await orbitdb.feed(bid.channel);
-  channels.push(db); //create channel
-
   await db.load();
   var message = db.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-  processInfo(message);
   await db.add(bid.address);
-  //Also let everybody know that the bid is taken.
-  checkForStep(3);
+  processInfo(message);
+  //Let everybody know that the bid is taken.
+  //checkForStep(3);
 }
 
 function checkForStep(step) {
@@ -138,7 +112,7 @@ function checkForStep(step) {
     var message = db.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
   }
 
-  processInfo(message);
+  return message;
 }
 
 /*
@@ -151,14 +125,11 @@ function checkForStep(step) {
     };
 */
 async function pushContractInfo(contractInfo) {
-  //db has already been created, how to we access it?
-  //Need to add check to confirm that we have received the correct JsonObject
-  newJson = {
-    "step" : "3",
-    "digest" : contractInfo.digest,
-    "contractAddress" : contractInfo.contractAddress
-  };
-  await db.add(newJson);
+
+  await db.add(contactInfo);
+
+  processInfo(checkForStep(4));
+
 }
 
 /*
@@ -170,29 +141,23 @@ async function pushContractInfo(contractInfo) {
     };
 */
 async function pushContractInfo(contractInfo) {
-  //db has already been created, how do we access it?
-  //Need to add check to confirm that we have received the correct JsonObject
-  newJson = {
-    "step" : "4",
-    "contractAddress" : contractInfo.contractAddress
-  };
-  await db.add(newJson);
+
+  await db.add(contractInfo);
 }
 
 
-/*
-What's left? Add functionality to take continiously take down the new information
-*/
-
-function processInfo(contractInfo) {
+function processInfo(message) {
   if(contractInfo.step == 1) {
-    //return step 1, prompt user to continue
+    return message;
+    //call checkForStep(3)
   } else if(contractInfo.step == 2) {
-    //return step 2, prompt user to continue
+    return message;
+    //prompt user to complete step 3
   } else if(contractInfo.step == 3) {
-    //return step 3, prompt user to continue
+    //prompt user to complete step 4
+    return message;
   } else if(contractInfo.step == 4) {
-    //return step 4, prompt user to continue
+    return message;
   } else {
 
   }
