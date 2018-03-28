@@ -21,7 +21,7 @@ const { exec } = require('child_process');
 
 
 /**@todo kill this child-process once parent is killed */
-const geth = exec("geth --light --testnet --ws --wsaddr 127.0.0.1 --wsport 7545 --wsorigins='*' --port 30303 --wsapi personal,eth,web3");
+/**const geth = exec("geth --light --testnet --ws --wsaddr 127.0.0.1 --wsport 7545 --wsorigins='*' --port 30303 --wsapi personal,eth,web3");
 
 geth.stdout.on('data', (data) => {
   console.log(`stdout: ${data}`);
@@ -38,14 +38,9 @@ geth.on('error', (err) => {
 geth.on('close', (code) => {
   console.log(`child process exited with code ${code}`);
 });
-
-async function isConnected(ethchain){
-  try {
-    let a = await ethchain.eth.net.isListening();
-  } catch (e){
-    return false;
-  } 
-  return true;
+*/
+function isConnected(ethchain){
+  return ethchain.currentProvider.connection._connection.connected
 }
 
 /**Connect our application to Ethereum-servers
@@ -195,23 +190,23 @@ async function sendERC20Contract(ethchain, from_address, secret = null, digest =
     sendTokensToContract(ethchain, contract_address, token_address, value_in_tokens);
 }
 
-async function sendEtherContract(ethchain, from_address, secret, digest, destination, value_in_eth){
+async function sendEtherContract(ethchain, from_address, secret, digest, destination, value_in_wei){
     var args, gen_digest;
     
     gen_digest = generateDigest(ethchain, secret, digest);
     args = [gen_digest, destination];
-    sendContract(ethchain, htlc_ether, args, from_address, gen_digest, value_in_eth);
+    sendContract(ethchain, htlc_ether, args, from_address, gen_digest, value_in_wei);
 }
  
-async function sendContract(ethchain, jsoncontract, args, from_address, digest, value_in_eth){
-    var ether, gas_estimate, contract, contract_instance;
+async function sendContract(ethchain, jsoncontract, args, from_address, digest, value_in_wei){
+    var ether, gas_estimate, contract, contract_instance, contract_address;
     /**If you are bid poster the secret will be keccak256-hashed
      * else p_digest will contain the hashed secret
      */
 
     /**Need to convert the user inputted amount to Wei */
-    ether = ethchain.utils.toWei(value_in_eth, "ether");
-    gas_estimate =  4712386;//web3FirstChain.eth.estimateGas({data: bytecode});
+    //ether = ethchain.utils.toWei(value_in_wei, "wei");
+    gas_estimate =  572810;//web3FirstChain.eth.estimateGas({data: bytecode});
      
     
     contract = new ethchain.eth.Contract(jsoncontract.abi);
@@ -220,20 +215,21 @@ async function sendContract(ethchain, jsoncontract, args, from_address, digest, 
     console.log(args);
     console.log(gas_estimate);
     console.log(from_address);
-    console.log(ether);
-    var receipt = await contract_instance.send({from: from_address, gasPrice: gas_estimate.toString(), gas: gas_estimate, value: 0});
+    console.log(value_in_wei);
+    var receipt = await contract_instance.send({from: from_address, gasPrice: gas_estimate.toString(), gas: gas_estimate, value: value_in_wei});
     
+    contract_address = receipt._address;
+    console.log(receipt._address);
     /**@todo send this information to other user */
-    console.log("Contract deployed in block " + receipt.blockNumber);
-    console.log("Contract deployed at address " + receipt.contractAddress);
-    contract.options.address = receipt.contractAddress;
+    console.log("Contract deployed at address " + contract_address);
+    
+    contract.options.address = contract_address;
     subscribeToClaim(contract, receipt.blockNumber);
     
     return receipt.contractAddress;
     /**@todo send this information to other user */
 
 }
-
 
 function generateDigest(ethchain, secret, digest){
     if(secret != null){
@@ -243,7 +239,6 @@ function generateDigest(ethchain, secret, digest){
         return digest;
     }
 }
-
 
 /**  This function will validate a ERC20 HTLC contract
 *  @param {string} value_in_tokens - The number of tokens, without decimals, so fix decimals before putting something in!
@@ -297,4 +292,4 @@ function claimContract(ethchain, pre_image_hash, from_address, claim_address){
     console.log("DEPLOYED");});
 }
 
-module.exports = {isConnected, subscribeToClaim, unlockAccount, getPastClaim, experimental, geth, htlc_ether, htlc_erc20, validateCode, validateEtherContract, validateERC20Contract, validateContract, validateDestination, validateValue, validateERC20Value, classic, claimContract, sendTokensToContract, sendERC20Contract, sendEtherContract, validateContract};
+module.exports = {isConnected, subscribeToClaim, unlockAccount, getPastClaim, experimental, htlc_ether, htlc_erc20, validateCode, validateEtherContract, validateERC20Contract, validateContract, validateDestination, validateValue, validateERC20Value, classic, claimContract, sendTokensToContract, sendERC20Contract, sendEtherContract, validateContract};
