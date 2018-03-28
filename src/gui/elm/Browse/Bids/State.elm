@@ -4,6 +4,8 @@ module Browse.Bids.State exposing
     , subscriptions
     )
 
+import Task
+
 import Browse.Bids.Types exposing (..)
 import Bid.Types exposing (Bid)
 import Browse.Bids.Rest exposing
@@ -24,6 +26,20 @@ update msg model =
     case msg of
         Noop ->
             (model, Cmd.none)
+
+        ToError _ ->
+            (model, Cmd.none)
+
+        AcceptFailure error ->
+            let
+                (newModel, newCmd) = update EndProcessingBid model
+            in
+                ( newModel
+                , Cmd.batch
+                    [ newCmd
+                    , Task.perform ToError (Task.succeed error)
+                    ]
+                )
 
         SetBids bids ->
             ({model | bids = bids}, Cmd.none)

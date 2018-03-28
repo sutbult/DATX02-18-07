@@ -21,7 +21,6 @@ acceptBid bid sseID =
             "acceptBid"
             (Json.Decode.succeed ())
             (\_ -> Noop)
-            -- TODO: Implementera felhantering
-            (\_ -> Noop)
+            AcceptFailure
     else
         Cmd.none
