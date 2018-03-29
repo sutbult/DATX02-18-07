@@ -3,7 +3,7 @@ var path = require("path")
 var directory = path.resolve("./")
 var str
 const browser = new HeadlessChrome({
-    headless: false // If you turn this off, you can actually see the browser navigate with your instructions
+    headless: true // If you turn this off, you can actually see the browser navigate with your instructions
     // see above if using remote interface
 })
 

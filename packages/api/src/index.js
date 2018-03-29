@@ -5,6 +5,10 @@ const messenger = require("./OrbitDBHandler")
 
 // Adds a new bid to the decentralized database
 async function addBid(bid) {
+  var jsonObject = bid
+  jsonObject["id"] = "PlaceHolder"
+  jsonObject["status"] = "active"
+  jsonObject["channel"] = "/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message"
   /*var jsonObject = {
       "step" : "1",
       "from" : "CURRENCY",
@@ -15,7 +19,7 @@ async function addBid(bid) {
       "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
     };
     console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));*/
-    db.addBid(bid)
+    await db.addBid(jsonObject)
 }
 
 
@@ -46,7 +50,7 @@ function BidFactory() {
 async function getBids() {
     // Detta fungerar inte
     //addBid('test')
-    return db.getBid(5)
+    return await db.getBid(5)
 
     /*
     // TODO: Implementera på riktigt

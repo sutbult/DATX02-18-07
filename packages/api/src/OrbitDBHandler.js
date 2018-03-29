@@ -76,12 +76,14 @@ Bid should be JSON in form of jsonObject = {
   Can only push one bid at a time at the moment
 */
 async function addBid(bid, address){
-  var test = await orbitdb.feed(address)
-  await test.add(bid);
-  var db = await orbitdb.feed(bid.channel)
-  await db.load()
-  await db.add(bid.address);
-  processInfo(checkForStep(2));
+  var db = await orbitdb.feed(address)
+  await db.add(bid);
+
+  var channel = await orbitdb.feed(bid.channel)
+  await channel.add(bid.address);
+
+  //gives error
+//  processInfo(checkForStep(2));
 }
 
 /*
@@ -176,7 +178,7 @@ var jsonObject = {
 async function getBid(amount, address){
     var db = await orbitdb.feed(address)
     await db.load()
-    var bids = db.iterator({ limit: 5 }).collect().map((e) => e.payload.value)
+    var bids = db.iterator({ limit: amount }).collect().map((e) => e.payload.value)
     return bids
 }
 
