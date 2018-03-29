@@ -5,7 +5,7 @@
     "private": true,
     "scripts": {
         "postinstall": "lerna bootstrap",
-        "test": "lerna run elm:installBuild --stream",
+        "test": "lerna run test --stream",
         "debug": "lerna run elm:installBuild --stream && lerna run start --parallel"
     },
     "devDependencies": {
