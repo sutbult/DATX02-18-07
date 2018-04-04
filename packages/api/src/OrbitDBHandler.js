@@ -82,13 +82,13 @@ Bid should be JSON in form of jsonObject = {
 
   Can only push one bid at a time at the moment
 */
-async function addBid(bid, address){
+async function addData(data, address){
   var db = await orbitdb.feed(address)
   await db.load()
-  await db.add(bid);
+  await db.add(data);
 
-  var channel = await orbitdb.feed(bid.channel)
-  await channel.add(bid.address);
+  var channel = await orbitdb.feed(data.channel)
+  await channel.add(data.address);
 
   //gives error
 //  processInfo(checkForStep(2));
@@ -183,16 +183,16 @@ var jsonObject = {
     "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
   };
 */
-async function getBid(amount, address){
+async function getData(amount, address){
     var db = await orbitdb.feed(address)
     await db.load()
-    var bids = db.iterator({ limit: amount }).collect()
-    return bids
+    var data = db.iterator({ limit: amount }).collect()
+    return data
 }
 
 module.exports = {
-  addBid,
-  getBid,
+  addData,
+  getData,
   acceptBid,
   checkForStep,
   createChannel,
