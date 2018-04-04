@@ -6,7 +6,6 @@ const messenger = require("./OrbitDBHandler")
 // Adds a new bid to the decentralized database
 async function addBid(bid) {
   var jsonObject = bid
-  jsonObject["id"] = "PlaceHolder"
   jsonObject["status"] = "active"
   jsonObject["channel"] = "/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message"
   /*var jsonObject = {

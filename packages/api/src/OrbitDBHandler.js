@@ -179,9 +179,7 @@ var jsonObject = {
 async function getBid(amount, address){
     var db = await orbitdb.feed(address)
     await db.load()
-    console.log('ready')
-    var bids = db.iterator({ limit: amount }).collect().map((e) => e.payload.value)
-    console.log(bids)
+    var bids = db.iterator({ limit: amount }).collect()
     return bids
 }
 
