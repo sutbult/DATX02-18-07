@@ -50,7 +50,9 @@ function BidFactory() {
 async function getBids() {
     // Detta fungerar inte
     //addBid('test')
-    return await db.getBid(5)
+    const bid = await db.getBid(5)
+    console.log(bid)
+    return bid
 
     /*
     // TODO: Implementera på riktigt

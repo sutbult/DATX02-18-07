@@ -77,6 +77,7 @@ Bid should be JSON in form of jsonObject = {
 */
 async function addBid(bid, address){
   var db = await orbitdb.feed(address)
+  await db.load()
   await db.add(bid);
 
   var channel = await orbitdb.feed(bid.channel)
@@ -178,7 +179,9 @@ var jsonObject = {
 async function getBid(amount, address){
     var db = await orbitdb.feed(address)
     await db.load()
+    console.log('ready')
     var bids = db.iterator({ limit: amount }).collect().map((e) => e.payload.value)
+    console.log(bids)
     return bids
 }
 
