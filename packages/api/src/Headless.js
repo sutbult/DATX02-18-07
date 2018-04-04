@@ -1,47 +1,38 @@
-const HeadlessChrome = require('simple-headless-chrome')
+const HeadlessChrome = require("simple-headless-chrome")
 var path = require("path")
 var directory = path.resolve("./")
-var str
+var dbAddress = "null"
 const browser = new HeadlessChrome({
     headless: true // If you turn this off, you can actually see the browser navigate with your instructions
     // see above if using remote interface
 })
 
-async function navigateWebsite() {
+async function createDB(dbName) {
     try {
         await browser.init()
-
         const mainTab = await browser.newTab({
             privateTab: false
         })
 
-        await mainTab.goTo('file:///' + directory + '/src/db.html')
+        await mainTab.goTo('file:///' + directory + "/src/DB.html")
+        await mainTab.type("#nameInput", dbName)
+        await mainTab.click("#createBtn")
         await mainTab.onConsole(listener)
-        await mainTab.wait(10000)
+        await mainTab.wait(2000)
         await browser.close()
+        return dbAddress
     } catch (err) {
-        console.log('ERROR!', err)
+        console.log("ERROR!", err)
     }
 
-  //  await browser.close()
 }
-
-navigateWebsite()
-
 function listener(word) {
     var string = JSON.stringify(word, null, 2)
-
     if (string.includes("orbit")) {
-        str = string.substring(string.indexOf('/orbit'), string.indexOf('createdb'))
-        str = str + 'createdb'
-        console.log(str)
+       dbAddress = word[0].value
     }
-}
-
-function getDB(){
-  return str
 }
 
 module.exports = {
-  getDB
+  createDB
 }

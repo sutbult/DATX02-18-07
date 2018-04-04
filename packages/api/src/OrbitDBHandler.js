@@ -1,5 +1,7 @@
 const Ipfs = require('ipfs')
 const OrbitDB = require('orbit-db')
+const headless = require("./Headless.js")
+
 
 //1st: Bud och egen address.
 //2nd: accept bid, skickar sin egen adress.
@@ -53,6 +55,11 @@ async function createChannel(channelName) {
   catch (e) {
     console.error(e)
   }
+}
+
+// Creates a database address and returns it
+async function createDB(name){
+  return headless.createDB(name)
 }
 
 
@@ -188,5 +195,6 @@ module.exports = {
   getBid,
   acceptBid,
   checkForStep,
-  createChannel
+  createChannel,
+  createDB
 }

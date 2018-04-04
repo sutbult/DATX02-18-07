@@ -50,7 +50,6 @@ async function getBids() {
     // Detta fungerar inte
     //addBid('test')
     const bid = await db.getBid(5)
-    console.log(bid)
     return bid
 
     /*

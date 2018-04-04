@@ -1,5 +1,4 @@
 const orbitDB = require("./OrbitDBHandler.js")
-//const headless = require("./Headless.js")
 var db = '/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db'
 
 async function getBid(amount){
@@ -10,6 +9,8 @@ async function getBid(amount){
     bid["id"] = object[i].hash
     bids.push(bid)
   }
+  var address = await orbitDB.createDB('test')
+  console.log(address)
   return bids
 }
 
