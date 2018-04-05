@@ -57,9 +57,14 @@ async function createChannel(channelName) {
   }
 }
 
-// Creates a database address and returns it
-async function createDB(name){
-  return headless.createDB(name)
+/**
+* Creates a new database address
+* @param name The name of the database
+* @param type The database type (log, feed, keyvalue)
+* @param permission The write permission of the database. Leave empty for local permission
+*/
+async function createDB(name, type, permission){
+  return headless.createDB(name, type, permission)
 }
 
 

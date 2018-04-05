@@ -26,8 +26,17 @@ async function createDB(){
     write: ['*'],
   }
     // init database
-    db = await orbitdb.feed(document.getElementById("nameInput").value, access);
-    console.log(db.address.toString())
+    var name = document.getElementById("nameInput").value
+    var type = document.getElementById("typeInput").value
+    var permission = document.getElementById("permissionInput").value
+    if ( permission == 'false' ) {
+      db = await orbitdb[type](name);
+      console.log(db.address.toString())
+    }
+    else {
+      db = await orbitdb[type](name, access);
+      console.log(db.address.toString())
+    }
 
   });
 
