@@ -8,7 +8,7 @@ async function init(){
   globaldb = '/orbitdb/QmNupSCzj3YFbvcpJYxbfAXZHVczcNzyxgjj7BjSrXbHMr/db'
 
   // Address to the local database containing status of the user's bids
-  localdb = await orbitDB.createDB('beef', 'feed', 'asd')
+  //localdb = await orbitDB.createDB('bidHistory')
   console.log(localdb)
 }
 

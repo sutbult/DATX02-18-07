@@ -11,7 +11,7 @@ async function createDB(name, type, permission) {
     try {
         await browser.init()
         const mainTab = await browser.newTab({
-            privateTab: false
+            privateTab: true
         })
 
 
