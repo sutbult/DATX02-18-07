@@ -24,11 +24,11 @@ async function createDB(name, type, permission) {
         else {
           await mainTab.type("#permissionInput", 'true')
         }
-        
+
         await mainTab.click("#createBtn")
         await mainTab.onConsole(listener)
         await mainTab.wait(2000)
-      //  await browser.close()
+        await browser.close()
         return dbAddress
     } catch (err) {
         console.log("ERROR!", err)
