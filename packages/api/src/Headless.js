@@ -3,7 +3,7 @@ var path = require("path")
 var directory = path.resolve("./")
 var dbAddress = "null"
 const browser = new HeadlessChrome({
-    headless: false // If you turn this off, you can actually see the browser navigate with your instructions
+    headless: true // If you turn this off, you can actually see the browser navigate with your instructions
     // see above if using remote interface
 })
 
@@ -11,10 +11,8 @@ async function createDB(name, type, permission) {
     try {
         await browser.init()
         const mainTab = await browser.newTab({
-            privateTab: true
+            privateTab: false
         })
-
-
 
         await mainTab.goTo('file:///' + directory + "/src/DB.html")
         await mainTab.type("#nameInput", name)
@@ -26,6 +24,7 @@ async function createDB(name, type, permission) {
         else {
           await mainTab.type("#permissionInput", 'true')
         }
+        
         await mainTab.click("#createBtn")
         await mainTab.onConsole(listener)
         await mainTab.wait(2000)

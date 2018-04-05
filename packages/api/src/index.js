@@ -5,9 +5,8 @@ const messenger = require("./OrbitDBHandler")
 
 // Adds a new bid to the decentralized database
 async function addBid(bid) {
-  var jsonObject = bid
-  jsonObject["status"] = "active"
-  jsonObject["channel"] = "/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message"
+  bid.status = "ACTIVE"
+  bid.channel = "/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message"
   /*var jsonObject = {
       "step" : "1",
       "from" : "CURRENCY",
@@ -18,7 +17,7 @@ async function addBid(bid) {
       "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
     };
     console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));*/
-    await db.addBid(jsonObject)
+    await db.addBid(bid)
 }
 
 
@@ -47,23 +46,8 @@ function BidFactory() {
 
 // Fetches all available bids from the decentralized database
 async function getBids() {
-    // Detta fungerar inte
-    //addBid('test')
-    const bid = await db.getBid(5)
+    var bid = await db.getBid(50)
     return bid
-
-    /*
-    // TODO: Implementera på riktigt
-    var Bid = BidFactory();
-    return [
-        Bid("Bitcoin",      "1000000",              "Ethereum",     "100000000000000000"),
-        Bid("Ethereum",     "500000000000000000",   "Monero",       "5"                 ),
-        Bid("Ethereum",     "100000000000000000",   "Dogecoin",     "9001"              ),
-        Bid("Bitcoin",      "2000000",              "Monero",       "2"                 ),
-        Bid("Bitcoin cash", "3000000",              "Monero",       "3"                 ),
-        Bid("Dogecoin",     "100",                  "Monero",       "3"                 ),
-    ];
-    */
 }
 
 // Accepts a bid and starts the swapping process
@@ -89,12 +73,9 @@ async function getWallet() {
 
 // Fetches all bids associated with the user
 async function getUserBids() {
-    var Bid = BidFactory();
-    return [
-        Bid("Dogecoin",     "1000",     "Ethereum", "100000000000000000",   "ACTIVE"),
-        Bid("Bitcoin cash", "50000000", "Bitcoin",  "10000000",             "PENDING"),
-        Bid("Bitcoin",      "50000000", "Dogecoin", "100",                  "FINISHED"),
-    ];
+  var bid = await db.getUserBids(50)
+  return bid
+
 }
 
 // Fetches the currencies which is available for the user to create bids with

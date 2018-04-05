@@ -43,19 +43,6 @@ ipfs.once('ready', async function() {
 
 });
 
-async function createChannel(channelName) {
-  try{
-    ipfs.on('ready', async function(){
-      var returnDB = await orbitdb.feed(channelName)
-      return returnDB
-
-    })
-
-  }
-  catch (e) {
-    console.error(e)
-  }
-}
 
 /**
 * Creates a new database address
@@ -67,8 +54,6 @@ async function createDB(name, type, permission){
   return headless.createDB(name, type, permission)
 }
 
-
-//console.log(test)
 
 /*
 Bid should be JSON in form of jsonObject = {
@@ -87,16 +72,32 @@ Bid should be JSON in form of jsonObject = {
 
   Can only push one bid at a time at the moment
 */
-async function addData(data, address){
+async function addData(data, address, type){
   var db = await orbitdb.feed(address)
   await db.load()
-  await db.add(data);
+  var hash = await db.add(data);
 
   var channel = await orbitdb.feed(data.channel)
   await channel.add(data.address);
 
+  return hash
+
   //gives error
 //  processInfo(checkForStep(2));
+}
+
+// Used for keyvalue database
+async function addKVData(key, value, address){
+  var db = await orbitdb.keyvalue(address)
+  await db.load()
+  await db.put(key, value);
+}
+
+async function getKVData(key, address){
+  var db = await orbitdb.keyvalue(address)
+  await db.load()
+  var data = db.get(key)
+  return data
 }
 
 /*
@@ -191,7 +192,7 @@ var jsonObject = {
 async function getData(amount, address){
     var db = await orbitdb.feed(address)
     await db.load()
-    var data = db.iterator({ limit: amount }).collect()
+    var data = db.iterator({ limit : amount }).collect()
     return data
 }
 
@@ -200,6 +201,7 @@ module.exports = {
   getData,
   acceptBid,
   checkForStep,
-  createChannel,
-  createDB
+  createDB,
+  addKVData,
+  getKVData
 }
