@@ -73,12 +73,12 @@ Bid should be JSON in form of jsonObject = {
   Can only push one bid at a time at the moment
 */
 async function addData(data, address, type){
-  var db = await orbitdb.feed(address)
+  var db = await orbitdb.log(address)
   await db.load()
   var hash = await db.add(data);
 
-  var channel = await orbitdb.feed(data.channel)
-  await channel.add(data.address);
+  //var channel = await orbitdb.feed(data.channel)
+  //await channel.add(data.address);
 
   return hash
 
@@ -88,7 +88,9 @@ async function addData(data, address, type){
 
 // Used for keyvalue database
 async function addKVData(key, value, address){
+  console.log('aye')
   var db = await orbitdb.keyvalue(address)
+  console.log('hello')
   await db.load()
   await db.put(key, value);
 }
@@ -190,7 +192,7 @@ var jsonObject = {
   };
 */
 async function getData(amount, address){
-    var db = await orbitdb.feed(address)
+    var db = await orbitdb.log(address)
     await db.load()
     var data = db.iterator({ limit : amount }).collect()
     return data
