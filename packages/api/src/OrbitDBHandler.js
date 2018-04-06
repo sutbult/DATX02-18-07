@@ -88,9 +88,7 @@ async function addData(data, address, type){
 
 // Used for keyvalue database
 async function addKVData(key, value, address){
-  console.log('aye')
   var db = await orbitdb.keyvalue(address)
-  console.log('hello')
   await db.load()
   await db.put(key, value);
 }

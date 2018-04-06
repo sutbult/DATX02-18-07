@@ -14,7 +14,6 @@ async function init(){
 
   // Address to the local database containing user's bid history
   localDB = await orbitDB.createDB("bidHistory", "log", "global")
-  console.log(localDB)
 }
 
 async function getBid(amount){
@@ -24,12 +23,9 @@ async function getBid(amount){
 async function addBid(bid){
   // Add bid to global database
   var key = await orbitDB.addData(bid, globalDB)
-  console.log('here')
   // Add bid to local database
   await orbitDB.addData(bid, localDB)
-  console.log('here 2')
   await orbitDB.addKVData(key, bid, statusDB)
-  console.log('here 3')
 
 }
 
