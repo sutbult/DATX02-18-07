@@ -72,15 +72,16 @@ Bid should be JSON in form of jsonObject = {
 
   Can only push one bid at a time at the moment
 */
-async function addData(data, address, type){
-  var db = await orbitdb.log(address)
+async function addData(data, address){
+  data["step"] = "1"
+  data["channel"] = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15); //randomly generated String https://gist.github.com/6174/6062387
+
+  var db = await orbitdb.feed(address)
   await db.load()
-  var hash = await db.add(data);
+  await db.add(data);
 
-  //var channel = await orbitdb.feed(data.channel)
-  //await channel.add(data.address);
-
-  return hash
+  var channel = await orbitdb.feed(data.channel)
+  await channel.add(data.address);
 
   //gives error
 //  processInfo(checkForStep(2));
