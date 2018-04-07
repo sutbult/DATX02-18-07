@@ -18,16 +18,17 @@ async function createDB(name, type, permission) {
         await mainTab.type("#nameInput", name)
         await mainTab.type("#typeInput", type)
 
-        if (permission == undefined || null) {
-          await mainTab.type("#permissionInput", 'false')
+        if (permission == "public") {
+          await mainTab.type("#permissionInput", 'true')
         }
         else {
-          await mainTab.type("#permissionInput", 'true')
+          await mainTab.type("#permissionInput", permission)
         }
 
         await mainTab.click("#createBtn")
         await mainTab.onConsole(listener)
         await mainTab.wait(2000)
+        await mainTab.close()
         return dbAddress
     } catch (err) {
         console.log("ERROR!", err)

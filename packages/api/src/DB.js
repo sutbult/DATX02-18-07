@@ -21,19 +21,22 @@ async function createDB(){
   ipfs.once('ready', async function() {
 
     var orbitdb = new OrbitDB(ipfs)
-    const access = {
-    // Give write access to everyone
-    write: ['*'],
-  }
+
     // init database
     var name = document.getElementById("nameInput").value
     var type = document.getElementById("typeInput").value
     var permission = document.getElementById("permissionInput").value
-    if ( permission == 'false' ) {
-      db = await orbitdb[type](name);
+    if ( permission == 'true' ) {
+      const access = {
+      write: ['*'],
+    }
+      db = await orbitdb[type](name, access);
       console.log(db.address.toString())
     }
     else {
+      const access = {
+      write: [permission],
+    }
       db = await orbitdb[type](name, access);
       console.log(db.address.toString())
     }

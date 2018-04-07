@@ -11,6 +11,7 @@ const headless = require("./Headless.js")
 var orbitdb
 var db
 var channels = []
+var key
 
 const access = {
    // Give write access to ourselves
@@ -37,6 +38,8 @@ ipfs.once('ready', async function() {
 
   try {
     orbitdb = new OrbitDB(ipfs)
+    key = orbitdb.key.getPublic('hex')
+
 } catch (e) {
   console.error(e)
 }
@@ -48,9 +51,12 @@ ipfs.once('ready', async function() {
 * Creates a new database address
 * @param name The name of the database
 * @param type The database type (log, feed, keyvalue)
-* @param permission The write permission of the database. Leave empty for local permission
+* @param permission The write permission of the database. (public, local)
 */
 async function createDB(name, type, permission){
+  if(permission == "local"){
+    permission = key
+  }
   return headless.createDB(name, type, permission)
 }
 
