@@ -36,7 +36,7 @@ ipfs.once('error', (err) => console.error(err))
 ipfs.once('ready', async function() {
 
   try {
-    orbitdb = new OrbitDB(ipfs, './testing')
+    orbitdb = new OrbitDB(ipfs)
 } catch (e) {
   console.error(e)
 }
@@ -79,7 +79,7 @@ async function addData(data, address){
   var db = await orbitdb.log(address);
   await db.load();
   var hash = await db.add(data);
-  
+
   var channel = await orbitdb.feed(data.channel);
   await channel.add(data.address);
   return hash;
