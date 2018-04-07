@@ -36,7 +36,7 @@ ipfs.once('error', (err) => console.error(err))
 ipfs.once('ready', async function() {
 
   try {
-    orbitdb = new OrbitDB(ipfs)
+    orbitdb = new OrbitDB(ipfs, './testing')
 } catch (e) {
   console.error(e)
 }
@@ -74,14 +74,15 @@ Bid should be JSON in form of jsonObject = {
 */
 async function addData(data, address){
   data["step"] = "1"
-  data["channel"] = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15); //randomly generated String https://gist.github.com/6174/6062387
+  data["channel"] = await createDB(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), "feed", "public"); //randomly generated String https://gist.github.com/6174/6062387
 
-  var db = await orbitdb.feed(address)
-  await db.load()
-  await db.add(data);
-
-  var channel = await orbitdb.feed(data.channel)
+  var db = await orbitdb.log(address);
+  await db.load();
+  var hash = await db.add(data);
+  
+  var channel = await orbitdb.feed(data.channel);
   await channel.add(data.address);
+  return hash;
 
   //gives error
 //  processInfo(checkForStep(2));
