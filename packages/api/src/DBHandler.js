@@ -29,6 +29,10 @@ async function addBid(bid){
 
 }
 
+async function acceptBid(bid) {
+  await orbitDB.acceptBid(bid);
+}
+
 async function changeBidStatus(bid, status){
   bid.status = status
   await orbitDB.addKVData(bid.id, bid, statusDB)

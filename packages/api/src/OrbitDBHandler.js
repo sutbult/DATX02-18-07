@@ -10,7 +10,7 @@ const headless = require("./Headless.js")
 
 var orbitdb
 var db
-var channels = []
+var channel
 var key
 
 const access = {
@@ -81,12 +81,13 @@ Bid should be JSON in form of jsonObject = {
 async function addData(data, address){
   data["step"] = "1"
   data["channel"] = await createDB(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), "feed", "public"); //randomly generated String https://gist.github.com/6174/6062387
-
   var db = await orbitdb.log(address);
   await db.load();
   var hash = await db.add(data);
 
-  var channel = await orbitdb.feed(data.channel);
+  console.log(data.channel);
+
+  channel = await orbitdb.feed(data.channel);
   await channel.add(data.address);
   return hash;
 
@@ -109,27 +110,27 @@ async function getKVData(key, address){
 }
 
 /*
-  Just send address and channel
+  Just send address
   jsonObject = {
       "step" : "2",
-      "adress" : adressString,
-      "channel" : channelString
+      "adress" : adressString
     };
 */
 async function acceptBid(bid){
-  db = await orbitdb.feed(bid.channel);
-  await db.load();
-  var message = db.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-  await db.add(bid.address);
+  channel = await orbitdb.feed(bid.channel);
+  await channel.load();
+  var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
+  var jsonObject = { "step" : "2", "address" : bid.address};
+  await channel.add(jsonObject);
   processInfo(message);
   //Let everybody know that the bid is taken.
   //checkForStep(3);
 }
 
 function checkForStep(step) {
-  var message = db.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
+  var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
   while(message.step != step) {
-    var message = db.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
+    var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
   }
 
   return message;
@@ -145,8 +146,12 @@ function checkForStep(step) {
     };
 */
 async function pushDigestInfo(contractInfo) {
-
-  await db.add(contactInfo);
+  jsonObject = {
+      "step" : "3",
+      "digest" : contractInfo.digest,
+      "contractAddress" : contractInfo.contractAddress
+    };
+  await channel.add(jsonObject);
 
   processInfo(checkForStep(4));
 
@@ -161,8 +166,11 @@ async function pushDigestInfo(contractInfo) {
     };
 */
 async function pushContractInfo(contractInfo) {
-
-  await db.add(contractInfo);
+  jsonObject = {
+      "step" : "4",
+      "contractAddress" : contractInfo.contractAddress
+    };
+  await channel.add(jsonObject);
 }
 
 
