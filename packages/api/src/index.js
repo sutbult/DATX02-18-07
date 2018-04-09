@@ -4,12 +4,18 @@ const messenger = require("./OrbitDBHandler")
 const runOnce = require("./runOnce.js");
 
 async function init() {
+    // messageHandler kommer att vara tillgänglig här
     const dbPromise = db.init();
     const messengerPromise = messenger.init();
     await dbPromise;
     await messengerPromise;
 }
 const ensureInitialized = runOnce(init);
+
+var messageHandler = null;
+function setMessageHandler(messageHandlerArg) {
+    messageHandler = messageHandlerArg;
+}
 
 // Exempel på funktioner som mycket väl kan finnas med i denna modul
 
@@ -113,4 +119,5 @@ module.exports = {
     getWallet,
     getUserBids,
     getCurrencies,
+    setMessageHandler,
 };

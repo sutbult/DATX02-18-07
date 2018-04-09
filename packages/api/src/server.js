@@ -122,6 +122,11 @@ function sendSSE(id, data) {
 		client.send(JSON.stringify(data));
 	}
 }
+api.setMessageHandler(message => {
+    for(var id in sseClients) {
+        sendSSE(id, message);
+    }
+});
 
 const app = express();
 app.use("/api", apiRouter);
