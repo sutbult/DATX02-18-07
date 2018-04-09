@@ -1,44 +1,8 @@
 /**Imports */
 const fs = require("fs");
 const Web3 = require("web3");
-// const geth = require("geth");
 const { exec } = require('child_process');
 
-/**Geth related */
-// var options = {
-//     testnet: null,
-//     port: 30303, //Trying to connect from same network you need to change it up
-//     light: null,
-//     ws: null,
-//     wsaddr: "127.0.0.1",
-//     wsport: 7545
-
-// };
-
-// geth.start(options, (err, res) => {
-//     if (err) return console.log(err + " \n Install Geth");
-// });
-
-
-/**@todo kill this child-process once parent is killed */
-/**const geth = exec("geth --light --testnet --ws --wsaddr 127.0.0.1 --wsport 7545 --wsorigins='*' --port 30303 --wsapi personal,eth,web3");
-
-geth.stdout.on('data', (data) => {
-  console.log(`stdout: ${data}`);
-});
-
-geth.stderr.on('data', (data) => {
-    console.log(`stderr: ${data}`);
-});
-
-geth.on('error', (err) => {
-    console.log(err + " Install Geth");
-});
-
-geth.on('close', (code) => {
-  console.log(`child process exited with code ${code}`);
-});
-*/
 function isConnected(ethchain){
   return ethchain.currentProvider.connection._connection.connected
 }
@@ -49,14 +13,30 @@ function isConnected(ethchain){
  * So if the chains are not using those localhosts, no connection
  * @todo recognise that two chains are running and connect to them
 */
+var experimental;
+var erc20;
+var htlc_ether;
+var htlc_erc20;
+function initialize(){
+    try{
+        experimental = new Web3('ws://127.0.0.1:8545');
+        if( experimental.eth.getBlock(0).hash == "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3"){//Mainnet genesis block
+            (console.log("Connected to mainnet"));
+        } else if(experimental.eth.getBlock(0).hash == "0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d"){//Ropsten testnet genesis block, for testing
+            (console.log("Connected to Ropsten testnet"));
+        }
+    } catch(err){
+        //User have to have geth up and running before attempting to trade with eth
+        Console.log("You are not connected to geth, please connect and try again " + err);
+    }
+        
+    /**Query for the compiled abi and bytecode */
+    erc20 = JSON.parse(fs.readFileSync('./contracts/ERC20Partial.json', 'utf8'));
+    htlc_ether = JSON.parse(fs.readFileSync('./contracts/HTLC.json', 'utf8'));
+    htlc_erc20 = JSON.parse(fs.readFileSync('./contracts/HTLC_ERC20.json', 'utf8'));
+}
+//var classic =  new Web3('ws://127.0.0.1:8545');
 
-var experimental = new Web3('ws://127.0.0.1:7545');
-var classic =  new Web3('ws://127.0.0.1:8545');
-
-/**Query for the compiled abi and bytecode */
-var erc20 = JSON.parse(fs.readFileSync('./contracts/ERC20Partial.json', 'utf8'));
-var htlc_ether = JSON.parse(fs.readFileSync('./contracts/HTLC.json', 'utf8'));
-var htlc_erc20 = JSON.parse(fs.readFileSync('./contracts/HTLC_ERC20.json', 'utf8'));
 
 async function unlockAccount(ethchain, account_address, account_password, time_in_ms = 10000){
     var account = await ethchain.eth.personal.unlockAccount(account_address, account_password, time_in_ms);
@@ -292,4 +272,4 @@ function claimContract(ethchain, pre_image_hash, from_address, claim_address){
     console.log("DEPLOYED");});
 }
 
-module.exports = {isConnected, subscribeToClaim, unlockAccount, getPastClaim, experimental, htlc_ether, htlc_erc20, validateCode, validateEtherContract, validateERC20Contract, validateContract, validateDestination, validateValue, validateERC20Value, classic, claimContract, sendTokensToContract, sendERC20Contract, sendEtherContract, validateContract};
+module.exports = {isConnected, initialize, subscribeToClaim, unlockAccount, getPastClaim, experimental, htlc_ether, htlc_erc20, validateCode, validateEtherContract, validateERC20Contract, validateContract, validateDestination, validateValue, validateERC20Value, claimContract, sendTokensToContract, sendERC20Contract, sendEtherContract, validateContract};
