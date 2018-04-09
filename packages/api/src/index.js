@@ -1,5 +1,7 @@
+
 const db = require("./DBHandler.js");
 const messenger = require("./OrbitDBHandler")
+const runOnce = require("./runOnce.js");
 
 async function init() {
     const dbPromise = db.init();
@@ -7,41 +9,7 @@ async function init() {
     await dbPromise;
     await messengerPromise;
 }
-
-var initialized = false;
-var initQueue = [];
-function performInit() {
-    init()
-        .then(() => {
-            for(var i in initQueue) {
-                initQueue[i].resolve();
-            }
-            initialized = true;
-        })
-        .catch((error) => {
-            console.log(error);
-            for(var i in initQueue) {
-                initQueue[i].reject(error);
-            }
-            initQueue = [];
-        });
-}
-function ensureInitialized() {
-    if(!initialized) {
-        return new Promise((resolve, reject) => {
-            initQueue.push({
-                resolve,
-                reject,
-            });
-            if(initQueue.length === 1) {
-                performInit();
-            }
-        });
-    }
-    else {
-        return Promise.resolve();
-    }
-}
+const ensureInitialized = runOnce(init);
 
 // Exempel på funktioner som mycket väl kan finnas med i denna modul
 
