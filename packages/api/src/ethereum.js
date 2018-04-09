@@ -50,6 +50,7 @@ function isConnected(ethchain){
  * @todo recognise that two chains are running and connect to them
 */
 
+// TODO: Till initialisering
 var experimental = new Web3('ws://127.0.0.1:7545');
 var classic =  new Web3('ws://127.0.0.1:8545');
 
@@ -282,14 +283,35 @@ async function getPastClaim(ethchain, contract_address, from_block = 1){
 
 function claimContract(ethchain, pre_image_hash, from_address, claim_address){
     var contract;
-    
+
     /**@todo the account claiming the contract should be based on user input */
 
     contract = new ethchain.eth.Contract(htlc_ether.abi);
     contract.options.address = claim_address;
-    
+
     contract.methods.claim(pre_image_hash).send({from: from_address}).on("receipt", function(receipt){
     console.log("DEPLOYED");});
 }
 
-module.exports = {isConnected, subscribeToClaim, unlockAccount, getPastClaim, experimental, htlc_ether, htlc_erc20, validateCode, validateEtherContract, validateERC20Contract, validateContract, validateDestination, validateValue, validateERC20Value, classic, claimContract, sendTokensToContract, sendERC20Contract, sendEtherContract, validateContract};
+module.exports = {
+    isConnected,
+    subscribeToClaim,
+    unlockAccount,
+    getPastClaim,
+    experimental,
+    htlc_ether,
+    htlc_erc20,
+    validateCode,
+    validateEtherContract,
+    validateERC20Contract,
+    validateContract,
+    validateDestination,
+    validateValue,
+    validateERC20Value,
+    classic,
+    claimContract,
+    sendTokensToContract,
+    sendERC20Contract,
+    sendEtherContract,
+    validateContract,
+};

@@ -32,16 +32,23 @@ apiRouter.use((req, res, next) => {
 // Endpoints
 
 apiRouter.get("/getBids", (req, res, next) => {
+    // TODO: Fixa bättre felhantering
     api.getBids().then((bids) => {
         next(bids);
-    });
+    }).catch(error => {
+        console.log("Get bids", error);
+        next(500);
+    })
 });
 apiRouter.post("/addBid", (req, res, next) => {
     api.addBid(req.body).then(() => {
         // Avkommentera för konstgjord fördröjning
         //setTimeout(() => next({}), 1000);
         next({});
-    });
+    }).catch(error => {
+        console.log("Add bid", error);
+        next(500);
+    })
 });
 apiRouter.post("/acceptBid", (req, res, next) => {
     if(req.body.clientID < 0) {

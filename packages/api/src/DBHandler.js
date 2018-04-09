@@ -2,7 +2,6 @@ const orbitDB = require("./OrbitDBHandler.js")
 var globalDB
 var statusDB
 var localDB
-init()
 
 async function init(){
   // Address to the global database containing all bids

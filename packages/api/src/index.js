@@ -1,22 +1,67 @@
 const db = require("./DBHandler.js");
 const messenger = require("./OrbitDBHandler")
 
+async function init() {
+    const dbPromise = db.init();
+    const messengerPromise = messenger.init();
+    await dbPromise;
+    await messengerPromise;
+}
+
+var initialized = false;
+var initQueue = [];
+function performInit() {
+    init()
+        .then(() => {
+            for(var i in initQueue) {
+                initQueue[i].resolve();
+            }
+            initialized = true;
+        })
+        .catch((error) => {
+            console.log(error);
+            for(var i in initQueue) {
+                initQueue[i].reject(error);
+            }
+            initQueue = [];
+        });
+}
+function ensureInitialized() {
+    if(!initialized) {
+        return new Promise((resolve, reject) => {
+            initQueue.push({
+                resolve,
+                reject,
+            });
+            if(initQueue.length === 1) {
+                performInit();
+            }
+        });
+    }
+    else {
+        return Promise.resolve();
+    }
+}
+
 // Exempel på funktioner som mycket väl kan finnas med i denna modul
 
 // Adds a new bid to the decentralized database
 async function addBid(bid) {
-  bid.status = "ACTIVE"
-  bid.channel = "/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message"
-  /*var jsonObject = {
-      "step" : "1",
-      "from" : "CURRENCY",
-      "fromAmount" : '5',
-      "to":"CURRENCY",
-      "toAmount" : '5',
-      "address" : 'test',
-      "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
+    await ensureInitialized();
+    bid.status = "ACTIVE"
+    bid.channel = "/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message"
+    /*
+    var jsonObject = {
+        "step" : "1",
+        "from" : "CURRENCY",
+        "fromAmount" : '5',
+        "to":"CURRENCY",
+        "toAmount" : '5',
+        "address" : 'test',
+        "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
     };
-    console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));*/
+    console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));
+    */
     await db.addBid(bid)
 }
 
@@ -46,18 +91,21 @@ function BidFactory() {
 
 // Fetches all available bids from the decentralized database
 async function getBids() {
+    await ensureInitialized();
     var bid = await db.getBid(50)
     return bid
 }
 
 // Accepts a bid and starts the swapping process
 async function acceptBid(bidID, callback) {
+    await ensureInitialized();
     // TODO: Implementera på riktigt
     console.log("User accepts the bid with this ID: %s", bidID);
 }
 
 // Fetches all accounts associated with the user
 async function getWallet() {
+    await ensureInitialized();
     function Account(currency, amount) {
         return {
             currency: currency,
@@ -73,13 +121,13 @@ async function getWallet() {
 
 // Fetches all bids associated with the user
 async function getUserBids() {
-  var bid = await db.getUserBids(50)
-  return bid
-
+    await ensureInitialized();
+    return await db.getUserBids(50)
 }
 
 // Fetches the currencies which is available for the user to create bids with
 async function getCurrencies() {
+    await ensureInitialized();
     return [
         "Bitcoin",
         "Ethereum",

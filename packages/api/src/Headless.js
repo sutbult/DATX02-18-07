@@ -1,12 +1,18 @@
 const HeadlessChrome = require("simple-headless-chrome")
 var path = require("path")
-var directory = path.resolve("./")
-var dbAddress = "null"
-const browser = new HeadlessChrome({
-    headless: true // If you turn this off, you can actually see the browser navigate with your instructions
-    // see above if using remote interface
-})
 
+var directory;
+var dbAddress;
+var browser;
+
+async function init() {
+    directory = path.resolve("./");
+    dbAddress = "null";
+    browser = new HeadlessChrome({
+        headless: true // If you turn this off, you can actually see the browser navigate with your instructions
+        // see above if using remote interface
+    });
+}
 async function createDB(name, type, permission) {
     try {
         await browser.init()
@@ -43,5 +49,6 @@ function listener(word) {
 }
 
 module.exports = {
-  createDB
-}
+    init,
+    createDB,
+};

@@ -2,6 +2,12 @@ const Ipfs = require('ipfs')
 const OrbitDB = require('orbit-db')
 const headless = require("./Headless.js")
 
+async function init() {
+    const orbitDBPromise = initOrbitDB();
+    const headlessPromise = headless.init();
+    await orbitDBPromise;
+    await headlessPromise;
+}
 
 //1st: Bud och egen address.
 //2nd: accept bid, skickar sin egen adress.
@@ -12,39 +18,45 @@ var orbitdb
 var db
 var channel
 var key
+var ipfs
 
 const access = {
-   // Give write access to ourselves
-   write: ['*'],
- }
+    // Give write access to ourselves
+    write: ['*'],
+};
 
-var ipfs = new Ipfs({
-  repo: "ipfs/shared",
-  config: {
-    Addresses: {
-      Swarm: [
-        '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
-      ]
-    }
-  },
-  EXPERIMENTAL: {
-      pubsub: true // OrbitDB requires pubsub
-  }
-});
-
-ipfs.once('error', (err) => console.error(err))
-
-ipfs.once('ready', async function() {
-
-  try {
-    orbitdb = new OrbitDB(ipfs)
-    key = orbitdb.key.getPublic('hex')
-
-} catch (e) {
-  console.error(e)
+function initOrbitDB() {
+    return new Promise((resolve, reject) => {
+        ipfs = new Ipfs({
+            repo: "ipfs/shared",
+            config: {
+                Addresses: {
+                    Swarm: [
+                        '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
+                    ],
+                },
+            },
+            EXPERIMENTAL: {
+                // OrbitDB requires pubsub
+                pubsub: true,
+            },
+        });
+        ipfs.once('error', error => {
+            reject(error);
+        });
+        ipfs.once('ready', () => {
+            try {
+                orbitdb = new OrbitDB(ipfs);
+                key = orbitdb.key.getPublic('hex');
+                resolve();
+            }
+            catch(error) {
+                reject(error);
+            }
+        });
+    });
 }
 
-});
 
 
 /**
@@ -213,6 +225,7 @@ async function getData(amount, address){
 }
 
 module.exports = {
+  init,
   addData,
   getData,
   acceptBid,
