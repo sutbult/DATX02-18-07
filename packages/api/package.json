@@ -7,10 +7,11 @@
         "child_process": "^1.0.2",
         "express": "^4.16.2",
         "ipfs": "0.28.2",
+        "jest": "^22.4.3",
         "npm": "^5.8.0",
         "orbit-db": "0.19.7",
+        "simple-headless-chrome": "4.3.10",
         "sse": "^0.0.8",
-        "web3": "1.0.0-beta.30",
-        "simple-headless-chrome": "4.3.10"
+        "web3": "1.0.0-beta.30"
     }
 }
