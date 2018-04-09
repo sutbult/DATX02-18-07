@@ -4,11 +4,12 @@
     "license": "UNLICENSED",
     "private": true,
     "scripts": {
-        "postinstall": "lerna bootstrap",
+        "postinstall": "lerna bootstrap --npm-client=yarn",
         "test": "lerna run test --stream",
         "debug": "lerna run elm:installBuild --stream && lerna run start --parallel"
     },
     "devDependencies": {
-        "lerna": "^2.9.0"
+        "lerna": "^2.9.0",
+        "yarn": "^1.5.1"
     }
 }
