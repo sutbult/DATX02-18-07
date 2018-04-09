@@ -1,7 +1,6 @@
 /**Imports */
 const fs = require("fs");
 const Web3 = require("web3");
-const { exec } = require('child_process');
 
 function isConnected(ethchain){
   return ethchain.currentProvider.connection._connection.connected
