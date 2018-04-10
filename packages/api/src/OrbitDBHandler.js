@@ -92,14 +92,20 @@ Bid should be JSON in form of jsonObject = {
 */
 async function addData(data, address){
   data["step"] = "1"
+
+  //Does this function return a database or the address to the database?
   data["channel"] = await createDB(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), "feed", "public"); //randomly generated String https://gist.github.com/6174/6062387
+
   var db = await orbitdb.log(address);
   await db.load();
   var hash = await db.add(data);
 
-  console.log(data.channel);
+  console.log(hash);
 
+  //CreateDb has to be used?
   channel = await orbitdb.feed(data.channel);
+
+  await channel.load();
   await channel.add(data.address);
   return hash;
 
@@ -129,6 +135,7 @@ async function getKVData(key, address){
     };
 */
 async function acceptBid(bid){
+  //use createDB
   channel = await orbitdb.feed(bid.channel);
   await channel.load();
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
