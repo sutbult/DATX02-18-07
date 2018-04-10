@@ -1,57 +1,65 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
+
 version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
       - image: circleci/node:9.4
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
 
     working_directory: ~/repo
 
     steps:
       - checkout
 
-      # Download and cache dependencies
+      # Root node modules
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
+      # Api node modules
       - restore_cache:
           keys:
           - api-dependencies-{{ checksum "packages/api/package.json" }}
           - api-dependencies-
 
+      # Gui node modules
       - restore_cache:
           keys:
           - gui-dependencies-{{ checksum "packages/gui/package.json" }}
           - gui-dependencies-
 
+      # Elm packages
+      - restore_cache:
+          keys:
+          - elm-dependencies-{{ checksum "packages/gui/elm-package.json" }}
+          - elm-dependencies-
+
+      # Install packages
       - run: yarn install
 
+      # Root node modules
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
+      # Api node modules
       - save_cache:
           paths:
             - packages/api/node_modules
           key: api-dependencies-{{ checksum "packages/api/package.json" }}
 
+      # Gui node modules
       - save_cache:
           paths:
             - packages/gui/node_modules
           key: gui-dependencies-{{ checksum "packages/gui/package.json" }}
 
-      # run tests!
+      # Elm packages
+      - save_cache:
+          paths:
+            - packages/gui/elm-stuff
+          key: gui-dependencies-{{ checksum "packages/gui/elm-package.json" }}
+
+      # Run tests
       - run: yarn test
