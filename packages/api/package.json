@@ -1,7 +1,7 @@
 {
     "name": "api",
     "scripts": {
-        "test": "jest --runInBand",
+        "test_notinuse": "jest --runInBand",
         "start": "node src/server.js"
     },
     "dependencies": {
