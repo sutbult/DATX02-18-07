@@ -17,6 +17,11 @@ function setMessageHandler(messageHandlerArg) {
     messageHandler = messageHandlerArg;
 }
 
+async function stop() {
+    await messenger.stop();
+    ensureInitialized.reset();
+}
+
 // Exempel på funktioner som mycket väl kan finnas med i denna modul
 
 // Adds a new bid to the decentralized database
@@ -117,6 +122,7 @@ async function getCurrencies() {
 }
 
 module.exports = {
+    stop,
     addBid,
     getBids,
     acceptBid,

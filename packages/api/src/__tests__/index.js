@@ -7,6 +7,7 @@ describe("Index", () => {
                 const bids = await api.getBids();
                 console.log("Dessa bud finns: ");
                 console.log(bids);
+                await api.stop();
                 return true;
             }
             expect.assertions(1);

@@ -8,6 +8,9 @@ async function init() {
     await orbitDBPromise;
     await headlessPromise;
 }
+async function stop() {
+    await stopOrbitDB();
+}
 
 //1st: Bud och egen address.
 //2nd: accept bid, skickar sin egen adress.
@@ -53,6 +56,15 @@ function initOrbitDB() {
             catch(error) {
                 reject(error);
             }
+        });
+    });
+}
+function stopOrbitDB() {
+    return new Promise((resolve, reject) => {
+        orbitdb.stop().then(() => {
+            ipfs.stop(() => {
+                resolve();
+            });
         });
     });
 }
@@ -233,6 +245,7 @@ async function getData(amount, address){
 
 module.exports = {
   init,
+  stop,
   addData,
   getData,
   acceptBid,

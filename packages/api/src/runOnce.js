@@ -29,7 +29,7 @@ function runOnce(fn) {
             }
         });
     }
-    return () => {
+    function run() {
         if(!performed) {
             return newResultPromise();
         }
@@ -37,5 +37,11 @@ function runOnce(fn) {
             return Promise.resolve();
         }
     }
+    function reset() {
+        performed = false;
+        resultQueue = [];
+    }
+    run.reset = reset;
+    return run;
 }
 module.exports = runOnce;
