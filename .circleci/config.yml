@@ -59,7 +59,7 @@ jobs:
       - save_cache:
           paths:
             - packages/gui/elm-stuff
-          key: gui-dependencies-{{ checksum "packages/gui/elm-package.json" }}
+          key: elm-dependencies-{{ checksum "packages/gui/elm-package.json" }}
 
       # Run tests
       - run: yarn test
