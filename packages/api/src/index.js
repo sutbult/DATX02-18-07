@@ -36,7 +36,11 @@ async function addBid(bid) {
     };
     console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));
     */
-    await db.addBid(bid)
+    await db.addBid(bid);
+    // TODO: Flytta hanteringen till någon av databasmodulerna
+    messageHandler({
+        cmd: "updateBids",
+    });
 }
 
 
