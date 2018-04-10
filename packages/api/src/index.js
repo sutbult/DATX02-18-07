@@ -1,46 +1,20 @@
+
 const db = require("./DBHandler.js");
 const messenger = require("./OrbitDBHandler")
+const runOnce = require("./runOnce.js");
 
 async function init() {
+    // messageHandler kommer att vara tillgänglig här
     const dbPromise = db.init();
     const messengerPromise = messenger.init();
     await dbPromise;
     await messengerPromise;
 }
+const ensureInitialized = runOnce(init);
 
-var initialized = false;
-var initQueue = [];
-function performInit() {
-    init()
-        .then(() => {
-            for(var i in initQueue) {
-                initQueue[i].resolve();
-            }
-            initialized = true;
-        })
-        .catch((error) => {
-            console.log(error);
-            for(var i in initQueue) {
-                initQueue[i].reject(error);
-            }
-            initQueue = [];
-        });
-}
-function ensureInitialized() {
-    if(!initialized) {
-        return new Promise((resolve, reject) => {
-            initQueue.push({
-                resolve,
-                reject,
-            });
-            if(initQueue.length === 1) {
-                performInit();
-            }
-        });
-    }
-    else {
-        return Promise.resolve();
-    }
+var messageHandler = null;
+function setMessageHandler(messageHandlerArg) {
+    messageHandler = messageHandlerArg;
 }
 
 // Exempel på funktioner som mycket väl kan finnas med i denna modul
@@ -62,7 +36,11 @@ async function addBid(bid) {
     };
     console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));
     */
-    await db.addBid(bid)
+    await db.addBid(bid);
+    // TODO: Flytta hanteringen till någon av databasmodulerna
+    messageHandler({
+        cmd: "updateBids",
+    });
 }
 
 
@@ -145,4 +123,5 @@ module.exports = {
     getWallet,
     getUserBids,
     getCurrencies,
+    setMessageHandler,
 };
