@@ -103,10 +103,10 @@ async function addData(data, address){
   console.log(hash);
 
   //CreateDb has to be used?
-  channel = await orbitdb.feed(data.channel);
+  //channel = await orbitdb.feed(data.channel);
 
-  await channel.load();
-  await channel.add(data.address);
+  //await channel.load();
+  //await channel.add(data.address);
   return hash;
 
   //gives error

@@ -15,5 +15,10 @@ es.onmessage = (event) => {
         case "acceptBidResponse":
             app.ports.acceptBidResponse.send(msg.status);
             break;
+
+        case "updateBids":
+            // TODO: Implementera port
+            console.log("Uppdatera bud!");
+            break;
     }
 }
