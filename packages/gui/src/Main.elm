@@ -14,5 +14,3 @@ main =
         , subscriptions = State.subscriptions
         , view = View.root
         }
-
---
