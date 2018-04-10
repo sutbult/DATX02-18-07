@@ -6,7 +6,7 @@
     "scripts": {
         "postinstall": "npm run elm:install",
         "start": "npm run electron:start & npm run elm:watch",
-        "test": "ls elm-stuff/build-artifacts/0.18.0/user/project/0.0.1 && npm run elm:build && node_modules/.bin/elm-test",
+        "test": "ls elm-stuff && npm run elm:build && node_modules/.bin/elm-test",
         "elm:installBuild": "npm run elm:install && npm run elm:build",
         "elm:install": "node_modules/.bin/elm-package install --yes",
         "elm:build": "node_modules/.bin/elm-make src/Main.elm --yes --output elm.js",
