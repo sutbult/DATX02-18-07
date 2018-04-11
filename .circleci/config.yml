@@ -61,5 +61,10 @@ jobs:
             - packages/gui/elm-stuff
           key: elm-dependencies-{{ checksum "packages/gui/elm-package.json" }}
 
+      - run:
+          command: |
+            echo "Test 1"
+            echo "Test 2"
+
       # Run tests
       - run: yarn test
