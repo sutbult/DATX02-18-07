@@ -61,5 +61,38 @@ jobs:
             - packages/gui/elm-stuff
           key: elm-dependencies-{{ checksum "packages/gui/elm-package.json" }}
 
+      # Sysconfcpus build
+      - restore_cache:
+          keys:
+          - sysconfcpus-build
+
+      # Configure elm-make to use sysconfcpus
+      - run:
+          name: "Configure elm-make to use sysconfcpus"
+          command: |
+            ROOT_DIR=$HOME/repo
+            GUI_BIN_DIR=$ROOT_DIR/packages/gui/node_modules/.bin
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+            if [ ! -d sysconfcpus/bin ];
+            then
+              git clone https://github.com/obmarg/libsysconfcpus.git;
+              cd libsysconfcpus;
+              ./configure --prefix=$ROOT_DIR/sysconfcpus;
+              make && make install;
+              cd ..;
+            fi
+            mv $GUI_BIN_DIR/elm-make $GUI_BIN_DIR/elm-make-old
+            printf '%s\n\n'\
+              '#!/bin/bash'\
+              'echo "Running elm-make with sysconfcpus -n 1"'\
+              '$HOME/repo/sysconfcpus/bin/sysconfcpus -n 1 elm-make-old "$@"' > $GUI_BIN_DIR/elm-make
+            chmod +x $GUI_BIN_DIR/elm-make
+
+      # Sysconfcpus build
+      - save_cache:
+          paths:
+            - sysconfcpus
+          key: sysconfcpus-build
+
       # Run tests
       - run: yarn test

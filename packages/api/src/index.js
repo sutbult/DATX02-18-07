@@ -5,10 +5,10 @@ const runOnce = require("./runOnce.js");
 
 async function init() {
     // messageHandler kommer att vara tillgänglig här
-    const dbPromise = db.init();
     const messengerPromise = messenger.init();
-    await dbPromise;
     await messengerPromise;
+    const dbPromise = db.init();
+    await dbPromise;
 }
 const ensureInitialized = runOnce(init);
 
@@ -99,8 +99,8 @@ async function getWallet() {
 
 // Fetches all bids associated with the user
 async function getUserBids() {
-    await ensureInitialized();
-    return await db.getUserBids(50)
+    //await ensureInitialized();
+    return null// await db.getUserBids(50)
 }
 
 // Fetches the currencies which is available for the user to create bids with
