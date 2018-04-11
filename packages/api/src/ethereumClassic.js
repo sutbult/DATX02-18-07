@@ -2,26 +2,51 @@
 const fs = require("fs");
 const Web3 = require("web3");
 
+function getIpcPath(){
+    var p = require('path');
+    var path = require('os').homedir();
+
+    if(process.platform === 'darwin')
+        path += '/Library/Ethereum/geth.ipc';
+
+    if(process.platform === 'freebsd' ||
+       process.platform === 'linux' ||
+       process.platform === 'sunos')
+        path += '/.ethereum/geth.ipc';
+
+    if(process.platform === 'win32')
+        path = '\\\\.\\pipe\\geth.ipc';
+
+    console.log('CONNECT to IPC PATH: '+ path);
+    return path;
+}
+
+const web3 = new Web3(Web3.givenProvider  || getIpcPath(), require("net"));
+
+/**
+ * This only works if you connect to websocket
+ * @todo make it work for ipc
+ */
 function isConnected(ethchain){
   return ethchain.currentProvider.connection._connection.connected
 }
 
-var classic;
 var erc20;
 var htlc_ether;
 var htlc_erc20;
 
-function initialize(){
-    classic = new Web3('ws://127.0.0.1:7545');
-    try{
-        if(classic.eth.getBlock(0).hash == "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3"){//Classic mainnet genesis block
-            console.log("Connected to classic mainnet");
-        }else if(classic.eth.getBlock(0).hash == "0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303"){ //Morden testnet genesis block
-            console.log("Connected to Morden testnet");
+function initialize(ethchain){
+    ethchain.eth.getBlock(0)
+    .then(genblock => {
+        if(genblock.hash == "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3"){//Classic mainnet genesis block
+            (console.log("Connected to mainnet"));
+        }else{
+            console.log(genblock.hash)
+            if(genblock.hash == "0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303"){ //Morden testnet genesis block, for testing
+                (console.log("Connected to Morden testnet"));
+            }
         }
-    }catch(err){
-        console.log("Not connected " + err);
-    }
+    });
     
     /**Query for the compiled abi and bytecode */
     erc20 = JSON.parse(fs.readFileSync('./contracts/ERC20Partial.json', 'utf8'));
@@ -263,4 +288,24 @@ function claimContract(ethchain, pre_image_hash, from_address, claim_address){
     console.log("DEPLOYED");});
 }
 
-module.exports = {isConnected, initialize, subscribeToClaim, unlockAccount, getPastClaim, htlc_ether, htlc_erc20, validateCode, validateEtherContract, validateERC20Contract, validateContract, validateDestination, validateValue, validateERC20Value, classic, claimContract, sendTokensToContract, sendERC20Contract, sendEtherContract, validateContract};
+module.exports = {
+    isConnected,
+    web3,
+    initialize,
+    subscribeToClaim, 
+    unlockAccount, 
+    getPastClaim, 
+    htlc_ether, 
+    htlc_erc20, 
+    validateCode, 
+    validateEtherContract, 
+    validateERC20Contract, 
+    validateContract, 
+    validateDestination, 
+    validateValue, 
+    validateERC20Value, 
+    claimContract, 
+    sendTokensToContract, 
+    sendERC20Contract, 
+    sendEtherContract, 
+    validateContract};

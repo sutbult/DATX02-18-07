@@ -2,39 +2,57 @@
 const fs = require("fs");
 const Web3 = require("web3");
 
+
+function getIpcPath(){
+    var p = require('path');
+    var path = require('os').homedir();
+
+    if(process.platform === 'darwin')
+        path += '/Library/Ethereum/geth.ipc';
+
+    if(process.platform === 'freebsd' ||
+       process.platform === 'linux' ||
+       process.platform === 'sunos')
+        path += '/.ethereum/geth.ipc';
+
+    if(process.platform === 'win32')
+        path = '\\\\.\\pipe\\geth.ipc';
+
+    console.log('CONNECT to IPC PATH: '+ path);
+    return path;
+}
+
+const web3 = new Web3(Web3.givenProvider  || getIpcPath(), require("net"));
+
+/**
+ * This only works if you connect to websocket
+ * @todo make it work for ipc
+ */
 function isConnected(ethchain){
   return ethchain.currentProvider.connection._connection.connected
 }
 
-/**Connect our application to Ethereum-servers
- * Current: "experimental" connects to an Ethereum blockchain using localhost 7545
- *          "classic" -||- on localhost 8545
- * So if the chains are not using those localhosts, no connection
- * @todo recognise that two chains are running and connect to them
-*/
-var experimental;
 var erc20;
 var htlc_ether;
 var htlc_erc20;
-function initialize(){
-    try{
-        experimental = new Web3('ws://127.0.0.1:8545');
-        if( experimental.eth.getBlock(0).hash == "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3"){//Mainnet genesis block
+function initialize(ethchain){
+    ethchain.eth.getBlock(0)
+    .then(genblock => {
+        if(genblock.hash == "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3"){//Mainnet genesis block
             (console.log("Connected to mainnet"));
-        } else if(experimental.eth.getBlock(0).hash == "0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d"){//Ropsten testnet genesis block, for testing
-            (console.log("Connected to Ropsten testnet"));
+        }else{
+            console.log(genblock.hash)
+            if(genblock.hash == "0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d"){//Ropsten testnet genesis block, for testing
+                (console.log("Connected to Ropsten testnet"));
+            }
         }
-    } catch(err){
-        //User have to have geth up and running before attempting to trade with eth
-        Console.log("You are not connected to geth, please connect and try again " + err);
-    }
+    });
 
     /**Query for the compiled abi and bytecode */
     erc20 = JSON.parse(fs.readFileSync('./contracts/ERC20Partial.json', 'utf8'));
     htlc_ether = JSON.parse(fs.readFileSync('./contracts/HTLC.json', 'utf8'));
     htlc_erc20 = JSON.parse(fs.readFileSync('./contracts/HTLC_ERC20.json', 'utf8'));
 }
-//var classic =  new Web3('ws://127.0.0.1:8545');
 
 async function unlockAccount(ethchain, account_address, account_password, time_in_ms = 10000){
     var account = await ethchain.eth.personal.unlockAccount(account_address, account_password, time_in_ms);
@@ -184,7 +202,7 @@ async function sendContract(ethchain, jsoncontract, args, from_address, digest, 
 
     /**Need to convert the user inputted amount to Wei */
     //ether = ethchain.utils.toWei(value_in_wei, "wei");
-    gas_estimate =  572810;//web3FirstChain.eth.estimateGas({data: bytecode});
+    gas_estimate =  572810;//web3.eth.estimateGas({data: bytecode});
 
 
     contract = new ethchain.eth.Contract(jsoncontract.abi);
@@ -276,7 +294,7 @@ module.exports = {
     subscribeToClaim,
     unlockAccount,
     getPastClaim,
-    experimental,
+    web3,
     htlc_ether,
     htlc_erc20,
     validateCode,
