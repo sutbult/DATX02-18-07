@@ -110,8 +110,6 @@ async function addData(data, address){
   await channel.add(data)
 
 
-  console.log("Kom hit????????????????");
-
   //CreateDb has to be used?
   //channel = await orbitdb.feed(data.channel);
 

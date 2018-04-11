@@ -1,3 +1,4 @@
+
 const orbitDB = require("./OrbitDBHandler.js")
 var globalDB
 var statusDB
@@ -33,7 +34,7 @@ async function addBid(bid){
   //var bidStringify = JSON.stringify(bid);
   //var bidParsed = JSON.parse(bidStringify)
 
-  //var object = {"id" : bidParsed.id, "status" : bidParsed.status, "from" : bidParsed.from, "to" : bidParsed.to, "address" : "TODO", "channel" : channelName};
+  //var object = {"id" : bidParsed.id, "status" : bidParsed.status, "from" : bidParsed.from, "to" : bidParsed.to, "address" : "", "channel" : channelName};
   //console.log("BID: " + JSON.stringify(object));
 
   //console.log("Bid: " + bid);
