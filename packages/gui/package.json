@@ -4,8 +4,9 @@
         "chokidar": "^2.0.0"
     },
     "scripts": {
+        "postinstall": "npm run elm:install",
         "start": "npm run electron:start & npm run elm:watch",
-        "test": "npm run elm:installBuild && node_modules/.bin/elm-test",
+        "test": "npm run elm:build && node_modules/.bin/elm-test",
         "elm:installBuild": "npm run elm:install && npm run elm:build",
         "elm:install": "node_modules/.bin/elm-package install --yes",
         "elm:build": "node_modules/.bin/elm-make src/Main.elm --yes --output elm.js",
