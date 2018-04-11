@@ -65,7 +65,7 @@ jobs:
       - run:
           command: |
             ROOT_DIR=$HOME/repo
-            GUI_BIN_DIR = $ROOT_DIR/packages/gui/node_modules/.bin
+            GUI_BIN_DIR=$ROOT_DIR/packages/gui/node_modules/.bin
             echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
             if [ ! -d sysconfcpus/bin ];
             then
