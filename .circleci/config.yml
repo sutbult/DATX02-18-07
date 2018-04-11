@@ -61,10 +61,22 @@ jobs:
             - packages/gui/elm-stuff
           key: elm-dependencies-{{ checksum "packages/gui/elm-package.json" }}
 
+      # Install and config sysconfcpus
       - run:
           command: |
-            echo "Test 1"
-            echo "Test 2"
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+            if [ ! -d sysconfcpus/bin ];
+            then
+              git clone https://github.com/obmarg/libsysconfcpus.git;
+              cd libsysconfcpus;
+              ./configure --prefix=$CIRCLE_WORKING_DIRECTORY/sysconfcpus;
+              make && make install;
+              cd ..;
+            fi
+            GUI_BIN_DIR = $CIRCLE_WORKING_DIRECTORY/packages/gui/node_modules/.bin
+            mv $GUI_BIN_DIR/elm-make $GUI_BIN_DIR/elm-make-old
+            printf '%s\n\n' '#!/bin/bash' 'echo "Running elm-make with sysconfcpus -n 2"' '$CIRCLE_WORKING_DIRECTORY/sysconfcpus/bin/sysconfcpus -n 2 elm-make-old "$@"' > $GUI_BIN_DIR/elm-make
+            chmod +x $GUI_BIN_DIR/elm-make
 
       # Run tests
       - run: yarn test
