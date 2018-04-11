@@ -2,7 +2,10 @@
 const fs = require("fs");
 const Web3 = require("web3");
 
-
+/**
+ * Operating systems have different ipc paths, these are the standard ipcpaths
+ * @todo either take user input if several blockchains use ipc, or force ethereum classic to use an non-standard path 
+ */
 function getIpcPath(){
     var p = require('path');
     var path = require('os').homedir();
@@ -24,18 +27,14 @@ function getIpcPath(){
 
 const web3 = new Web3(Web3.givenProvider  || getIpcPath(), require("net"));
 
-/**
- * This only works if you connect to websocket
- * @todo make it work for ipc
- */
-function isConnected(ethchain){
-  return ethchain.currentProvider.connection._connection.connected
-}
+/**Query for the compiled abi and bytecode */
+var erc20 = JSON.parse(fs.readFileSync('./contracts/ERC20Partial.json', 'utf8'));
+var htlc_ether = JSON.parse(fs.readFileSync('./contracts/HTLC.json', 'utf8'));
+var htlc_erc20 = JSON.parse(fs.readFileSync('./contracts/HTLC_ERC20.json', 'utf8'));
 
-var erc20;
-var htlc_ether;
-var htlc_erc20;
-function initialize(ethchain){
+
+//Use to check which chain you are on.
+function genesisCheck(ethchain){
     ethchain.eth.getBlock(0)
     .then(genblock => {
         if(genblock.hash == "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3"){//Mainnet genesis block
@@ -47,11 +46,6 @@ function initialize(ethchain){
             }
         }
     });
-
-    /**Query for the compiled abi and bytecode */
-    erc20 = JSON.parse(fs.readFileSync('./contracts/ERC20Partial.json', 'utf8'));
-    htlc_ether = JSON.parse(fs.readFileSync('./contracts/HTLC.json', 'utf8'));
-    htlc_erc20 = JSON.parse(fs.readFileSync('./contracts/HTLC_ERC20.json', 'utf8'));
 }
 
 async function unlockAccount(ethchain, account_address, account_password, time_in_ms = 10000){
@@ -289,12 +283,11 @@ function claimContract(ethchain, pre_image_hash, from_address, claim_address){
 }
 
 module.exports = {
-    isConnected,
-    initialize,
+    web3,
+    genesisCheck,
     subscribeToClaim,
     unlockAccount,
     getPastClaim,
-    web3,
     htlc_ether,
     htlc_erc20,
     validateCode,
