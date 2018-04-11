@@ -100,7 +100,8 @@ async function getWallet() {
 // Fetches all bids associated with the user
 async function getUserBids() {
     //await ensureInitialized();
-    return null// await db.getUserBids(50)
+    return []
+    // await db.getUserBids(50)
 }
 
 // Fetches the currencies which is available for the user to create bids with
