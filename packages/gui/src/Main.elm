@@ -6,8 +6,6 @@ import Types
 import State
 import View
 
--- Windows
-
 main : Program Never Types.Model Types.Msg
 main =
     Html.program
