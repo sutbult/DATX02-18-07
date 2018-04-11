@@ -5,7 +5,8 @@ var localDB
 
 async function init(){
   // Address to the global database containing all bids
-  globalDB = await orbitDB.getLogDB("/orbitdb/QmPEqy2vrB8gkkeVv7yLdLd2e3sh9XxUdMkAvKE37aLKGn/Bids")
+  var bids = await orbitDB.createDB("Bids", "log", "public")
+  globalDB = await orbitDB.getLogDB(bids)
   await globalDB.load()
 
   // Address to the local database containing status of the user's bids
@@ -14,7 +15,8 @@ async function init(){
 
   // Address to the local database containing user's bid history
   var local = await orbitDB.createDB("bidHistory", "log", "local")
-//  localDB = await orbitDB.getLogDB(local)
+  localDB = await orbitDB.getLogDB(local)
+  await localDB.load()
 }
 
 async function getBid(amount){
@@ -25,7 +27,7 @@ async function addBid(bid){
   // Add bid to global database
   var key = await globalDB.add(bid)
   // Add bid to local database
-  //await localDB.add(bid)
+  await localDB.add(bid)
   //await orbitDB.addKVData(key, bid, statusDB)
 
 }
