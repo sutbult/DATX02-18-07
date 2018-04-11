@@ -92,23 +92,32 @@ Bid should be JSON in form of jsonObject = {
   Can only push one bid at a time at the moment
 */
 async function addData(data, address){
-  data["step"] = "1"
+/*
+  var channelName = await createDB(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), "log", "public") //randomly generated String https://gist.github.com/6174/6062387
 
-  //Does this function return a database or the address to the database?
-  data["channel"] = await createDB(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), "feed", "public"); //randomly generated String https://gist.github.com/6174/6062387
+  var dataStringify = JSON.stringify(data);
+  var dataParsed = JSON.parse(dataStringify)
+  //var parsedData = JSON.parse(data)
+  console.log(test2.status);
 
-  var db = await orbitdb.log(address);
-  await db.load();
-  var hash = await db.add(data);
+  var object = { "step" : "1", "from" : dataParsed.from, "to" : dataParsed.to, "address" : address, "channel" : channelName};
+  console.log("BID: " + JSON.stringify(object));
+*/
+  channel = await getLogDB(data.channel)
+  console.log("Cool DB: " + data.channel);
+  //data["channel"] = channel
+  await channel.load()
+  await channel.add(data)
 
-  console.log(hash);
+
+  console.log("Kom hit????????????????");
 
   //CreateDb has to be used?
   //channel = await orbitdb.feed(data.channel);
 
   //await channel.load();
   //await channel.add(data.address);
-  return hash;
+  //return hash;
 
   //gives error
 //  processInfo(checkForStep(2));
@@ -135,13 +144,15 @@ async function getKVData(key, address){
       "adress" : adressString
     };
 */
-async function acceptBid(bid){
+async function acceptBid(JSONbid){
   //use createDB
+  var bid = JSON.parse(JSONbid)
   channel = await orbitdb.feed(bid.channel);
   await channel.load();
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-  var jsonObject = { "step" : "2", "address" : bid.address};
-  await channel.add(jsonObject);
+  var object = { "step" : "2", "address" : bid.address};
+  var JSONObject = object.stringify()
+  await channel.add(JSONObject);
   processInfo(message);
   //Let everybody know that the bid is taken.
   //checkForStep(3);

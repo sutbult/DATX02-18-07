@@ -27,9 +27,23 @@ async function getBid(amount){
 }
 
 async function addBid(bid){
+
+  //var channelName = await orbitDB.createDB(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), "log", "public") //randomly generated String https://gist.github.com/6174/6062387
+
+  //var bidStringify = JSON.stringify(bid);
+  //var bidParsed = JSON.parse(bidStringify)
+
+  //var object = {"id" : bidParsed.id, "status" : bidParsed.status, "from" : bidParsed.from, "to" : bidParsed.to, "address" : "TODO", "channel" : channelName};
+  //console.log("BID: " + JSON.stringify(object));
+
+  //console.log("Bid: " + bid);
+
+
   // Add bid to global database
-  var key = await globalDB.add(bid)
+  var key = await globalDB.add(bid) //object instead of bid
   // Add bid to local database
+  //await orbitDB.addData(object, "unessecary?")
+  //orbitDB.close()
   await localDB.add(bid)
   //await orbitDB.addKVData(key, bid, statusDB)
 
