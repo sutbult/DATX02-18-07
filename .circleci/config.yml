@@ -82,7 +82,8 @@ jobs:
               cd ..;
             fi
             mv $GUI_BIN_DIR/elm-make $GUI_BIN_DIR/elm-make-old
-            printf '%s\n\n' '#!/bin/bash'\
+            printf '%s\n\n'\
+              '#!/bin/bash'\
               'echo "Running elm-make with sysconfcpus -n 1"'\
               '$HOME/repo/sysconfcpus/bin/sysconfcpus -n 1 elm-make-old "$@"' > $GUI_BIN_DIR/elm-make
             chmod +x $GUI_BIN_DIR/elm-make
