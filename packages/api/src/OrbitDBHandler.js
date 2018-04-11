@@ -211,6 +211,13 @@ function processInfo(message) {
 
 }
 
+async function getLogDB(address){
+  var db = await orbitdb.log(address)
+    return db
+
+  }
+
+
 
 
 /*
@@ -239,5 +246,6 @@ module.exports = {
   checkForStep,
   createDB,
   addKVData,
-  getKVData
+  getKVData,
+  getLogDB
 }
