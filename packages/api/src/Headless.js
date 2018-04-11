@@ -9,7 +9,7 @@ async function init() {
     directory = path.resolve("./");
     dbAddress = "null";
     browser = new HeadlessChrome({
-        headless: true // If you turn this off, you can actually see the browser navigate with your instructions
+        headless: false // If you turn this off, you can actually see the browser navigate with your instructions
         // see above if using remote interface
     });
 }
@@ -41,6 +41,10 @@ async function createDB(name, type, permission) {
     }
 
 }
+
+async function close(){
+  await browser.close()
+}
 function listener(word) {
     var string = JSON.stringify(word, null, 2)
     if (string.includes("orbit")) {
@@ -51,4 +55,5 @@ function listener(word) {
 module.exports = {
     init,
     createDB,
+    close
 };

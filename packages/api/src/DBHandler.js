@@ -8,6 +8,7 @@ async function init(){
   var bids = await orbitDB.createDB("Bids", "log", "public")
   globalDB = await orbitDB.getLogDB(bids)
   await globalDB.load()
+  await orbitDB.close()
 
   // Address to the local database containing status of the user's bids
   // Currently globalaccess, needs to be fixed
@@ -17,6 +18,8 @@ async function init(){
   var local = await orbitDB.createDB("bidHistory", "log", "local")
   localDB = await orbitDB.getLogDB(local)
   await localDB.load()
+  await orbitDB.close()
+
 }
 
 async function getBid(amount){
