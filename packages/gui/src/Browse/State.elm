@@ -12,6 +12,7 @@ import Error.State as ErrorState
 
 import Platform.Cmd
 import Browse.Rest exposing (getBids)
+import Ports
 
 init : (Model, Cmd Msg)
 init =
@@ -77,12 +78,16 @@ update msg model =
                     <| filterElementsPart .to bids
                 ]
 
+        UpdateBids ->
+            (model, getBids)
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map Filter <| FilterState.subscriptions model.filter
         , Sub.map Bids <| BidsState.subscriptions model.bids
         , Sub.map Error <| ErrorState.subscriptions model.error
+        , Ports.updateBids <| (\_ -> UpdateBids)
         ]
 
 getFilterElements : List Bid -> (List String, List String)

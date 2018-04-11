@@ -17,8 +17,7 @@ es.onmessage = (event) => {
             break;
 
         case "updateBids":
-            // TODO: Implementera port
-            console.log("Uppdatera bud!");
+            app.ports.updateBids.send(null);
             break;
     }
 }

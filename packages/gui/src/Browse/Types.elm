@@ -16,3 +16,4 @@ type Msg
     | Filter Browse.Filter.Types.Msg
     | Error Error.Types.Msg
     | SetBids (List Bid)
+    | UpdateBids
