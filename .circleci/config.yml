@@ -61,8 +61,14 @@ jobs:
             - packages/gui/elm-stuff
           key: elm-dependencies-{{ checksum "packages/gui/elm-package.json" }}
 
-      # Install and config sysconfcpus
+      # Sysconfcpus build
+      - restore_cache:
+          keys:
+          - sysconfcpus-build
+
+      # Configure elm-make to use sysconfcpus
       - run:
+          name: "Configure elm-make to use sysconfcpus"
           command: |
             ROOT_DIR=$HOME/repo
             GUI_BIN_DIR=$ROOT_DIR/packages/gui/node_modules/.bin
@@ -78,6 +84,12 @@ jobs:
             mv $GUI_BIN_DIR/elm-make $GUI_BIN_DIR/elm-make-old
             printf '%s\n\n' '#!/bin/bash' 'echo "Running elm-make with sysconfcpus -n 2"' '$HOME/repo/sysconfcpus/bin/sysconfcpus -n 2 elm-make-old "$@"' > $GUI_BIN_DIR/elm-make
             chmod +x $GUI_BIN_DIR/elm-make
+
+      # Sysconfcpus build
+      - save_cache:
+          paths:
+            - sysconfcpus
+          key: sysconfcpus-build
 
       # Run tests
       - run: yarn test
