@@ -3,8 +3,11 @@ const orbitDB = require("./OrbitDBHandler.js")
 var globalDB
 var statusDB
 var localDB
+var messageHandler
 
-async function init(){
+async function init(msgHandler){
+  var messageHandler = msgHandler
+
   // Address to the global database containing all bids
   var bids = await orbitDB.createDB("Bids", "log", "public")
   globalDB = await orbitDB.getLogDB(bids)
@@ -13,13 +16,20 @@ async function init(){
 
   // Address to the local database containing status of the user's bids
   // Currently globalaccess, needs to be fixed
-//  statusDB = await orbitDB.createDB("bidStatus", "keyvalue", "local")
+  //  statusDB = await orbitDB.createDB("bidStatus", "keyvalue", "local")
 
   // Address to the local database containing user's bid history
   var local = await orbitDB.createDB("bidHistory", "log", "local")
   localDB = await orbitDB.getLogDB(local)
   await localDB.load()
   await orbitDB.close()
+
+  //Add Listeners
+  globalDB.events.on('replicated', () => {
+    messageHandler({
+        cmd: "updateBids",
+    });
+  });
 
 }
 
