@@ -227,6 +227,11 @@ async function getLogDB(address){
 
   }
 
+async function getKVDB(address){
+  var db = await orbitdb.keyvalue(address)
+  return db
+}
+
 
 async function close(){
   headless.close()
@@ -263,5 +268,6 @@ module.exports = {
   addKVData,
   getKVData,
   getLogDB,
+  getKVDB,
   close
 }
