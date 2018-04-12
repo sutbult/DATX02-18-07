@@ -7,7 +7,7 @@ async function init() {
     // messageHandler kommer att vara tillgänglig här
     const messengerPromise = messenger.init();
     await messengerPromise;
-    const dbPromise = db.init();
+    const dbPromise = db.init(messageHandler);
     await dbPromise;
 }
 const ensureInitialized = runOnce(init);
@@ -39,10 +39,6 @@ async function addBid(bid) {
     console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));
     */
     await db.addBid(bid);
-    // TODO: Flytta hanteringen till någon av databasmodulerna
-    messageHandler({
-        cmd: "updateBids",
-    });
 }
 
 
