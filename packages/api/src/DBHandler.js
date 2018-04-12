@@ -23,8 +23,17 @@ async function init(){
 
 }
 
-async function getBid(amount){
-  return await getBids(amount, globalDB)
+// async function getBid(amount){
+//   return await getBids(amount, globalDB)
+// }
+
+async function getFullInfo(BidID){
+  return await globalDB.get(bidID);
+}
+
+async function getBid(bidID){
+  return await globalDB.get(bidID).payload.value;
+ 
 }
 
 async function addBid(bid){
@@ -79,5 +88,6 @@ module.exports = {
   getBid,
   changeBidStatus,
   getUserBids,
-  init
+  init,
+  acceptBid
 }

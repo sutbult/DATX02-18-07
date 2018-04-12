@@ -142,9 +142,8 @@ async function getKVData(key, address){
       "adress" : adressString
     };
 */
-async function acceptBid(JSONbid){
+async function acceptBid(bid){
   //use createDB
-  var bid = JSON.parse(JSONbid)
   channel = await orbitdb.feed(bid.channel);
   await channel.load();
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
@@ -182,7 +181,7 @@ async function pushDigestInfo(contractInfo) {
     };
   await channel.add(jsonObject);
 
-  processInfo(checkForStep(4));
+  return processInfo(checkForStep(4));
 
 }
 
@@ -263,5 +262,7 @@ module.exports = {
   addKVData,
   getKVData,
   getLogDB,
+  pushDigestInfo,
+  pushContractInfo,
   close
 }

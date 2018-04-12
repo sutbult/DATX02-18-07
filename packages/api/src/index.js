@@ -2,6 +2,7 @@
 const db = require("./DBHandler.js");
 const messenger = require("./OrbitDBHandler")
 const runOnce = require("./runOnce.js");
+const trader = require("./tradeHandler.js");
 
 async function init() {
     // messageHandler kommer att vara tillgänglig här
@@ -9,6 +10,11 @@ async function init() {
     await messengerPromise;
     const dbPromise = db.init();
     await dbPromise;
+    
+    /**check in a set interval if anyone accepted your bid
+     * @todo clearInterval once accepted: https://nodejs.org/en/docs/guides/timers-in-node/
+     */
+    setInterval(checkAccBid, 10000);
 }
 const ensureInitialized = runOnce(init);
 
@@ -40,6 +46,26 @@ async function addBid(bid) {
     // TODO: Flytta hanteringen till någon av databasmodulerna
     messageHandler({
         cmd: "updateBids",
+    });
+}
+
+
+async function checkAccBid(){
+    console.log("It's alive!");
+    /**Not sure how the limit in this function works, but need all userBids, soo
+    *@todo someone with knowledge fix this 
+    */
+    var bids = await db.getUserBids(1000000000000000);
+    console.log(bids);
+    bids.forEach(bid => {
+        //Only testcheck, remove
+        if(bid.status === "ACTIVE"){
+            console.log("Bara att fortsätta vänta");
+        }
+        //The big question is if the status will be === ACCEPTED
+        if(bid.status === "ACCEPTED"){
+            trader.whenBidAccepted(bid);
+        }
     });
 }
 
@@ -78,7 +104,16 @@ async function getBids() {
 async function acceptBid(bidID, callback) {
     await ensureInitialized();
     // TODO: Implementera på riktigt
+    trader.acceptBid(bidID);
+
+    
+
+
     console.log("User accepts the bid with this ID: %s", bidID);
+
+    switchCase(bid);
+
+
 }
 
 // Fetches all accounts associated with the user

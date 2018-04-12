@@ -28,9 +28,9 @@ function getIpcPath(){
 const web3 = new Web3(Web3.givenProvider  || getIpcPath(), require("net"));
 
 /**Query for the compiled abi and bytecode */
-var erc20 = JSON.parse(fs.readFileSync('./contracts/ERC20Partial.json', 'utf8'));
-var htlc_ether = JSON.parse(fs.readFileSync('./contracts/HTLC.json', 'utf8'));
-var htlc_erc20 = JSON.parse(fs.readFileSync('./contracts/HTLC_ERC20.json', 'utf8'));
+var erc20 = JSON.parse(fs.readFileSync('../../contracts/ERC20Partial.json', 'utf8'));
+var htlc_ether = JSON.parse(fs.readFileSync('../../contracts/HTLC.json', 'utf8'));
+var htlc_erc20 = JSON.parse(fs.readFileSync('../../contracts/HTLC_ERC20.json', 'utf8'));
 
 
 //Use to check which chain you are on.
