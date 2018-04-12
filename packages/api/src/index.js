@@ -23,6 +23,8 @@ function setMessageHandler(messageHandlerArg) {
 async function addBid(bid) {
     await ensureInitialized();
     bid.status = "ACTIVE"
+    //bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+
     bid.channel = "/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message"
     /*
     var jsonObject = {
@@ -78,6 +80,7 @@ async function getBids() {
 async function acceptBid(bidID, callback) {
     await ensureInitialized();
     // TODO: Implementera på riktigt
+    var test = await db.acceptBid("bidID")
     console.log("User accepts the bid with this ID: %s", bidID);
 }
 
