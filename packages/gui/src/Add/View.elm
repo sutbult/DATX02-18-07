@@ -21,40 +21,6 @@ root model =
         ]
 
 
--- TODO: Implementera som enhetstester
-test : Html Msg
-test =
-    let
-        cases =
-            [ ("Bitcoin", "")
-            , ("Bitcoin", "1")
-            , ("Bitcoin", "12")
-            , ("Ethereum", "1")
-            , ("Ethereum", "21")
-            , ("Bitcoin", "1.1")
-            , ("Ethereum", "1.1")
-            , ("Ethereum", "1.1.1")
-            , ("Ethereum", "1.1e1")
-            , ("Ethereum", "1e1.1")
-            , ("Ethereum", "-1")
-            , ("Ethereum", "e1")
-            , ("Dogecoin", "2")
-            , ("Bitcoin", "0")
-            , ("Bitcoin", "0.0")
-            , ("Bitcoin", ".0")
-            , ("Bitcoin", "000000000001.00001")
-            ]
-        caseView (currency, amount) =
-            p []
-                [ text
-                    <| toString
-                    <| amountStatus True currency amount
-                ]
-    in
-        div []
-            <| List.map caseView cases
-
-
 form : Model -> Html Msg
 form model =
     let
