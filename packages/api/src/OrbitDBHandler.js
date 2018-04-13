@@ -121,7 +121,7 @@ async function addData(data, channelName, address){
   console.log("date: " + date);
   console.log("JSON.parse(date).step: " + JSON.parse(date).step);
 
-  checkForStep(2);
+  //checkForStep(2);
 
   //Return address and tell blockchain part to call step 3
 
@@ -150,10 +150,9 @@ async function getKVData(key, address){
 */
 async function acceptBid(JSONbid){
 
-  console.log("JSONbid: " + JSONbid)
-
-  //var acceptBid = JSON.parse(JSONbid)
-  var messagingChannel = await createDB("acceptBid.channel", "log", "public") //configure so that acceptBid.channel works
+  var acceptBid = JSON.parse(JSONbid)
+  console.log("acceptBid.channel: " + acceptBid.channel);
+  var messagingChannel = await createDB(acceptBid.channel, "log", "public") //configure so that acceptBid.channel works
   channel = await getLogDB(messagingChannel)
   await channel.load()
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
@@ -162,26 +161,28 @@ async function acceptBid(JSONbid){
 
   var acceptMessage = new Object();
   acceptMessage.step = 2;
-  acceptMessage.address = "address"; //How do we access address?
+  acceptMessage.address = acceptBid.address; //How do we access address?
 
   var JSONObject = JSON.stringify(acceptMessage)
   await channel.add(JSONObject);
 
 
-  checkForStep(3);
+  checkForStep(3); //Might be done at blockchain part
   //Let everybody know that the bid is taken.
   //Send to blockchain parts
 }
 
 function checkForStep(step) {
-  var message = channel.iterator({ limit: -1 }).collect().map((e) => e.payload.value)
+  var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
   var timer = setInterval(function(){
     if(JSON.parse(message).step != step) {
-      message = channel.iterator({ limit: -1 }).collect().map((e) => e.payload.value);
+      message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
       console.log(JSON.parse(message).step)
+      return message
     } else {
-      console.log("Correct step: " + JSON.parse(message).step)
       clearInterval(timer)
+      console.log("Correct step: " + JSON.parse(message).step)
+      return message
     }
   }, 1000);
 }
@@ -201,6 +202,8 @@ async function pushDigestInfo(contractInfo) {
   digestMessage.step = 3;
   digestMessage.digest = contractInfo.digest;
   digestMessage.contractAddress = contractInfo.contractAddress;
+  digestMessage.address = contractInfo.address;
+
 
   var JSONdigest = JSON.stringify(digestMessage)
   await channel.add(JSONdigest);
