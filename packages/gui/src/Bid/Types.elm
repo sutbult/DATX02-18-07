@@ -112,6 +112,7 @@ amountString account =
             <| String.dropRight basePow amount
         dec =
             removeLastZeroes
+            <| padZeroesLeft basePow
             <| String.right basePow amount
         separator =
             if String.isEmpty dec then
@@ -181,6 +182,11 @@ padZeroes limit n str =
         String.left n <| padZeroes False n str
     else
         str ++ String.repeat (n - String.length str) "0"
+
+
+padZeroesLeft : Int -> String -> String
+padZeroesLeft n str =
+    String.repeat (n - String.length str) "0" ++ str
 
 
 -- TODO: Implementera med reguljära uttryck istället

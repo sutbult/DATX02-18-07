@@ -134,4 +134,65 @@ suite =
                         (amountStatus False "Bitcoin" "1.2345678901234567890")
                         (Success "123456789" "satoshi")
             ]
+        , describe "amountString"
+            [ test "Small integer" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "100000000")
+                        "1"
+
+            , test "Large integer" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "1000100000000000")
+                        "10'001'000"
+
+            , test "Small float with Bitcoin" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "110000000")
+                        "1.1"
+
+            , test "Small float with Ethereum" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Ethereum" "1100000000000000000")
+                        "1.1"
+
+            , test "Minimal float" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "1")
+                        "0.00000001"
+
+            , test "Integer plus minimal float" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "100000001")
+                        "1.00000001"
+
+            , test "Small float plus minimal float" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "10000001")
+                        "0.10000001"
+
+            , test "Smaller float plus minimal float" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "1000001")
+                        "0.01000001"
+
+            , test "Remove last zeroes" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "100000")
+                        "0.001"
+
+            , test "Large integer with minimal float" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "1000100000000001")
+                        "10'001'000.00000001"
+            ]
         ]
