@@ -11,5 +11,8 @@
     "devDependencies": {
         "lerna": "^2.9.0",
         "yarn": "^1.5.1"
+    },
+    "dependencies": {
+        "npm": "^5.8.0"
     }
 }

@@ -39,7 +39,7 @@ function whenBidAccepted(bid){
 
 async function acceptBid(bidID){
     //Fetch bid from database with bidID
-    var bid = await db.getBid(bidID);
+    var bid = await db.getBid2(bidID);
     // const util = require("util");
     // console.log(util.inspect(bid,false,null));
     
