@@ -40,6 +40,10 @@ function getBid(amount){
   return bids
 }
 
+async function getBid2(bidID){
+  return await globalDB.get(bidID).payload.value;
+}
+
 async function addBid(bid){
 
   var channelName = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) //randomly generated String https://gist.github.com/6174/6062387
@@ -95,6 +99,7 @@ function getBids(amount, db){
 module.exports = {
   addBid,
   getBid,
+  getBid2,
   acceptBid,
   changeBidStatus,
   getUserBids,
