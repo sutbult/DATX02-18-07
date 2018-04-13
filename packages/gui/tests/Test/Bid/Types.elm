@@ -1,13 +1,24 @@
 module Test.Bid.Types exposing (suite)
 
 import Test exposing (..)
+import Fuzz exposing (int)
 import Expect
 import Bid.Types exposing (..)
 
 suite : Test
 suite =
     describe "Bid.Types"
-        [ describe "amountStatus"
+        [ describe "createBid"
+            [ test "Values remains" <|
+                \() ->
+                    Expect.equal
+                        (createBid "TSTID" Active "Bitcoin" "1" "Ethereum" "10")
+                        (Bid "TSTID" Active
+                            (Value "Bitcoin" "1")
+                            (Value "Ethereum" "10")
+                        )
+            ]
+        , describe "amountStatus"
             [ test "Empty amount" <|
                 \() ->
                     Expect.equal
@@ -48,6 +59,12 @@ suite =
                 \() ->
                     Expect.equal
                         (amountStatus True "Ethereum" "10001000")
+                        (Success "10'001'000'000'000'000'000'000'000" "wei")
+
+            , test "Large integer with formatting in input" <|
+                \() ->
+                    Expect.equal
+                        (amountStatus True "Ethereum" "10'001'000")
                         (Success "10'001'000'000'000'000'000'000'000" "wei")
 
             , test "Small float with Bitcoin" <|
@@ -128,4 +145,87 @@ suite =
                         (amountStatus False "Bitcoin" "1.2345678901234567890")
                         (Success "123456789" "satoshi")
             ]
+        , describe "amountString"
+            [ test "Small integer" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "100000000")
+                        "1"
+
+            , test "Large integer" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "1000100000000000")
+                        "10'001'000"
+
+            , test "Small float with Bitcoin" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "110000000")
+                        "1.1"
+
+            , test "Small float with Ethereum" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Ethereum" "1100000000000000000")
+                        "1.1"
+
+            , test "Minimal float" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "1")
+                        "0.00000001"
+
+            , test "Integer plus minimal float" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "100000001")
+                        "1.00000001"
+
+            , test "Small float plus minimal float" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "10000001")
+                        "0.10000001"
+
+            , test "Smaller float plus minimal float" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "1000001")
+                        "0.01000001"
+
+            , test "Remove last zeroes" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "100000")
+                        "0.001"
+
+            , test "Large integer with minimal float" <|
+                \() ->
+                    Expect.equal
+                        (amountString <| Value "Bitcoin" "1000100000000001")
+                        "10'001'000.00000001"
+            ]
+        , describe "amountString + amountStatus" <|
+            let
+                performTest currency unit n =
+                    if n > 0 then
+                        let
+                            nstr = toString n
+                            actual =
+                                amountStatus False currency <|
+                                amountString <| Value currency nstr
+                        in
+                            Expect.equal
+                                actual
+                                (Success nstr unit)
+                    else
+                        Expect.pass
+            in
+                [ fuzz int "Arbitrary integer with Bitcoin" <|
+                    performTest "Bitcoin" "satoshi"
+
+                , fuzz int "Arbitrary integer with Ethereum" <|
+                    performTest "Ethereum" "wei"
+                ]
         ]
