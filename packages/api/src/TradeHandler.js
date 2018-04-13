@@ -45,10 +45,6 @@ async function acceptBid(bidID){
     
     //step 2
     messenger.acceptBid(bid);
-    //Also in step 2 must run checkForStep(3)
-    
-    //needs to receive message before secondSender can send anything
-    var message = messenger.checkForStep(3);
 
     var jsonObj;
 

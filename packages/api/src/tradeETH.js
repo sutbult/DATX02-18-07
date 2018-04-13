@@ -8,7 +8,7 @@ function firstSender(bid, message){
     var secret = "1";
     
     //to_adr = message.to_adr
-    wei_value bid.from.amount; //This is not in wei!!!
+    wei_value = bid.from.amount; //This is not in wei!!!
 
 
     return ETH.sendEtherContract(ETH.web3,form_adr,secret,digest,to_adr,wei_value);
