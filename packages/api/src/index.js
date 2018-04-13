@@ -75,7 +75,7 @@ async function checkAccBid(){
     *@todo someone with knowledge fix this 
     */
     var bids = await db.getUserBids(1000000000000000);
-    console.log(bids);
+    //console.log(bids);
     bids.forEach(bid => {
         //Only testcheck, remove
         if(bid.status === "ACTIVE"){

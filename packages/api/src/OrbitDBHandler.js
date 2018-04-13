@@ -150,7 +150,8 @@ async function getKVData(key, address){
 */
 async function acceptBid(JSONbid){
 
-  var acceptBid = JSON.parse(JSONbid)
+  //var acceptBid = JSON.parse(JSONbid)
+  var acceptBid = JSONbid;
   console.log("acceptBid.channel: " + acceptBid.channel);
   var messagingChannel = await createDB(acceptBid.channel, "log", "public") //configure so that acceptBid.channel works
   channel = await getLogDB(messagingChannel)
