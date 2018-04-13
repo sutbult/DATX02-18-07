@@ -1,6 +1,7 @@
 module Test.Bid.Types exposing (suite)
 
 import Test exposing (..)
+import Fuzz exposing (int)
 import Expect
 import Bid.Types exposing (..)
 
@@ -195,4 +196,26 @@ suite =
                         (amountString <| Value "Bitcoin" "1000100000000001")
                         "10'001'000.00000001"
             ]
+        , describe "amountString + amountStatus" <|
+            let
+                performTest currency unit n =
+                    if n > 0 then
+                        let
+                            nstr = toString n
+                            actual =
+                                amountStatus False currency <|
+                                amountString <| Value currency nstr
+                        in
+                            Expect.equal
+                                actual
+                                (Success nstr unit)
+                    else
+                        Expect.pass
+            in
+                [ fuzz int "Arbitrary integer with Bitcoin" <|
+                    performTest "Bitcoin" "satoshi"
+
+                , fuzz int "Arbitrary integer with Ethereum" <|
+                    performTest "Ethereum" "wei"
+                ]
         ]
