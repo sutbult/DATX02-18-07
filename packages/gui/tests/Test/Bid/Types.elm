@@ -50,6 +50,12 @@ suite =
                         (amountStatus True "Ethereum" "10001000")
                         (Success "10'001'000'000'000'000'000'000'000" "wei")
 
+            , test "Large integer with formatting in input" <|
+                \() ->
+                    Expect.equal
+                        (amountStatus True "Ethereum" "10'001'000")
+                        (Success "10'001'000'000'000'000'000'000'000" "wei")
+
             , test "Small float with Bitcoin" <|
                 \() ->
                     Expect.equal

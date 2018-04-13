@@ -76,7 +76,7 @@ amountStatus withFormatting currency amount =
     else if String.isEmpty currency then
         Error
     else
-        case amountRegexMatch amount of
+        case amountRegexMatch <| removeApostrophes amount of
             Just (base, dec) ->
                 let
                     (padding, unit) = baseUnit currency
@@ -94,6 +94,11 @@ amountStatus withFormatting currency amount =
                     Success formattedValue unit
             Nothing ->
                 Error
+
+
+removeApostrophes : String -> String
+removeApostrophes =
+    replace All (regex "'") (\_ -> "")
 
 
 amountString : Value -> String
