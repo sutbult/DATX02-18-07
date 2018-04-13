@@ -68,8 +68,8 @@ function BidFactory() {
 // Fetches all available bids from the decentralized database
 async function getBids() {
     await ensureInitialized();
-    var bid = await db.getBid(50)
-    return bid
+    return db.getBid(50)
+
 }
 
 // Accepts a bid and starts the swapping process
@@ -99,7 +99,7 @@ async function getWallet() {
 // Fetches all bids associated with the user
 async function getUserBids() {
     await ensureInitialized();
-    return await db.getUserBids(50)
+    return db.getUserBids(50)
 }
 
 // Fetches the currencies which is available for the user to create bids with
