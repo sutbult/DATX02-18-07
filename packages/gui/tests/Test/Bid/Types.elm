@@ -8,7 +8,17 @@ import Bid.Types exposing (..)
 suite : Test
 suite =
     describe "Bid.Types"
-        [ describe "amountStatus"
+        [ describe "createBid"
+            [ test "Values remains" <|
+                \() ->
+                    Expect.equal
+                        (createBid "TSTID" Active "Bitcoin" "1" "Ethereum" "10")
+                        (Bid "TSTID" Active
+                            (Value "Bitcoin" "1")
+                            (Value "Ethereum" "10")
+                        )
+            ]
+        , describe "amountStatus"
             [ test "Empty amount" <|
                 \() ->
                     Expect.equal
