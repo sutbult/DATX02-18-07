@@ -44,8 +44,8 @@ async function acceptBid(bidID){
     // console.log(util.inspect(bid,false,null));
     
     //step 2
-    messenger.acceptBid(bid);
-
+    var message = await messenger.acceptBid(bid);
+    Console.log("Rad 48 in TradeHandler, printas detta anta att messenger.acceptBid funkar");
     var jsonObj;
 
     var toCurrency = bid.to.currency;

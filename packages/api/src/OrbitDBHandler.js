@@ -150,10 +150,9 @@ async function getKVData(key, address){
 */
 async function acceptBid(JSONbid){
 
-  //var acceptBid = JSON.parse(JSONbid)
   var acceptBid = JSONbid;
   console.log("acceptBid.channel: " + acceptBid.channel);
-  var messagingChannel = await createDB(acceptBid.channel, "log", "public") //configure so that acceptBid.channel works
+  var messagingChannel = await createDB(acceptBid.channel, "log", "public")
   channel = await getLogDB(messagingChannel)
   await channel.load()
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
@@ -168,7 +167,7 @@ async function acceptBid(JSONbid){
   await channel.add(JSONObject);
 
 
-  checkForStep(3); //Might be done at blockchain part
+  return checkForStep(3); //Might be done at blockchain part
   //Let everybody know that the bid is taken.
   //Send to blockchain parts
 }
