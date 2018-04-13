@@ -68,6 +68,26 @@ async function checkAccBid(){
 }
 
 
+async function checkAccBid(){
+    console.log("It's alive!");
+    /**Not sure how the limit in this function works, but need all userBids, soo
+    *@todo someone with knowledge fix this 
+    */
+    var bids = await db.getUserBids(1000000000000000);
+    console.log(bids);
+    bids.forEach(bid => {
+        //Only testcheck, remove
+        if(bid.status === "ACTIVE"){
+            console.log("Bara att fortsätta vänta");
+        }
+        //The big question is if the status will be === ACCEPTED
+        if(bid.status === "ACCEPTED"){
+            trader.whenBidAccepted(bid);
+        }
+    });
+}
+
+
 // Temporär
 function BidFactory() {
     var idCounter = 1;
