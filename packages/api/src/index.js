@@ -109,7 +109,7 @@ async function acceptBid(bidID, callback) {
 
     console.log("User accepts the bid with this ID: %s", bidID);
 
-    switchCase(bid);
+    //switchCase(bid);
 
 
 }
