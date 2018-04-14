@@ -12,3 +12,4 @@ type Msg
     = Noop
     | SetBids (List Bid)
     | ToError Error.Types.Msg
+    | UpdateBids

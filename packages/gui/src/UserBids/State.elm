@@ -3,6 +3,7 @@ module UserBids.State exposing (..)
 import UserBids.Types exposing (..)
 import UserBids.Rest exposing (getUserBids)
 import Error.State
+import Ports
 
 
 init : (Model, Cmd Msg)
@@ -35,6 +36,10 @@ update msg model =
             in
                 ({model | error = subModel}, Cmd.map ToError subCmd)
 
+        UpdateBids ->
+            (model, getUserBids)
+
 
 subscriptions : Model -> Sub Msg
-subscriptions _ = Sub.none
+subscriptions _ =
+    Ports.updateBids <| (\_ -> UpdateBids)
