@@ -28,6 +28,12 @@ async function init(msgHandler){
     });
   });
 
+  globalDB.events.on('write', () => {
+    messageHandler({
+        cmd: "updateBids",
+    });
+  });
+
 }
 
 function getBid(amount){
