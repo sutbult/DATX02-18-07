@@ -16,7 +16,7 @@ async function init(msgHandler){
 
 
   // Address to the local database containing status of the user's bids
-  var status = await orbitDB.createDB("bidStatus", "keyvalue", "local")
+  var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
   statusDB = await orbitDB.getKVDB(status)
   await statusDB.load()
   await orbitDB.close()
@@ -33,6 +33,19 @@ async function init(msgHandler){
         cmd: "updateBids",
     });
   });
+
+  statusDB.events.on('replicated', () => {
+    messageHandler({
+        cmd: "updateBids",
+    });
+  });
+
+  statusDB.events.on('write', () => {
+    messageHandler({
+        cmd: "updateBids",
+    });
+  });
+
 
 }
 
@@ -59,15 +72,17 @@ async function addBid(bid){
 
   // Add bid to global database
   //Consult Samuel about structure of bids
-  var key = await globalDB.add(bid) //object instead of bid
+  var id = await globalDB.add(bid) //object instead of bid
   // Add bid to local database
+  await statusDB.put(id, "ACTIVE");
+
   await orbitDB.addData("test", bid.channel, "PLACEHOLDER") //Placeholder replace with function to get address
   orbitDB.close()
-  await statusDB.put(key, bid);
 
 }
 
-async function acceptBid(bid) {
+async function acceptBid(bidID) {
+  await statusDB.put(bidID, "PENDING")
   //await orbitDB.acceptBid(bid);
 }
 
@@ -93,6 +108,7 @@ function getBids(amount, db){
     var bid = data[i].payload.value
     bid.id = data[i].hash
     bid.key = data[i].key
+    bid.status = statusDB.get(data[i].hash)
     bids.push(bid)
   }
   return bids
