@@ -108,7 +108,7 @@ function getBids(amount, db){
     var bid = data[i].payload.value
     bid.id = data[i].hash
     bid.key = data[i].key
-    bid.status = statusDB.get(data[i].hash)
+  //  bid.status = statusDB.get(data[i].hash)
     bids.push(bid)
   }
   return bids
