@@ -78,7 +78,7 @@ async function acceptBid(bidID, callback) {
     // TODO: Implementera på riktigt
     //var test = await db.acceptBid("bidID")
     console.log("User accepts the bid with this ID: %s", bidID);
-    await acceptBid(bidID)
+    await db.acceptBid(bidID)
 }
 
 // Fetches all accounts associated with the user

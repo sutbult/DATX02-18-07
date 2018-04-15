@@ -22,18 +22,18 @@ async function init(msgHandler){
   await orbitDB.close()
 
   //Add Listeners
-  globalDB.events.on('replicated', () => {
+/*  globalDB.events.on('replicated', () => {
     messageHandler({
         cmd: "updateBids",
     });
   });
-
-  globalDB.events.on('write', () => {
+*/
+  /*globalDB.events.on('write', () => {
     messageHandler({
         cmd: "updateBids",
     });
   });
-
+*/
   statusDB.events.on('replicated', () => {
     messageHandler({
         cmd: "updateBids",
@@ -52,7 +52,7 @@ async function init(msgHandler){
 function getBid(amount){
   var bids = getBids(amount, globalDB)
   for (var i = bids.length - 1; i >= 0; i--){
-    if(bids[i].key == key){
+    if(bids[i].key == key || bids[i].status == "PENDING" || bids[i].status == "FINISHED"){
       bids.splice(i,1);
     }
   }
@@ -108,7 +108,7 @@ function getBids(amount, db){
     var bid = data[i].payload.value
     bid.id = data[i].hash
     bid.key = data[i].key
-  //  bid.status = statusDB.get(data[i].hash)
+    bid.status = statusDB.get(data[i].hash)
     bids.push(bid)
   }
   return bids
