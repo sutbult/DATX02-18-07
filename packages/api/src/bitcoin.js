@@ -2,9 +2,72 @@ var bitcoinjs = require('bitcoinjs-lib')
 var OPS = require('bitcoin-ops')
 var bcrypto = bitcoinjs.crypto
 var base58check = require('bs58')
-var bip68 = require('bip68')
 var bip65 = require('bip65')
+var RpcClient = require('bitcoind-rpc');
 
+
+var rpc;
+
+
+function BitcoinClient(user, password, host, port) {
+  var config = {
+    protocol: 'http',
+    user: user,
+    pass: password,
+    host: host,
+    port: port,
+  };
+  rpc = new RpcClient(config);
+}
+
+function DefaultBitcoinClient() {
+  var config = {
+    // protocol: 'http'
+    // user: 'user'
+    // pass: 'pass'
+    // host: '127.0.0.1'
+    // port: '8332'
+  }
+  rpc = new RpcClient(config);
+}
+
+function ping(callback) {
+  var result = {'error': '', 'status': ''};
+  rpc.getNetworkInfo(function (err, ret) {
+    if (err) {
+      result.error = err;
+    } else {
+      result.status = 'OK';
+    }
+    callback(result);
+  });
+}
+
+function getBalance(callback) {
+  var result = {'error': '', 'balance': ''};
+  if (rpc === undefined) {
+    result.error = 'RPC needs to be defined';
+    callback(result);
+    return;
+  }
+  rpc.getBalance(function (err, ret) {
+    if (err) {
+      result.error = err;
+    } else {
+      result.balance = ret.result.toString();
+    }
+    callback(result)
+  });
+}
+
+function myFun(word) {
+  console.log(word);
+}
+
+BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16592');
+// DefaultBitcoinClient();
+ping(myFun);
+/*
 var hashType = bitcoinjs.Transaction.SIGHASH_ALL
 
 var alice = bitcoinjs.ECPair.fromWIF('cRuoxDPY2ku1LjANJJMBUjqWYejYnF5MwmzbWsAs7i1uoVSqCmzH', bitcoinjs.networks.testnet); //Use your own key!
@@ -18,7 +81,7 @@ function toDigest(secret){
 
 var timeout = bip65.encode({ blocks: 110 }) //The block where you can refund the transaction after (in absolute value; check current block height)
 
-function htlc (digest, seller, buyer, timeout) { 
+function htlc (digest, seller, buyer, timeout) {
   return bitcoinjs.script.compile //CHECKSQUENCEVERIFY REFUSES TO WORK
   ([
     bitcoinjs.opcodes.OP_IF,
@@ -26,7 +89,7 @@ function htlc (digest, seller, buyer, timeout) {
       digest,
       bitcoinjs.opcodes.OP_EQUALVERIFY,
       bitcoinjs.opcodes.OP_DUP,
-      bitcoinjs.opcodes.OP_HASH160, 
+      bitcoinjs.opcodes.OP_HASH160,
       bcrypto.hash160(seller.getPublicKeyBuffer()),
     bitcoinjs.opcodes.OP_ELSE,
       bitcoinjs.script.number.encode(timeout),
@@ -59,13 +122,13 @@ var tx = txb.buildIncomplete();
 
 var signatureHash = tx.hashForSignature(0, redeemScript, hashType);
 var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
-    bob.sign(signatureHash).toScriptSignature(hashType),  
+    bob.sign(signatureHash).toScriptSignature(hashType),
     bob.getPublicKeyBuffer(),
     //Buffer.from("1"), //This is the secret
     //bitcoinjs.opcodes.OP_TRUE
     bitcoinjs.opcodes.OP_FALSE
   ], redeemScript)
-  
+
 tx.setInputScript(0, redeemScriptSig);
 
 console.log(bitcoinjs.script.decompile(redeemScript));
@@ -74,5 +137,4 @@ console.log(bcrypto.hash160(alice.getPublicKeyBuffer()).toString('hex'));
 
 
 module.exports = {htlc, toDigest, alice, bob, tx, redeemScript};
-
-
+*/
