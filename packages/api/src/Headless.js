@@ -14,6 +14,8 @@ async function init() {
     });
 }
 async function createDB(name, type, permission) {
+    console.log("First thing in createDB");
+    console.log(dbAddress);
     try {
         await browser.init()
         const mainTab = await browser.newTab({
@@ -35,6 +37,7 @@ async function createDB(name, type, permission) {
         await mainTab.onConsole(listener)
         await mainTab.wait(2000)
         //await mainTab.close()
+        console.log("In creatDB in Headless: " + dbAddress);
         return dbAddress
     } catch (err) {
         console.log("ERROR!", err)
@@ -48,7 +51,9 @@ async function close(){
 function listener(word) {
     var string = JSON.stringify(word, null, 2)
     if (string.includes("orbit")) {
-       dbAddress = word[0].value
+        console.log("listener: ");
+        console.log(word);
+        dbAddress = word[0].value
     }
 }
 

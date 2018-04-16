@@ -152,9 +152,12 @@ async function acceptBid(JSONbid){
 
   var acceptBid = JSONbid;
   console.log("acceptBid.channel: " + acceptBid.channel);
+  console.log("Right before messangingChannel");
   var messagingChannel = await createDB(acceptBid.channel, "log", "public")
+  console.log("MessagingChannel: " + messagingChannel);
   channel = await getLogDB(messagingChannel)
   await channel.load()
+  console.log("After channel.log");
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
 
   //Send information to blockchain parts
