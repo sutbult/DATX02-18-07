@@ -49,8 +49,8 @@ async function init(msgHandler){
 
 }
 
-function getBid(amount){
-  var bids = getBids(amount, globalDB)
+function getBids(amount){
+  var bids = getBid(amount, globalDB)
   for (var i = bids.length - 1; i >= 0; i--){
     if(bids[i].key == key || bids[i].status == "PENDING" || bids[i].status == "FINISHED"){
       bids.splice(i,1);
@@ -92,7 +92,7 @@ async function changeBidStatus(bid, status){
 }
 
 function getUserBids(amount){
-  var bids = getBids(amount, globalDB)
+  var bids = getBid(amount, globalDB)
   for (var i = bids.length - 1; i >= 0; i--){
     if(bids[i].key != key){
       bids.splice(i,1);
@@ -101,7 +101,7 @@ function getUserBids(amount){
   return bids
 }
 
-function getBids(amount, db){
+function getBid(amount, db){
   var data = db.iterator({ limit : amount }).collect()
   var bids = []
   for (var i = 0; i < data.length; i++) {
