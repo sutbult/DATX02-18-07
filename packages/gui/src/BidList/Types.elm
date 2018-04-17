@@ -18,8 +18,8 @@ type alias Model =
 
 type Msg
     = ToTable TableTypes.Msg
-    | Filter FilterTypes.Msg
-    | Error Error.Types.Msg
+    | ToFilter FilterTypes.Msg
+    | ToError Error.Types.Msg
     | SetBids (List Bid)
     | UpdateBids
     | BidClick Bid

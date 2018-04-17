@@ -17,8 +17,8 @@ import Error.View as ErrorView
 root : Model -> Html Msg
 root model =
     div []
-        [ Html.map Error (ErrorView.root (.error model))
-        , Html.map Filter (FilterView.root (.filter model))
+        [ Html.map ToError (ErrorView.root (.error model))
+        , Html.map ToFilter (FilterView.root (.filter model))
         , Html.map mapTableCmd
             <| TableView.root model.table
             <| getFilter model.filter

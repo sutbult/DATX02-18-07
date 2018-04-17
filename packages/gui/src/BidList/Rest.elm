@@ -23,7 +23,7 @@ getBids path =
         path
         decodeBids
         SetBids
-        Error
+        ToError
 
 
 decodeBids : Decoder (List Bid)

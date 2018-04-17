@@ -18,7 +18,7 @@ init =
             }
         , Cmd.batch
             [ Platform.Cmd.map mapBidListCmd bidListCmd
-            , Platform.Cmd.map ToAccept acceptCmd
+            , Platform.Cmd.map mapAcceptCmd acceptCmd
             ]
         )
 
@@ -35,12 +35,12 @@ update msg model =
             let
                 (subModel, subCmd) = AcceptState.update subMsg (.accept model)
             in
-                ({model | accept = subModel}, Platform.Cmd.map ToAccept subCmd)
+                ({model | accept = subModel}, Platform.Cmd.map mapAcceptCmd subCmd)
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Sub.map ToBidList <| BidListState.subscriptions model.bidList
-        , Sub.map ToAccept <| AcceptState.subscriptions model.accept
+        [ Sub.map mapBidListCmd <| BidListState.subscriptions model.bidList
+        , Sub.map mapAcceptCmd <| AcceptState.subscriptions model.accept
         ]

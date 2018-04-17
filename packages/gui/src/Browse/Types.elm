@@ -23,3 +23,13 @@ mapBidListCmd msg =
 
         subMsg ->
             ToBidList subMsg
+
+
+mapAcceptCmd : AcceptTypes.Msg -> Msg
+mapAcceptCmd msg =
+    case msg of
+        AcceptTypes.ToError error ->
+            ToBidList <| BidListTypes.ToError error
+
+        subMsg ->
+            ToAccept subMsg

@@ -13,6 +13,6 @@ root model =
         [ Html.map mapBidListCmd
             <| BidListView.root model.bidList
 
-        , Html.map ToAccept
+        , Html.map mapAcceptCmd
             <| AcceptView.root model.accept
         ]

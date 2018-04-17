@@ -40,8 +40,8 @@ init bidPath =
             }
         , Cmd.batch
             [ Platform.Cmd.map mapTableCmd tableCmd
-            , Platform.Cmd.map Filter filterCmd
-            , Platform.Cmd.map Error errorCmd
+            , Platform.Cmd.map ToFilter filterCmd
+            , Platform.Cmd.map ToError errorCmd
             , getBids bidPath
             ]
         )
@@ -49,11 +49,11 @@ init bidPath =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        Filter subMsg ->
+        ToFilter subMsg ->
             let
                 (subModel, subCmd) = FilterState.update subMsg (.filter model)
             in
-                ({model | filter = subModel}, Platform.Cmd.map Filter subCmd)
+                ({model | filter = subModel}, Platform.Cmd.map ToFilter subCmd)
 
         ToTable subMsg ->
             let
@@ -61,20 +61,20 @@ update msg model =
             in
                 ({model | table = subModel}, Platform.Cmd.map mapTableCmd subCmd)
 
-        Error subMsg ->
+        ToError subMsg ->
             let
                 (subModel, subCmd) = ErrorState.update subMsg (.error model)
             in
-                ({model | error = subModel}, Platform.Cmd.map Error subCmd)
+                ({model | error = subModel}, Platform.Cmd.map ToError subCmd)
 
         SetBids bids ->
             foldMsg update model
                 [ ToTable <| TableTypes.SetBids bids
-                , Filter
+                , ToFilter
                     <| FilterTypes.From
                     <| FilterPartTypes.SetCurrencies
                     <| filterElementsPart .from bids
-                , Filter
+                , ToFilter
                     <| FilterTypes.To
                     <| FilterPartTypes.SetCurrencies
                     <| filterElementsPart .to bids
@@ -90,9 +90,9 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Sub.map Filter <| FilterState.subscriptions model.filter
-        , Sub.map ToTable <| TableState.subscriptions model.table
-        , Sub.map Error <| ErrorState.subscriptions model.error
+        [ Sub.map ToFilter <| FilterState.subscriptions model.filter
+        , Sub.map mapTableCmd <| TableState.subscriptions model.table
+        , Sub.map ToError <| ErrorState.subscriptions model.error
         , Ports.updateBids <| (\_ -> UpdateBids)
         ]
 
