@@ -10,13 +10,14 @@ import Bid.Types exposing
 import Bid.Rest exposing
     ( decodeBid
     )
-
-import Rest
+import Utils.Rest exposing
+    ( get
+    )
 
 
 getBids : Cmd Msg
 getBids =
-    Rest.get
+    get
         "getBids"
         decodeBids
         SetBids
