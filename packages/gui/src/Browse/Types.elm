@@ -1,34 +1,25 @@
 module Browse.Types exposing (..)
 
-import BidList.Table.Types as TableTypes
+import BidList.Types as BidListTypes
 import Browse.Accept.Types as AcceptTypes
-import BidList.Filter.Types as FilterTypes
-import Error.Types
-import Bid.Types exposing (Bid)
 
 
 type alias Model =
-    { table : TableTypes.Model
-    , filter : FilterTypes.Model
-    , error : Error.Types.Model
+    { bidList : BidListTypes.Model
     , accept : AcceptTypes.Model
     }
 
 
 type Msg
-    = ToTable TableTypes.Msg
-    | Filter FilterTypes.Msg
-    | Error Error.Types.Msg
+    = ToBidList BidListTypes.Msg
     | ToAccept AcceptTypes.Msg
-    | SetBids (List Bid)
-    | UpdateBids
 
 
-mapTableCmd : TableTypes.Msg -> Msg
-mapTableCmd msg =
+mapBidListCmd : BidListTypes.Msg -> Msg
+mapBidListCmd msg =
     case msg of
-        TableTypes.Click bid ->
+        BidListTypes.BidClick bid ->
             ToAccept <| AcceptTypes.DisplayModal bid
 
         subMsg ->
-            ToTable subMsg
+            ToBidList subMsg
