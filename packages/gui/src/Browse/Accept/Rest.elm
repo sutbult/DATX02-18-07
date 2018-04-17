@@ -1,6 +1,6 @@
-module Browse.Bids.Rest exposing (..)
+module Browse.Accept.Rest exposing (..)
 
-import Browse.Bids.Types exposing (..)
+import Browse.Accept.Types exposing (..)
 
 import Bid.Types exposing
     ( Bid

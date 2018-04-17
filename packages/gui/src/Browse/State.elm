@@ -1,10 +1,14 @@
 module Browse.State exposing (init, update, subscriptions)
 
-import Browse.Bids.Types
 import Browse.Types exposing (..)
 import Bid.Types exposing (Value, Bid)
-import Browse.Bids.State as BidsState
+
+import BidList.Table.Types as TableTypes
+import BidList.Table.State as TableState
+
 import Browse.Filter.State as FilterState
+import Browse.Accept.State as AcceptState
+
 import Browse.Filter.Types
 import Browse.Filter.Part.Types
 
@@ -17,31 +21,24 @@ import Ports
 init : (Model, Cmd Msg)
 init =
     let
-        (bidsModel, bidsCmd) = BidsState.init []
+        (tableModel, tableCmd) = TableState.init
         (filterModel, filterCmd) = FilterState.init
         (errorModel, errorCmd) = ErrorState.init
+        (acceptModel, acceptCmd) = AcceptState.init
     in
-        (   { bids = bidsModel
+        (   { table = tableModel
             , filter = filterModel
             , error = errorModel
+            , accept = acceptModel
             }
         , Cmd.batch
-            [ Platform.Cmd.map Bids bidsCmd
+            [ Platform.Cmd.map ToTable tableCmd
             , Platform.Cmd.map Filter filterCmd
             , Platform.Cmd.map Error errorCmd
+            , Platform.Cmd.map ToAccept acceptCmd
             , getBids
             ]
         )
-
-
-mapBidsCmd : Browse.Bids.Types.Msg -> Msg
-mapBidsCmd msg =
-    case msg of
-        Browse.Bids.Types.ToError error ->
-            Error error
-
-        subMsg ->
-            Bids subMsg
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -53,11 +50,11 @@ update msg model =
             in
                 ({model | filter = subModel}, Platform.Cmd.map Filter subCmd)
 
-        Bids subMsg ->
+        ToTable subMsg ->
             let
-                (subModel, subCmd) = BidsState.update subMsg (.bids model)
+                (subModel, subCmd) = TableState.update subMsg (.table model)
             in
-                ({model | bids = subModel}, Platform.Cmd.map mapBidsCmd subCmd)
+                ({model | table = subModel}, Platform.Cmd.map mapTableCmd subCmd)
 
         Error subMsg ->
             let
@@ -65,9 +62,15 @@ update msg model =
             in
                 ({model | error = subModel}, Platform.Cmd.map Error subCmd)
 
+        ToAccept subMsg ->
+            let
+                (subModel, subCmd) = AcceptState.update subMsg (.accept model)
+            in
+                ({model | accept = subModel}, Platform.Cmd.map ToAccept subCmd)
+
         SetBids bids ->
             foldMsg update model
-                [ Bids <| Browse.Bids.Types.SetBids bids
+                [ ToTable <| TableTypes.SetBids bids
                 , Filter
                     <| Browse.Filter.Types.From
                     <| Browse.Filter.Part.Types.SetCurrencies
@@ -85,8 +88,9 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map Filter <| FilterState.subscriptions model.filter
-        , Sub.map Bids <| BidsState.subscriptions model.bids
+        , Sub.map ToTable <| TableState.subscriptions model.table
         , Sub.map Error <| ErrorState.subscriptions model.error
+        , Sub.map ToAccept <| AcceptState.subscriptions model.accept
         , Ports.updateBids <| (\_ -> UpdateBids)
         ]
 
