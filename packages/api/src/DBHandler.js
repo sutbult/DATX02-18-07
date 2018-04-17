@@ -95,7 +95,6 @@ module.exports = {
   addBid,
   getBid,
   getBid2,
-  acceptBid,
   changeBidStatus,
   getUserBids,
   init
