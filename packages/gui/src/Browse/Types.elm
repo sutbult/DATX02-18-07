@@ -2,14 +2,14 @@ module Browse.Types exposing (..)
 
 import BidList.Table.Types as TableTypes
 import Browse.Accept.Types as AcceptTypes
-import Browse.Filter.Types
+import BidList.Filter.Types as FilterTypes
 import Error.Types
 import Bid.Types exposing (Bid)
 
 
 type alias Model =
     { table : TableTypes.Model
-    , filter : Browse.Filter.Types.Model
+    , filter : FilterTypes.Model
     , error : Error.Types.Model
     , accept : AcceptTypes.Model
     }
@@ -17,7 +17,7 @@ type alias Model =
 
 type Msg
     = ToTable TableTypes.Msg
-    | Filter Browse.Filter.Types.Msg
+    | Filter FilterTypes.Msg
     | Error Error.Types.Msg
     | ToAccept AcceptTypes.Msg
     | SetBids (List Bid)

@@ -1,4 +1,4 @@
-module Browse.Filter.Part.Types exposing (..)
+module BidList.Filter.Part.Types exposing (..)
 
 import Dict exposing (..)
 

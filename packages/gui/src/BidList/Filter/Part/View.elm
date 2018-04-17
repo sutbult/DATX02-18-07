@@ -1,10 +1,10 @@
-module Browse.Filter.Part.View exposing (root)
+module BidList.Filter.Part.View exposing (root)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
-import Browse.Filter.Part.Types exposing (..)
+import BidList.Filter.Part.Types exposing (..)
 
 import Dict
 

@@ -6,11 +6,12 @@ import Bid.Types exposing (Value, Bid)
 import BidList.Table.Types as TableTypes
 import BidList.Table.State as TableState
 
-import Browse.Filter.State as FilterState
+import BidList.Filter.Types as FilterTypes
+import BidList.Filter.State as FilterState
+import BidList.Filter.Part.Types as FilterPartTypes
+
 import Browse.Accept.State as AcceptState
 
-import Browse.Filter.Types
-import Browse.Filter.Part.Types
 
 import Error.State as ErrorState
 
@@ -75,12 +76,12 @@ update msg model =
             foldMsg update model
                 [ ToTable <| TableTypes.SetBids bids
                 , Filter
-                    <| Browse.Filter.Types.From
-                    <| Browse.Filter.Part.Types.SetCurrencies
+                    <| FilterTypes.From
+                    <| FilterPartTypes.SetCurrencies
                     <| filterElementsPart .from bids
                 , Filter
-                    <| Browse.Filter.Types.To
-                    <| Browse.Filter.Part.Types.SetCurrencies
+                    <| FilterTypes.To
+                    <| FilterPartTypes.SetCurrencies
                     <| filterElementsPart .to bids
                 ]
 

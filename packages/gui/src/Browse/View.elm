@@ -1,10 +1,12 @@
 module Browse.View exposing (root)
 
 import Browse.Types exposing (..)
-import Browse.Filter.Types exposing (getFilter)
+import BidList.Filter.Types exposing
+    ( getFilter
+    )
 
 import BidList.Table.View as TableView
-import Browse.Filter.View as FilterView
+import BidList.Filter.View as FilterView
 import Browse.Accept.View as AcceptView
 
 import Error.View as ErrorView

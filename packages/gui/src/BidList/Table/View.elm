@@ -6,7 +6,7 @@ import Html.Attributes exposing (..)
 import Bid.Types exposing
     ( Bid
     )
-import Browse.Filter.Types exposing
+import BidList.Filter.Types exposing
     ( Filter
     )
 import BidList.Table.Types exposing (..)

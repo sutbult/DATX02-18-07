@@ -1,6 +1,6 @@
-module Browse.Filter.Types exposing (..)
+module BidList.Filter.Types exposing (..)
 
-import Browse.Filter.Part.Types as PartTypes
+import BidList.Filter.Part.Types as PartTypes
 
 type alias Model =
     { from : PartTypes.Model
