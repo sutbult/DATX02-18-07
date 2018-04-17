@@ -17,6 +17,8 @@ import Error.State as ErrorState
 import Platform.Cmd
 import Browse.Rest exposing (getBids)
 import Ports
+import Utils.List exposing (nub)
+
 
 init : (Model, Cmd Msg)
 init =
@@ -104,17 +106,6 @@ filterElementsPart : (Bid -> Value) -> List Bid -> List String
 filterElementsPart access =
     nub << List.map (.currency << access)
 
-nub : List a -> List a
-nub list =
-    case list of
-        [] ->
-            []
-
-        x :: xs ->
-            if List.member x xs then
-                nub xs
-            else
-                x :: nub xs
 
 foldMsg : (msg -> model -> (model, Cmd msg)) -> model -> List msg -> (model, Cmd msg)
 foldMsg fn model = List.foldl (updateCmd fn) (model, Cmd.none)
