@@ -27,7 +27,7 @@ root model filter =
             error "Selected filter doesn't match any bids"
 
         else
-            bidList False Click bids
+            bidList model.showStatus Click bids
 
 
 -- Error

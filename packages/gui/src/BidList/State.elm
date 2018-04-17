@@ -26,10 +26,10 @@ import Utils.State exposing (foldMsg)
 import Utils.List exposing (nub)
 
 
-init : String -> (Model, Cmd Msg)
-init bidPath =
+init : Bool -> String -> (Model, Cmd Msg)
+init showStatus bidPath =
     let
-        (tableModel, tableCmd) = TableState.init
+        (tableModel, tableCmd) = TableState.init showStatus
         (filterModel, filterCmd) = FilterState.init
         (errorModel, errorCmd) = ErrorState.init
     in

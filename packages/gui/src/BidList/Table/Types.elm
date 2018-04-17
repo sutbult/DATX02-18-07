@@ -6,6 +6,7 @@ import Bid.Types exposing
 
 type alias Model =
     { bids : List Bid
+    , showStatus : Bool
     }
 
 type Msg

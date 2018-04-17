@@ -10,7 +10,7 @@ import BidList.State as BidListState
 init : (Model, Cmd Msg)
 init =
     let
-        (bidListModel, bidListCmd) = BidListState.init "getBids"
+        (bidListModel, bidListCmd) = BidListState.init False "getBids"
         (acceptModel, acceptCmd) = AcceptState.init
     in
         (   { bidList = bidListModel

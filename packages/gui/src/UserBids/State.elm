@@ -9,7 +9,7 @@ import UserBids.Types exposing (..)
 init : (Model, Cmd Msg)
 init =
     let
-        (bidListModel, bidListCmd) = BidListState.init "getUserBids"
+        (bidListModel, bidListCmd) = BidListState.init True "getUserBids"
     in
         (   { bidList = bidListModel
             }

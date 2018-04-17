@@ -2,9 +2,10 @@ module BidList.Table.State exposing (..)
 
 import BidList.Table.Types exposing (..)
 
-init : (Model, Cmd Msg)
-init =
+init : Bool -> (Model, Cmd Msg)
+init showStatus =
     (   { bids = []
+        , showStatus = showStatus
         }
     , Cmd.none
     )

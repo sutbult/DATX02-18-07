@@ -9,7 +9,7 @@ import AcceptedBids.Types exposing (..)
 init : (Model, Cmd Msg)
 init =
     let
-        (bidListModel, bidListCmd) = BidListState.init "getAcceptedBids"
+        (bidListModel, bidListCmd) = BidListState.init False "getAcceptedBids"
     in
         (   { bidList = bidListModel
             }
