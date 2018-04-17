@@ -32,11 +32,11 @@ async function init(msgHandler){
 
 function getBid(amount){
   var bids = getBids(amount, globalDB)
-  for (var i = bids.length - 1; i >= 0; i--){
-    if(bids[i].key == key){
-      bids.splice(i,1);
-    }
-  }
+  // for (var i = bids.length - 1; i >= 0; i--){
+  //   if(bids[i].key == key){
+  //     bids.splice(i,1);
+  //   }
+  // }
   return bids
 }
 

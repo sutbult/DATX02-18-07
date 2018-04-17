@@ -20,8 +20,10 @@ function whenBidAccepted(bid){
     }
 
     //firstSender will wait here until secondSender has sent their contractAdr
-    var message = messenger.pushDigestInfo(jsonObj);
+    messenger.pushDigestInfo(jsonObj, whenBidAccepted2);
+}
 
+function whenBidAccepted2(){
     var toCurrency = bid.to.currency;
     switch(toCurrency){
         case "Ethereum":
@@ -37,15 +39,21 @@ function whenBidAccepted(bid){
     }
 }
 
+
+
 async function acceptBid(bidID){
     //Fetch bid from database with bidID
     var bid = await db.getBid2(bidID);
     // const util = require("util");
     // console.log(util.inspect(bid,false,null));
+    var message;
     
-    //step 2
-    var message = await messenger.acceptBid(bid);
-    Console.log("Rad 48 in TradeHandler, printas detta anta att messenger.acceptBid funkar");
+    messenger.acceptBid(bid, acceptBid2);
+}
+
+function acceptBid2(){
+    console.log(message);
+    console.log("Rad 48 in TradeHandler, printas detta anta att messenger.acceptBid funkar");
     var jsonObj;
 
     var toCurrency = bid.to.currency;
@@ -60,8 +68,11 @@ async function acceptBid(bidID){
             break;
         default:
             console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
+            return;
+            //throw error
     }
-
+    console.log(jsonObj);
+    // console.log(messenger);
     messenger.pushContractInfo(jsonObj);
 
     var fromCurrency = bid.from.currency;
@@ -76,28 +87,10 @@ async function acceptBid(bidID){
             break;
         default:
             console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
+            return;
             //Throw error
     }
-}
-
-/**Deploy the HTLC on the appropriate chain. Determined by to and from of bid
- * @param {object} bid 
- */
-function toSwitchCase(bid, message){
-    var toCurrency = bid.to.currency;
-
-    switch(toCurrency){
-        case "Ethereum":
-            console.log("To Ethereum");
-            Eth.receiver(bid, message);
-            break;
-        case "Ethereum classic":
-            console.log("To Ethereum classic");
-            //Etc.receiver(bid, message);
-            break;
-        default:
-            console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
-    }
+    
 }
 
 module.exports = {

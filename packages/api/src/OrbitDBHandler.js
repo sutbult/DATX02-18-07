@@ -118,8 +118,8 @@ async function addData(data, channelName, address){
   //For testing
   const date = channel.iterator({ limit: -1 }).collect().map((e) => e.payload.value)
 
-  console.log("date: " + date);
-  console.log("JSON.parse(date).step: " + JSON.parse(date).step);
+  // console.log("date: " + date);
+  // console.log("JSON.parse(date).step: " + JSON.parse(date).step);
 
   //checkForStep(2);
 
@@ -148,16 +148,16 @@ async function getKVData(key, address){
       "adress" : adressString
     };
 */
-async function acceptBid(JSONbid){
+async function acceptBid(JSONbid, func){
 
   var acceptBid = JSONbid;
-  console.log("acceptBid.channel: " + acceptBid.channel);
-  console.log("Right before messangingChannel");
+  // console.log("acceptBid.channel: " + acceptBid.channel);
+  // console.log("Right before messangingChannel");
   var messagingChannel = await createDB(acceptBid.channel, "log", "public")
-  console.log("MessagingChannel: " + messagingChannel);
+  // console.log("MessagingChannel: " + messagingChannel);
   channel = await getLogDB(messagingChannel)
   await channel.load()
-  console.log("After channel.log");
+  // console.log("After channel.log");
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
 
   //Send information to blockchain parts
@@ -170,22 +170,23 @@ async function acceptBid(JSONbid){
   await channel.add(JSONObject);
 
 
-  return checkForStep(3); //Might be done at blockchain part
+  checkForStep(3,func); //Might be done at blockchain part
   //Let everybody know that the bid is taken.
   //Send to blockchain parts
 }
 
-function checkForStep(step) {
+function checkForStep(step, func) {
+  console.log(step);
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
   var timer = setInterval(function(){
     if(JSON.parse(message).step != step) {
       message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
-      console.log(JSON.parse(message).step)
-      return message
+      console.log("In checkForStep " + JSON.parse(message).step);
+      //return message
     } else {
       clearInterval(timer)
       console.log("Correct step: " + JSON.parse(message).step)
-      return message
+      func(message);
     }
   }, 1000);
 }
@@ -199,7 +200,7 @@ function checkForStep(step) {
       "contractAddress" : contractAddressString
     };
 */
-async function pushDigestInfo(contractInfo) {
+async function pushDigestInfo(contractInfo, func) {
 
   var digestMessage = new Object();
   digestMessage.step = 3;
@@ -210,7 +211,7 @@ async function pushDigestInfo(contractInfo) {
 
   var JSONdigest = JSON.stringify(digestMessage)
   await channel.add(JSONdigest);
-  checkForStep(4);
+  checkForStep(4,func);
   //Send to blockchain
 }
 
@@ -280,6 +281,8 @@ module.exports = {
   addData,
   getData,
   acceptBid,
+  pushDigestInfo,
+  pushContractInfo,
   checkForStep,
   createDB,
   addKVData,
