@@ -1,15 +1,10 @@
 module UserBids.Types exposing (..)
 
-import Bid.Types exposing (Bid)
-import Error.Types
+import BidList.Types as BidListTypes
 
 type alias Model =
-    { bids : List Bid
-    , error : Error.Types.Model
+    { bidList : BidListTypes.Model
     }
 
 type Msg
-    = Noop
-    | SetBids (List Bid)
-    | ToError Error.Types.Msg
-    | UpdateBids
+    = ToBidList BidListTypes.Msg

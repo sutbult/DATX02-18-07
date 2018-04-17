@@ -1,4 +1,4 @@
-module Browse.Bids.Types exposing (..)
+module Browse.Accept.Types exposing (..)
 
 import Bid.Types exposing
     ( Bid
@@ -6,19 +6,22 @@ import Bid.Types exposing
 import Error.Types
 
 type alias Model =
-    { bids : List Bid
-    , modal : Maybe Bid
+    { modal : Maybe Bid
     , processing : Bool
     , sseID : Int
     }
 
 type Msg
-    = SetBids (List Bid)
-    | DisplayModal Bid
+    -- Modal
+    = DisplayModal Bid
     | CancelModal
+
+    -- Accept bid
     | AcceptBid Bid
     | EndProcessingBid
-    | GetSSEId Int
-    | Noop
     | AcceptFailure Error.Types.Msg
+
+    -- Misc
+    | GetSSEId Int
     | ToError Error.Types.Msg
+    | Noop

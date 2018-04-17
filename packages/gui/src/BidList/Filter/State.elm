@@ -1,9 +1,13 @@
-module Browse.Filter.State exposing (init, update, subscriptions)
+module BidList.Filter.State exposing
+    ( init
+    , update
+    , subscriptions
+    )
 
 import Platform.Cmd
-import Browse.Filter.Types exposing (..)
+import BidList.Filter.Types exposing (..)
 
-import Browse.Filter.Part.State as PartState
+import BidList.Filter.Part.State as PartState
 
 init : (Model, Cmd Msg)
 init =

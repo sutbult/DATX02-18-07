@@ -1,40 +1,26 @@
-module Browse.Bids.View exposing (root)
-
-import Browse.Bids.Types exposing (..)
-import Bid.Types exposing
-    ( Bid
-    , Value
-    , amountString
-    )
-import Bid.View exposing (bidList)
+module Browse.Accept.View exposing (root)
 
 import Html exposing (..)
 import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 
-import Browse.Filter.Types exposing (Filter)
-
-root : Model -> Filter -> Html Msg
-root model filter =
-    let
-        bids = filteredBids model filter
-    in
-        if List.isEmpty bids then
-            error
-        else
-            div []
-                [ bidList False DisplayModal bids
-                , modal model
-                ]
+import Browse.Accept.Types exposing (..)
+import Bid.Types exposing
+    ( Bid
+    , Value
+    , amountString
+    )
 
 
-modal : Model -> Html Msg
-modal model =
+root : Model -> Html Msg
+root model =
     if model.processing then
         processingModal
     else
         bidModalMaybe model.modal
 
+
+-- Processing modal
 
 processingModal : Html Msg
 processingModal =
@@ -65,6 +51,7 @@ bidModalMaybe mbid =
 
         Nothing ->
             div [] []
+
 
 bidModal : Bid -> Html Msg
 bidModal bid =
@@ -149,25 +136,3 @@ valueRows title value =
                 ]
             ]
         ]
-
-
--- Error
-
-error : Html Msg
-error =
-    article [class "message is-danger"]
-        [ div [class "message-body"]
-            [ p [] [text "Selected filter doesn't match any bids"]
-            ]
-        ]
-
-
--- Filter
-
-filteredBids : Model -> Filter -> List Bid
-filteredBids model filter = List.filter (filterBid filter) (.bids model)
-
-filterBid : Filter -> Bid -> Bool
-filterBid filter bid =
-    List.member (.currency <| .from bid) (.from filter) &&
-    List.member (.currency <| .to bid) (.to filter)

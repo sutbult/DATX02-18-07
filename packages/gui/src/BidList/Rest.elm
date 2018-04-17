@@ -1,6 +1,8 @@
-module Browse.Rest exposing (getBids)
+module BidList.Rest exposing
+    ( getBids
+    )
 
-import Browse.Types exposing (..)
+import BidList.Types exposing (..)
 import Json.Decode exposing (..)
 
 import Bid.Types exposing
@@ -10,17 +12,18 @@ import Bid.Types exposing
 import Bid.Rest exposing
     ( decodeBid
     )
+import Utils.Rest exposing
+    ( get
+    )
 
-import Rest
 
-
-getBids : Cmd Msg
-getBids =
-    Rest.get
-        "getBids"
+getBids : String -> Cmd Msg
+getBids path =
+    get
+        path
         decodeBids
         SetBids
-        Error
+        ToError
 
 
 decodeBids : Decoder (List Bid)

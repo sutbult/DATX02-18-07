@@ -1,11 +1,11 @@
-module Browse.Filter.View exposing (root)
+module BidList.Filter.View exposing (root)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
-import Browse.Filter.Types exposing (..)
+import BidList.Filter.Types exposing (..)
 
-import Browse.Filter.Part.View as PartView
+import BidList.Filter.Part.View as PartView
 
 root : Model -> Html Msg
 root model =

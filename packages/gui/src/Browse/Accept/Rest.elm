@@ -1,6 +1,6 @@
-module Browse.Bids.Rest exposing (..)
+module Browse.Accept.Rest exposing (..)
 
-import Browse.Bids.Types exposing (..)
+import Browse.Accept.Types exposing (..)
 
 import Bid.Types exposing
     ( Bid
@@ -10,13 +10,15 @@ import Bid.Rest exposing
     )
 
 import Json.Decode
-import Rest
+import Utils.Rest exposing
+    ( post
+    )
 
 
 acceptBid : Bid -> Int -> Cmd Msg
 acceptBid bid sseID =
     if sseID >= 0 then
-        Rest.post
+        post
             (encodeBidId bid sseID)
             "acceptBid"
             (Json.Decode.succeed ())

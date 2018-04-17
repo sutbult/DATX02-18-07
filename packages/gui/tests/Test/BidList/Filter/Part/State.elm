@@ -1,16 +1,16 @@
-module Test.Browse.Filter.Part.State exposing (suite)
+module Test.BidList.Filter.Part.State exposing (suite)
 
 import Test exposing (..)
 import Fuzz exposing (string)
 import Expect
 import Dict
 
-import Browse.Filter.Part.Types exposing (..)
-import Browse.Filter.Part.State exposing (..)
+import BidList.Filter.Part.Types exposing (..)
+import BidList.Filter.Part.State exposing (..)
 
 suite : Test
 suite =
-    describe "Browse.Filter.Part.State"
+    describe "BidList.Filter.Part.State"
         [ describe "init"
             [ fuzz string "Initializes correctly" <|
                 \title ->

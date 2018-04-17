@@ -1,13 +1,13 @@
-module Test.Browse.Filter.Types exposing (suite)
+module Test.BidList.Filter.Types exposing (suite)
 
 import Test exposing (..)
 import Expect
 import Dict
 
-import Browse.Filter.Types exposing (..)
+import BidList.Filter.Types exposing (..)
 
 suite =
-    describe "Browse.Filter.Types" <|
+    describe "BidList.Filter.Types" <|
         [ describe "getFilter"
             [ test "Correctly filters currencies" <|
                 \() ->

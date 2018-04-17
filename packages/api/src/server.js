@@ -85,6 +85,13 @@ post("/acceptBid", async body => {
                     cmd: "acceptBidResponse",
                     status: "ok",
                 });
+            })
+            .catch(error => {
+                sendSSE(body.clientID, {
+                    cmd: "acceptBidResponse",
+                    status: "error",
+                    error,
+                });
             });
     }
 });

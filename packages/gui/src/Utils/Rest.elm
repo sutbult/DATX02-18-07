@@ -1,4 +1,4 @@
-module Rest exposing
+module Utils.Rest exposing
     ( get
     , post
     )

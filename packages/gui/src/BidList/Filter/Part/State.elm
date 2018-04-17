@@ -1,4 +1,4 @@
-module Browse.Filter.Part.State exposing
+module BidList.Filter.Part.State exposing
     ( init
     , update
     , subscriptions
@@ -6,7 +6,7 @@ module Browse.Filter.Part.State exposing
 
 import Dict
 
-import Browse.Filter.Part.Types exposing (..)
+import BidList.Filter.Part.Types exposing (..)
 
 
 init : String -> (Model, Cmd Msg)
