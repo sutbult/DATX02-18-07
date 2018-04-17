@@ -1,6 +1,55 @@
 const ETH = require("./ethereum.js");
 ETH.genesisCheck(ETH.web3);
 
+function getAddress(){
+    //The user should get to choose which account
+    console.log(ETH.web3.eth.accounts[0]);
+    return ETH.web3.eth.accounts[0];
+}
+
+function acceptBid(bid){
+    var jsonObj;
+    var toCurrency = bid.to.currency;
+    switch(toCurrency){
+        case "Ethereum":
+            console.log("To Ethereum");
+            // jsonObj = require("./tradeEth.js").secondSender(bid, message);
+            break;
+        case "Ethereum classic":
+            console.log("To Ethereum classic");
+            //jsonObj = require("./tradeEtc.js").secondSender(bid, message);
+            break;
+        default:
+            console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
+            return;
+            //throw error
+    }
+
+    console.log("Alrighty, you can continue from acceptBid in tradeETH");
+    // console.log(jsonObj);
+    // console.log(messenger);
+    // messenger.pushContractInfo(jsonObj);
+
+    // var fromCurrency = bid.from.currency;
+    // switch(fromCurrency){
+    //     case "Ethereum":
+    //         console.log("From Ethereum");
+    //         jsonObj = require("./tradeEth.js").secondReceiver(bid);
+    //         break;
+    //     case "Ethereum classic":
+    //         console.log("From Ethereum classic");
+    //         //jsonObj = require("./tradeEtc.js").secondReceiver(bid);
+    //         break;
+    //     default:
+    //         console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
+    //         return;
+    //         //Throw error
+    // }
+    
+}
+
+
+
 function firstSender(bid, message){
     console.log("message should contain to_adr");
     //From address should perhaps be set somewhere else
@@ -29,8 +78,10 @@ function secondReceiver(bid, message){
 }
 
 module.exports = {
-    firstSender,
-    firstReceiver,
-    secondSender,
-    secondReceiver
+    getAddress,
+    acceptBid
+    // firstSender,
+    // firstReceiver,
+    // secondSender,
+    // secondReceiver
 }

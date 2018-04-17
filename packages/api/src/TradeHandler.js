@@ -47,39 +47,14 @@ async function acceptBid(bidID){
     // const util = require("util");
     // console.log(util.inspect(bid,false,null));
     var message;
-    
-    messenger.acceptBid(bid, acceptBid2);
-}
-
-function acceptBid2(){
-    console.log(message);
-    console.log("Rad 48 in TradeHandler, printas detta anta att messenger.acceptBid funkar");
-    var jsonObj;
-
-    var toCurrency = bid.to.currency;
-    switch(toCurrency){
-        case "Ethereum":
-            console.log("To Ethereum");
-            jsonObj = require("./tradeEth.js").secondSender(bid, message);
-            break;
-        case "Ethereum classic":
-            console.log("To Ethereum classic");
-            //jsonObj = require("./tradeEtc.js").secondSender(bid, message);
-            break;
-        default:
-            console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
-            return;
-            //throw error
-    }
-    console.log(jsonObj);
-    // console.log(messenger);
-    messenger.pushContractInfo(jsonObj);
-
+    var address;
     var fromCurrency = bid.from.currency;
     switch(fromCurrency){
         case "Ethereum":
             console.log("From Ethereum");
-            jsonObj = require("./tradeEth.js").secondReceiver(bid);
+            var eth = require("./tradeEth.js");
+            address = eth.getAddress();
+            messenger.acceptBid(bid, address, eth.acceptBid(bid));
             break;
         case "Ethereum classic":
             console.log("From Ethereum classic");
@@ -90,7 +65,7 @@ function acceptBid2(){
             return;
             //Throw error
     }
-    
+    // messenger.acceptBid(bid, address, acceptBid2);
 }
 
 module.exports = {

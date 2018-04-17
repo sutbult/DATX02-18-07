@@ -148,12 +148,8 @@ async function getKVData(key, address){
       "adress" : adressString
     };
 */
-async function acceptBid(JSONbid, func){
-
-  var acceptBid = JSONbid;
-  // console.log("acceptBid.channel: " + acceptBid.channel);
-  // console.log("Right before messangingChannel");
-  var messagingChannel = await createDB(acceptBid.channel, "log", "public")
+async function acceptBid(bid,address, func){
+  var messagingChannel = await createDB(bid.channel, "log", "public")
   // console.log("MessagingChannel: " + messagingChannel);
   channel = await getLogDB(messagingChannel)
   await channel.load()
@@ -164,7 +160,7 @@ async function acceptBid(JSONbid, func){
 
   var acceptMessage = new Object();
   acceptMessage.step = 2;
-  acceptMessage.address = acceptBid.address; //How do we access address?
+  acceptMessage.address = address; //How do we access address?
 
   var JSONObject = JSON.stringify(acceptMessage)
   await channel.add(JSONObject);
