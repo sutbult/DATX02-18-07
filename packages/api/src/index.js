@@ -68,7 +68,7 @@ function BidFactory() {
 // Fetches all available bids from the decentralized database
 async function getBids() {
     await ensureInitialized();
-    return db.getBid(50)
+    return db.getBids(50)
 
 }
 

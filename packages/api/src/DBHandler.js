@@ -16,25 +16,25 @@ async function init(msgHandler){
 
 
   // Address to the local database containing status of the user's bids
-  var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
+/*  var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
   statusDB = await orbitDB.getKVDB(status)
   await statusDB.load()
   await orbitDB.close()
-
+*/
   //Add Listeners
-/*  globalDB.events.on('replicated', () => {
+  globalDB.events.on('replicated', () => {
     messageHandler({
         cmd: "updateBids",
     });
   });
-*/
-  /*globalDB.events.on('write', () => {
+
+  globalDB.events.on('write', () => {
     messageHandler({
         cmd: "updateBids",
     });
   });
-*/
-  statusDB.events.on('replicated', () => {
+
+/*  statusDB.events.on('replicated', () => {
     messageHandler({
         cmd: "updateBids",
     });
@@ -45,14 +45,18 @@ async function init(msgHandler){
         cmd: "updateBids",
     });
   });
-
+*/
 
 }
 
-function getBid(amount){
-  var bids = getBids(amount, globalDB)
+function getBids(amount){
+  var bids = getBid(amount, globalDB)
   for (var i = bids.length - 1; i >= 0; i--){
-    if(bids[i].key == key || bids[i].status == "PENDING" || bids[i].status == "FINISHED"){
+    //var tempAmount = bids[i].from.amount
+    //bids[i].from.amount = bids[i].to.amount
+    //bids[i].to.amount = tempAmount
+    //|| bids[i].status == "PENDING" || bids[i].status == "FINISHED"
+    if(bids[i].key == key){
       bids.splice(i,1);
     }
   }
@@ -74,7 +78,7 @@ async function addBid(bid){
   //Consult Samuel about structure of bids
   var id = await globalDB.add(bid) //object instead of bid
   // Add bid to local database
-  await statusDB.put(id, "ACTIVE");
+//  await statusDB.put(id, "ACTIVE");
 
   await orbitDB.addData("test", bid.channel, "PLACEHOLDER") //Placeholder replace with function to get address
   orbitDB.close()
@@ -92,7 +96,7 @@ async function changeBidStatus(bid, status){
 }
 
 function getUserBids(amount){
-  var bids = getBids(amount, globalDB)
+  var bids = getBid(amount, globalDB)
   for (var i = bids.length - 1; i >= 0; i--){
     if(bids[i].key != key){
       bids.splice(i,1);
@@ -101,14 +105,14 @@ function getUserBids(amount){
   return bids
 }
 
-function getBids(amount, db){
+function getBid(amount, db){
   var data = db.iterator({ limit : amount }).collect()
   var bids = []
   for (var i = 0; i < data.length; i++) {
     var bid = data[i].payload.value
     bid.id = data[i].hash
     bid.key = data[i].key
-    bid.status = statusDB.get(data[i].hash)
+  //  bid.status = statusDB.get(data[i].hash)
     bids.push(bid)
   }
   return bids
@@ -116,7 +120,7 @@ function getBids(amount, db){
 
 module.exports = {
   addBid,
-  getBid,
+  getBids,
   acceptBid,
   changeBidStatus,
   getUserBids,
