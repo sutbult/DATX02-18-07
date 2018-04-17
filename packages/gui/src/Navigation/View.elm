@@ -10,6 +10,7 @@ import Browse.View
 import Add.View
 import Wallet.View
 import UserBids.View
+import AcceptedBids.View
 
 root : Model -> Html Msg
 root model =
@@ -17,6 +18,7 @@ root model =
         [ tabs model.shown
         , viewSelector model
         ]
+
 
 viewSelector : Model -> Html Msg
 viewSelector model =
@@ -33,6 +35,9 @@ viewSelector model =
         UserBids ->
             Html.map ToUserBids <| UserBids.View.root model.models.userBids
 
+        AcceptedBids ->
+            Html.map ToAcceptedBids <| AcceptedBids.View.root model.models.acceptedBids
+
 
 tabs : View -> Html Msg
 tabs shown =
@@ -43,6 +48,7 @@ tabs shown =
                 , (Browse, "Browse bids")
                 , (Wallet, "Your wallets")
                 , (UserBids, "Your bids")
+                , (AcceptedBids, "Accepted bids")
                 ]
         ]
 

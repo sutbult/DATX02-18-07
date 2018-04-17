@@ -102,6 +102,11 @@ async function getUserBids() {
     await ensureInitialized();
     return db.getUserBids(50)
 }
+async function getAcceptedBids() {
+    await ensureInitialized();
+    // TODO: Implementera detta
+    return [];
+}
 
 // Fetches the currencies which is available for the user to create bids with
 async function getCurrencies() {
@@ -122,6 +127,7 @@ module.exports = {
     acceptBid,
     getWallet,
     getUserBids,
+    getAcceptedBids,
     getCurrencies,
     setMessageHandler,
 };

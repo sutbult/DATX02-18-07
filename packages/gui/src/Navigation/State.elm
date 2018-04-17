@@ -11,6 +11,7 @@ import Browse.State
 import Add.State
 import Wallet.State
 import UserBids.State
+import AcceptedBids.State
 
 -- TODO: Ta fram en lösning för denna och liknande mappar med kombinationer
 -- så att denna och linkande upprepningar undviks
@@ -22,6 +23,7 @@ init =
         (addModel, addCmd) = Add.State.init
         (walletModel, walletCmd) = Wallet.State.init
         (userBidsModel, userBidsCmd) = UserBids.State.init
+        (acceptedBidsModel, acceptedBidsCmd) = AcceptedBids.State.init
     in
         (   { shown = Add
             , models =
@@ -29,6 +31,7 @@ init =
                 , add = addModel
                 , wallet = walletModel
                 , userBids = userBidsModel
+                , acceptedBids = acceptedBidsModel
                 }
             }
         , Cmd.batch
@@ -36,6 +39,7 @@ init =
             , Platform.Cmd.map ToAdd addCmd
             , Platform.Cmd.map ToWallet walletCmd
             , Platform.Cmd.map ToUserBids userBidsCmd
+            , Platform.Cmd.map ToAcceptedBids acceptedBidsCmd
             ]
         )
 
@@ -77,6 +81,15 @@ update msg model =
             in
                 ({model | models = newModels}, Platform.Cmd.map ToUserBids subCmd)
 
+        ToAcceptedBids subMsg ->
+            let
+                (subModel, subCmd) = AcceptedBids.State.update subMsg model.models.acceptedBids
+                oldModels = model.models
+                newModels = {oldModels | acceptedBids = subModel}
+            in
+                ({model | models = newModels}, Platform.Cmd.map ToAcceptedBids subCmd)
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
@@ -84,4 +97,5 @@ subscriptions model =
         , Sub.map ToAdd <| Add.State.subscriptions model.models.add
         , Sub.map ToWallet <| Wallet.State.subscriptions model.models.wallet
         , Sub.map ToUserBids <| UserBids.State.subscriptions model.models.userBids
+        , Sub.map ToAcceptedBids <| AcceptedBids.State.subscriptions model.models.acceptedBids
         ]

@@ -68,6 +68,7 @@ apiRouter.use((req, res, next) => {
 get("/getBids", api.getBids);
 get("/getWallet", api.getWallet);
 get("/getUserBids", api.getUserBids);
+get("/getAcceptedBids", api.getAcceptedBids);
 get("/getCurrencies", api.getCurrencies);
 
 
