@@ -59,14 +59,9 @@ async function addBid(bid){
   //Consult Samuel about structure of bids
   var key = await globalDB.add(bid) //object instead of bid
   // Add bid to local database
-  await orbitDB.addData("test", bid.channel, "PLACEHOLDER") //Placeholder replace with function to get address
+  await orbitDB.addData("test", bid.channel, "Version x.69") //Placeholder replace with function to get address
   orbitDB.close()
   await statusDB.put(key, bid);
-
-}
-
-async function acceptBid(bid) {
-  //await orbitDB.acceptBid(bid);
 }
 
 async function changeBidStatus(bid, status){

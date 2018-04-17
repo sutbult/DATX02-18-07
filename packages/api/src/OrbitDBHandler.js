@@ -177,7 +177,7 @@ async function bidAccepted(bid, func){
   await channel.load()
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
 
-  checkForStep(1,func);
+  checkForStep(2,func);
 }
 
 function checkForStep(step, func) {

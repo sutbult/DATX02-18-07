@@ -39,13 +39,8 @@ function whenBidAccepted2(){
     }
 }
 
-
-
 async function acceptBid(bidID){
-    //Fetch bid from database with bidID
     var bid = await db.getBid2(bidID);
-    // const util = require("util");
-    // console.log(util.inspect(bid,false,null));
     var message;
     var address;
     var fromCurrency = bid.from.currency;

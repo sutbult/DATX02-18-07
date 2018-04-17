@@ -12,7 +12,7 @@ async function init() {
     await dbPromise;
     
     /**check in a set interval if anyone accepted your bid
-     * @todo clearInterval once accepted: https://nodejs.org/en/docs/guides/timers-in-node/
+     * @todo clearInterval once all bids are accepted: https://nodejs.org/en/docs/guides/timers-in-node/
      */
     setInterval(checkAccBid, 10000);
 }
@@ -23,27 +23,12 @@ function setMessageHandler(messageHandlerArg) {
     messageHandler = messageHandlerArg;
 }
 
-// Exempel på funktioner som mycket väl kan finnas med i denna modul
-
 // Adds a new bid to the decentralized database
 async function addBid(bid) {
     await ensureInitialized();
     bid.status = "ACTIVE"
     bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 
-    //bid.channel = "/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message"
-    /*
-    var jsonObject = {
-        "step" : "1",
-        "from" : "CURRENCY",
-        "fromAmount" : '5',
-        "to":"CURRENCY",
-        "toAmount" : '5',
-        "address" : 'test',
-        "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
-    };
-    console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));
-    */
     await db.addBid(bid);
 }
 
@@ -101,7 +86,7 @@ async function getBids() {
 // Accepts a bid and starts the swapping process
 async function acceptBid(bidID, callback) {
     await ensureInitialized();
-    // TODO: Implementera på riktigt
+    
     trader.acceptBid(bidID);
     console.log("User accepts the bid with this ID: %s", bidID);
 }
