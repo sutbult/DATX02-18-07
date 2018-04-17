@@ -175,6 +175,15 @@ async function acceptBid(JSONbid, func){
   //Send to blockchain parts
 }
 
+async function bidAccepted(bid, func){
+  var messagingChannel = await createDB(bid.channel, "log", "public")
+  channel = await getLogDB(messagingChannel)
+  await channel.load()
+  var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
+
+  checkForStep(1,func);
+}
+
 function checkForStep(step, func) {
   console.log(step);
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
@@ -280,6 +289,7 @@ module.exports = {
   init,
   addData,
   getData,
+  bidAccepted,
   acceptBid,
   pushDigestInfo,
   pushContractInfo,

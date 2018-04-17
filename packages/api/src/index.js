@@ -55,14 +55,15 @@ async function checkAccBid(){
     var bids = await db.getUserBids(1000000000000000);
     //console.log(bids);
     bids.forEach(bid => {
+        messenger.bidAccepted(bid,trader.whenBidAccepted(bid));
         //Only testcheck, remove
-        if(bid.status === "ACTIVE"){
-            console.log("Bara att fortsätta vänta");
-        }
-        //The big question is if the status will be === ACCEPTED
-        if(bid.status === "ACCEPTED"){
-            trader.whenBidAccepted(bid);
-        }
+        // if(bid.status === "ACTIVE"){
+        //     console.log("Bara att fortsätta vänta");
+        // }
+        // //The big question is if the status will be === ACCEPTED
+        // if(bid.status === "ACCEPTED"){
+        //     trader.whenBidAccepted(bid);
+        // }
     });
 }
 
@@ -102,15 +103,7 @@ async function acceptBid(bidID, callback) {
     await ensureInitialized();
     // TODO: Implementera på riktigt
     trader.acceptBid(bidID);
-
-    
-
-
     console.log("User accepts the bid with this ID: %s", bidID);
-
-    //switchCase(bid);
-
-
 }
 
 // Fetches all accounts associated with the user
