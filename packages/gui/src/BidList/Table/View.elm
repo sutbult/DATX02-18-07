@@ -20,19 +20,23 @@ root model filter =
     let
         bids = filteredBids model filter
     in
-        if List.isEmpty bids then
-            error
+        if List.isEmpty model.bids then
+            error "There is no bids to display"
+
+        else if List.isEmpty bids then
+            error "Selected filter doesn't match any bids"
+
         else
             bidList False Click bids
 
 
 -- Error
 
-error : Html Msg
-error =
+error : String -> Html Msg
+error message =
     article [class "message is-danger"]
         [ div [class "message-body"]
-            [ p [] [text "Selected filter doesn't match any bids"]
+            [ p [] [text message]
             ]
         ]
 
