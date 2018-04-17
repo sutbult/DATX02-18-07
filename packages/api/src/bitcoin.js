@@ -67,11 +67,32 @@ function getBalance() {
   });
 }
 
+async function getPrivateKey() {
+  return new Promise((resolve, reject) => {
+    rpc.getNewAddress((err1, addr) => {
+      if (err1) {
+        resolve(err1);
+      } else {
+        // resolve(addr.result.toString())
+        console.log(addr);
+        rpc.dumpPrivKey(addr.result.toString(), (err2, priv) => {
+          if (err2) {
+            reject(err2)
+          } else {
+            console.log(priv);
+            resolve(priv.result)
+          }
+        });
+      }
+    });
+  });
+}
+
 function myFun(word) {
   console.log(word);
 }
 
-BitcoinClient('bitcoinrpc', 'password', '127.0.0.2', '16592');
+BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16592');
 // DefaultBitcoinClient();
 
 // async function functionName() {
@@ -82,22 +103,29 @@ BitcoinClient('bitcoinrpc', 'password', '127.0.0.2', '16592');
 // console.log("hello");
 // ping(myFun
 
-var timeout = getTimeout(110)
-result = htlcTransactionObject(undefined, undefined, undefined)
-console.log(result);
-var alice = bitcoinjs.ECPair.fromWIF('cRuoxDPY2ku1LjANJJMBUjqWYejYnF5MwmzbWsAs7i1uoVSqCmzH', bitcoinjs.networks.testnet);
-console.log(alice.getPublicKeyBuffer());
+getPrivateKey().then((a) => console.log(a));
 
-redeemScript = result.redeemScript;
-hashType = result.hashType;
+var timeout = getTimeout(110)
+// result = htlcTransactionObject(undefined, undefined, undefined)
+// console.log(result);
+// var alice = bitcoinjs.ECPair.fromWIF('cRuoxDPY2ku1LjANJJMBUjqWYejYnF5MwmzbWsAs7i1uoVSqCmzH', bitcoinjs.networks.testnet);
+// console.log(alice.getPublicKeyBuffer());
+
+// redeemScript = result.redeemScript;
+// hashType = result.hashType;
 
 function getTimeout(timeoutBlocks) {
   //get current blockNumber first and add to timeoutBlocks
   return bip65.encode({ blocks: timeoutBlocks });
 }
 
-function sendToHTLC(secret, sellerPublicKey, satoshis) {
-  this.htlcTransactionObject = htlcTransactionObject()
+function sendToHTLC(secret, sellerPublicKeyBuffer, satoshis) {
+  getPrivateKey().then((privkey) => {
+    this.htlcTransactionObject = htlcTransactionObject(secret, privkey,
+      sellerPublicKeyBuffer, bitcoinjs.networks.testnet);
+
+  });
+
 }
 
 // function for sending to htlc address and adding id and stuff to htlcTransactionObject
@@ -108,7 +136,7 @@ function sendToHTLC(secret, sellerPublicKey, satoshis) {
 
 
 
-function htlcTransactionObject(bobKey, secret, timeoutBlocks) {
+function htlcTransactionObject(secret, buyerPrivatekey, sellerPublicKeyBuffer, timeoutBlocks, network) {
   var result = {};
   var hashType = bitcoinjs.Transaction.SIGHASH_ALL;
   result.hashType = hashType;
