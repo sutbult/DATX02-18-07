@@ -18,6 +18,7 @@ import Platform.Cmd
 import Browse.Rest exposing (getBids)
 import Ports
 import Utils.List exposing (nub)
+import Utils.State exposing (foldMsg)
 
 
 init : (Model, Cmd Msg)
@@ -86,6 +87,7 @@ update msg model =
         UpdateBids ->
             (model, getBids)
 
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
@@ -96,28 +98,7 @@ subscriptions model =
         , Ports.updateBids <| (\_ -> UpdateBids)
         ]
 
-getFilterElements : List Bid -> (List String, List String)
-getFilterElements bid =
-    ( filterElementsPart .from bid
-    , filterElementsPart .to bid
-    )
 
 filterElementsPart : (Bid -> Value) -> List Bid -> List String
 filterElementsPart access =
     nub << List.map (.currency << access)
-
-
-foldMsg : (msg -> model -> (model, Cmd msg)) -> model -> List msg -> (model, Cmd msg)
-foldMsg fn model = List.foldl (updateCmd fn) (model, Cmd.none)
-
-updateCmd
-    :  (msg -> model -> (model, Cmd msg))
-    -> msg
-    -> (model, Cmd msg)
-    -> (model, Cmd msg)
-
-updateCmd fn msg (model, cmd) =
-    let
-        (nmodel, ncmd) = fn msg model
-    in
-        nmodel ! [cmd, ncmd]
