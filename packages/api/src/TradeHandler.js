@@ -2,13 +2,14 @@ const messenger = require("./OrbitDBHandler")
 const db = require("./DBHandler.js");
 
 function whenBidAccepted(bid){
+    console.log(bid);
     var jsonObj;
     var fromCurrency = bid.from.currency;
     
     switch(fromCurrency){
         case "Ethereum":
             console.log("From Ethereum");
-            jsonObj = require("./tradeEth.js").firstSender(bid);
+            // jsonObj = require("./tradeEth.js").firstSender(bid);
             break;
         case "Ethereum classic":
             console.log("From Ethereum classic");

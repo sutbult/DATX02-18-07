@@ -183,6 +183,13 @@ async function bidAccepted(bid, func){
 function checkForStep(step, func) {
   console.log(step);
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
+  console.log(message);
+  //the first step is unnecessary, no one has accepted your bid yet
+  if(JSON.parse(message).step == 1){
+    console.log("it ends here");
+    close();
+    return
+  }
   var timer = setInterval(function(){
     if(JSON.parse(message).step != step) {
       message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);

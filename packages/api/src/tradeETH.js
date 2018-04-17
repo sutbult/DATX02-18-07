@@ -1,13 +1,22 @@
 const ETH = require("./ethereum.js");
 ETH.genesisCheck(ETH.web3);
 
+var bid;
+//Set the global bid to be used in acceptBid for instance, does it work?
+function setBid(_bid){
+    bid = _bid;
+    console.log("bid is set to: " + bid);
+}
+
 function getAddress(){
     //The user should get to choose which account
     console.log(ETH.web3.eth.accounts[0]);
     return ETH.web3.eth.accounts[0];
 }
 
-function acceptBid(bid){
+function acceptBid(message){
+    console.log(message);
+    console.log(bid);
     var jsonObj;
     var toCurrency = bid.to.currency;
     switch(toCurrency){
