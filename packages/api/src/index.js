@@ -43,7 +43,13 @@ async function checkAccBid(){
     var bids = await db.getUserBids(1000000000000000);
     console.log(bids);
     bids.forEach(bid => {
+        console.log("*");
+        console.log("*");
+        console.log("*");
         console.log(acceptedBids);
+        console.log("*");
+        console.log("*");
+        console.log("*");
         if(!acceptedBids.includes(bid)){
             messenger.bidAccepted(bid,trader.whenBidAccepted);
         }

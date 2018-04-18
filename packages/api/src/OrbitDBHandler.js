@@ -171,7 +171,6 @@ function checkForStep(step, func) {
     } else {
       clearInterval(timer)
       console.log("Correct step: " + JSON.parse(message).step)
-      message.bidc
       func(message);
     }
   }, 5000);

@@ -80,7 +80,7 @@ function secondContract(msg){
     console.log(msg);
     var message = JSON.parse(msg);
 
-    var toCurrency = bid.to.currency;
+    var toCurrency = message.bid.to.currency;
     switch(toCurrency){
         case "Ethereum":
             console.log("To Ethereum");

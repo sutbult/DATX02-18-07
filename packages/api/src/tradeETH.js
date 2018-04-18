@@ -48,7 +48,7 @@ function secondContract(message, callback){
 
 module.exports = {
     getAddress,
-    acceptBid,
+    // acceptBid,
     firstContract,
     secondContract
 }
