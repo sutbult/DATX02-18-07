@@ -35,7 +35,10 @@ function whenBidAccepted(msg){
 }
 
 function unlockWithSecret(msg){
+    console.log("Unlock msg");
+    console.log(msg);
     var message = JSON.parse(msg);
+    console.log(message);
     var toCurrency = message.bid.to.currency;
     switch(toCurrency){
         case "Ethereum":

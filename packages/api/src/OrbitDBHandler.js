@@ -149,8 +149,8 @@ function checkForStep(step, func) {
   // console.log(step);
   // console.log(channel.address);
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-  // console.log(message);
-  jsonObj = JSON.parse(message);
+  if(message != null) jsonObj = JSON.parse(message);
+  else return;
   //the first step is unnecessary, no one has accepted your bid yet
   if(jsonObj.step == 1){
     console.log("No one has accepted this bid yet");
@@ -192,14 +192,19 @@ async function pushDigestInfo(contractInfo, func) {
   //Send to blockchain
 }
 
-async function pushContractInfo(contractInfo,message, callback) {
-  var contractMessage = new Object();
-  contractMessage.step = 4;
-  contractMessage.contractAddress = contractInfo.contractAddress;
-  var JSONContract = JSON.stringify(contractMessage)
+async function pushContractInfo(contractInfo, message, callback) {
+  console.log("********************PUSHCONTRACTINFO********************");
+  contractInfo.then(result => {
+    console.log(result);
+    var contractMessage = message;
+    contractMessage.step = 4; //recycling step 3 data, need to refresh some values
+    contractMessage.contractAddress = result.contractAddress;
+    var JSONContract = JSON.stringify(contractMessage)
+  
+    channel.add(JSONContract);
+    callback(message);
 
-  await channel.add(JSONContract);
-  callback(message);
+  });
   //Complete transaction
 }
 
