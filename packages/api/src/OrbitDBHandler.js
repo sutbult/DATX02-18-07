@@ -117,14 +117,6 @@ async function addData(data, channelName, address){
 
   //For testing
   const date = channel.iterator({ limit: -1 }).collect().map((e) => e.payload.value)
-
-  // console.log("date: " + date);
-  // console.log("JSON.parse(date).step: " + JSON.parse(date).step);
-
-  //checkForStep(2);
-
-  //Return address and tell blockchain part to call step 3
-
 }
 
 // Used for keyvalue database
@@ -148,7 +140,7 @@ async function getKVData(key, address){
       "adress" : adressString
     };
 */
-async function acceptBid(bid,address, func){
+async function acceptBid(bid, address, func){
   var messagingChannel = await createDB(bid.channel, "log", "public")
   // console.log("MessagingChannel: " + messagingChannel);
   channel = await getLogDB(messagingChannel)
@@ -160,11 +152,11 @@ async function acceptBid(bid,address, func){
 
   var acceptMessage = new Object();
   acceptMessage.step = 2;
-  acceptMessage.address = address; //How do we access address?
+  acceptMessage.address = address;
 
   var JSONObject = JSON.stringify(acceptMessage)
-  await channel.add(JSONObject);
-
+  var returnvalue = await channel.add(JSONObject);
+  console.log("What is this " + returnvalue);
 
   checkForStep(3,func); //Might be done at blockchain part
   //Let everybody know that the bid is taken.
