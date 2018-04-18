@@ -215,10 +215,14 @@ async function sendContract(ethchain, jsoncontract, args, from_address, digest, 
 
     contract.options.address = contract_address;
     subscribeToClaim(contract, receipt.blockNumber);
-
-    return receipt.contractAddress;
+    var returnObj = new Object();
+    returnObj.contractAddress = contract_address;
+    returnObj.digest = args[0];
+    returnObj.address = from_address; //this is incorrect, remove
+    console.log("The returnObj");
+    console.log(returnObj);
+    return returnObj;
     /**@todo send this information to other user */
-
 }
 
 function generateDigest(ethchain, secret, digest){

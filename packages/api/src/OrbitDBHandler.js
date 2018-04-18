@@ -72,36 +72,7 @@ async function createDB(name, type, permission){
   return headless.createDB(name, type, permission)
 }
 
-
-/*
-Bid should be JSON in form of jsonObject = {
-    "step" : "1",
-    "from" : {
-        "currency": "CURRENCY",
-        "amount" : "AMOUNT"
-    },
-    "to": {
-        "currency": "CURRENCY",
-        "amount" : "AMOUNT"
-    },
-    "address" : adressString,
-    "channel" : channelString
-  };
-
-  Can only push one bid at a time at the moment
-*/
 async function addData(data, channelName, address){
-/*
-  var channelName = await createDB(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), "log", "public") //randomly generated String https://gist.github.com/6174/6062387
-
-  var dataStringify = JSON.stringify(data);
-  var dataParsed = JSON.parse(dataStringify)
-  //var parsedData = JSON.parse(data)
-  console.log("Status: " + dataParsed.status);
-
-  var object = { "step" : "1", "from" : dataParsed.from, "to" : dataParsed.to, "address" : address, "channel" : channelName};
-  console.log("BID: " + JSON.stringify(object));
-*/
   var messaging = await createDB(channelName, "log", "public")
   channel = await getLogDB(messaging)
   await channel.load()
@@ -153,6 +124,7 @@ async function acceptBid(bid, address, func){
   var acceptMessage = new Object();
   acceptMessage.step = 2;
   acceptMessage.address = address;
+  acceptMessage.bid = bid;
 
   var JSONObject = JSON.stringify(acceptMessage)
   var returnvalue = await channel.add(JSONObject);
