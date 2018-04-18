@@ -1,24 +1,26 @@
 const messenger = require("./OrbitDBHandler")
 const db = require("./DBHandler.js");
-
+var secret = null;
 function whenBidAccepted(msg){
     //remove bid from db to prevent multiple contracts
 
-    
+    //use random function to get a good secret
+    secret = 1;
     var jsonObj;
     var message = JSON.parse(msg);
+    message.secret = secret;
     var fromCurrency = message.bid.from.currency;
     
     switch(fromCurrency){
         case "Ethereum":
             console.log("From Ethereum");
             require("./tradeETH.js").firstContract(message, function(promise){
-                console.log("whenBidAccepted: " + promise);
+                // console.log("whenBidAccepted: " + promise);
                 promise.then(result => {
                     result.bid = message.bid;
-                    console.log(result);
-                    console.log("NOW TO PUSH DIGEST INFO*****************");
-                    messenger.pushDigestInfo(result, whenBidAccepted2);
+                    // console.log(result);
+                    // console.log("NOW TO PUSH DIGEST INFO*****************");
+                    messenger.pushDigestInfo(result, unlockWithSecret);
                 });
             }); 
             break;
@@ -32,12 +34,13 @@ function whenBidAccepted(msg){
     }
 }
 
-function whenBidAccepted2(){
-    var toCurrency = bid.to.currency;
+function unlockWithSecret(msg){
+    var message = JSON.parse(msg);
+    var toCurrency = message.bid.to.currency;
     switch(toCurrency){
         case "Ethereum":
             console.log("To Ethereum");
-            require("./tradeEth.js").firstReceiver(bid, message);
+            require("./tradeETH.js").claim(message);
             break;
         case "Ethereum classic":
             console.log("To Ethereum classic");
@@ -56,11 +59,11 @@ async function acceptBid(bidID){
     switch(fromCurrency){
         case "Ethereum":
             console.log("From Ethereum");
-            var eth = require("./tradeEth.js");
+            var eth = require("./tradeETH.js");
             eth.getAddress()
             .then(accs => {
-                console.log("Address");
-                console.log(accs[1]);
+                // console.log("Address");
+                // console.log(accs[1]);
                 messenger.acceptBid(bid, accs[1], secondContract);
             });
             break;
@@ -77,15 +80,15 @@ async function acceptBid(bidID){
 }
 
 function secondContract(msg){
-    console.log(msg);
+    // console.log(msg);
     var message = JSON.parse(msg);
 
     var toCurrency = message.bid.to.currency;
     switch(toCurrency){
         case "Ethereum":
             console.log("To Ethereum");
-            var eth = require("./tradeEth.js");
-            eth.secondContract(message, messenger.pushContractInfo);
+            var eth = require("./tradeETH.js");
+            eth.secondContract(message, messenger.pushContractInfo,unlockWithSecret);
             break;
         case "Ethereum classic":
             console.log("To Ethereum classic");

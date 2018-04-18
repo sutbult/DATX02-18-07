@@ -76,7 +76,7 @@ async function addData(data, channelName, address){
   var messaging = await createDB(channelName, "log", "public")
   channel = await getLogDB(messaging)
   await channel.load()
-  console.log("1: " + messaging);
+  // console.log("1: " + messaging);
 
   var initialMessage = new Object();
   initialMessage.step = 1;
@@ -128,8 +128,8 @@ async function acceptBid(bid, address, func){
 
   var JSONObject = JSON.stringify(acceptMessage)
   var returnvalue = await channel.add(JSONObject);
-  console.log("What is this " + returnvalue);
-  console.log("**************************************");
+  // console.log("What is this " + returnvalue);
+  // console.log("**************************************");
 
   checkForStep(3,func); //Might be done at blockchain part
   //Let everybody know that the bid is taken.
@@ -146,10 +146,10 @@ async function bidAccepted(bid, func){
 }
 
 function checkForStep(step, func) {
-  console.log(step);
-  console.log(channel.address);
+  // console.log(step);
+  // console.log(channel.address);
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-  console.log(message);
+  // console.log(message);
   jsonObj = JSON.parse(message);
   //the first step is unnecessary, no one has accepted your bid yet
   if(jsonObj.step == 1){
@@ -159,18 +159,18 @@ function checkForStep(step, func) {
   }
   var index = require("./index.js")
   if(!index.acceptedBids.includes(jsonObj.bid)){
-    console.log("************ADDING BID: " + JSON.stringify(jsonObj.bid));
+    // console.log("************ADDING BID: " + JSON.stringify(jsonObj.bid));
     index.acceptedBids.push(jsonObj.bid);
   }
   var timer = setInterval(function(){
     if(JSON.parse(message).step != step) {
-      console.log(channel.address);
+      // console.log(channel.address);
       message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
-      console.log("In checkForStep " + JSON.parse(message).step);
+      // console.log("In checkForStep " + JSON.parse(message).step);
       //return message
     } else {
       clearInterval(timer)
-      console.log("Correct step: " + JSON.parse(message).step)
+      // console.log("Correct step: " + JSON.parse(message).step)
       func(message);
     }
   }, 5000);
@@ -192,14 +192,14 @@ async function pushDigestInfo(contractInfo, func) {
   //Send to blockchain
 }
 
-async function pushContractInfo(contractInfo) {
+async function pushContractInfo(contractInfo,message, callback) {
   var contractMessage = new Object();
   contractMessage.step = 4;
   contractMessage.contractAddress = contractInfo.contractAddress;
   var JSONContract = JSON.stringify(contractMessage)
 
   await channel.add(JSONContract);
-
+  callback(message);
   //Complete transaction
 }
 

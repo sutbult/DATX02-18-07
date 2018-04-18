@@ -282,8 +282,10 @@ function claimContract(ethchain, pre_image_hash, from_address, claim_address){
     contract = new ethchain.eth.Contract(htlc_ether.abi);
     contract.options.address = claim_address;
 
-    contract.methods.claim(pre_image_hash).send({from: from_address}).on("receipt", function(receipt){
-    console.log("DEPLOYED");});
+    contract.methods.claim(pre_image_hash).send({from: from_address})
+    .on("receipt", function(receipt){
+        console.log("Claimed");
+    });
 }
 
 module.exports = {
