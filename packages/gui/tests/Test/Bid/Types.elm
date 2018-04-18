@@ -228,7 +228,7 @@ suite =
                 , fuzz int "Arbitrary integer with Ethereum" <|
                     performTest "ETH" "wei"
                 ]
-        --, describe "statusChanged" statusChangedTests
+        , describe "statusChanged" statusChangedTests
         ]
 
 
@@ -289,6 +289,7 @@ statusChangedTests =
                     , createBid "1" Active  "BTC" "1" "ETH" "1"
                     ]
                     [ createBid "0" Pending "BTC" "1" "ETH" "1"
+                    , createBid "1" Active  "BTC" "1" "ETH" "1"
                     ]
                 )
                 [ createBid "0" Pending "BTC" "1" "ETH" "1"
@@ -302,8 +303,10 @@ statusChangedTests =
                     , createBid "1" Active  "BTC" "1" "ETH" "1"
                     , createBid "2" Active  "BTC" "1" "ETH" "1"
                     ]
-                    [ createBid "1" Pending "BTC" "1" "ETH" "1"
+                    [ createBid "0" Active  "BTC" "1" "ETH" "1"
+                    , createBid "1" Pending "BTC" "1" "ETH" "1"
                     , createBid "2" Pending "BTC" "1" "ETH" "1"
+                    , createBid "3" Active  "BTC" "1" "ETH" "1"
                     ]
                 )
                 [ createBid "1" Pending "BTC" "1" "ETH" "1"
@@ -320,5 +323,20 @@ statusChangedTests =
                     ]
                 )
                 [ createBid "0" Finished "BTC" "1" "ETH" "1"
+                ]
+
+    , test "Reports both types of status changes" <|
+        \() ->
+            Expect.equal
+                (statusChanged
+                    [ createBid "0" Active  "BTC" "1" "ETH" "1"
+                    , createBid "1" Pending "BTC" "1" "ETH" "1"
+                    ]
+                    [ createBid "0" Pending  "BTC" "1" "ETH" "1"
+                    , createBid "1" Finished "BTC" "1" "ETH" "1"
+                    ]
+                )
+                [ createBid "0" Pending  "BTC" "1" "ETH" "1"
+                , createBid "1" Finished "BTC" "1" "ETH" "1"
                 ]
     ]
