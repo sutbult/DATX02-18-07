@@ -171,6 +171,7 @@ function checkForStep(step, func) {
     } else {
       clearInterval(timer)
       console.log("Correct step: " + JSON.parse(message).step)
+      message.bidc
       func(message);
     }
   }, 5000);
@@ -178,15 +179,16 @@ function checkForStep(step, func) {
 
 async function pushDigestInfo(contractInfo, func) {
 
-  var digestMessage = new Object();
-  digestMessage.step = 3;
-  digestMessage.digest = contractInfo.digest;
-  digestMessage.contractAddress = contractInfo.contractAddress;
-  digestMessage.address = contractInfo.address;
+  var jsonObj = new Object();
+  jsonObj.step = 3;
+  jsonObj.digest = contractInfo.digest;
+  jsonObj.contractAddress = contractInfo.contractAddress;
+  jsonObj.address = contractInfo.address;
+  jsonObj.bid = contractInfo.bid;
 
 
-  var JSONdigest = JSON.stringify(digestMessage)
-  await channel.add(JSONdigest);
+  var digestMessage = JSON.stringify(jsonObj)
+  await channel.add(digestMessage);
   checkForStep(4,func);
   //Send to blockchain
 }
@@ -194,7 +196,7 @@ async function pushDigestInfo(contractInfo, func) {
 async function pushContractInfo(contractInfo) {
   var contractMessage = new Object();
   contractMessage.step = 4;
-  contractMessage.contractAddress = contractMessage.contractAddress;
+  contractMessage.contractAddress = contractInfo.contractAddress;
   var JSONContract = JSON.stringify(contractMessage)
 
   await channel.add(JSONContract);
