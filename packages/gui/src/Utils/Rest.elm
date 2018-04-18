@@ -5,22 +5,14 @@ module Utils.Rest exposing
 
 import Json.Encode
 import Json.Decode exposing (Decoder)
-
 import Http
+import Task
+
 import Error.Types
 
 
 apiAddress : String
 apiAddress = "http://localhost:51337/api/"
-
-
-get
-    :  String
-    -> Json.Decode.Decoder res
-    -> (res -> msg)
-    -> (Error.Types.Msg -> msg)
-    -> Cmd msg
-get = performRequest Http.get
 
 
 post
@@ -30,33 +22,76 @@ post
     -> (res -> msg)
     -> (Error.Types.Msg -> msg)
     -> Cmd msg
-post req =
-    let
-        body = Http.jsonBody req
-    in
-        performRequest (flip Http.post body)
+post = postTask << Task.succeed
 
 
-performRequest
-    :  (String -> Decoder res -> Http.Request res)
-    -> String
-    -> Decoder res
+get
+    :  String
+    -> Json.Decode.Decoder res
     -> (res -> msg)
     -> (Error.Types.Msg -> msg)
     -> Cmd msg
-performRequest toRequest path decoder onSuccess onError =
-    let
-        url = apiAddress ++ path
-        request = toRequest url decoder
-        onResponse response =
-            case response of
-                Ok result ->
-                    onSuccess result
 
-                Err error ->
-                    onError <| errorMsg error
+get path decoder =
+    attemptRequest
+        <| Http.toTask
+        <| Http.get (toUrl path) decoder
+
+
+postTask
+    :  Task.Task Never Json.Encode.Value
+    -> String
+    -> Json.Decode.Decoder res
+    -> (res -> msg)
+    -> (Error.Types.Msg -> msg)
+    -> Cmd msg
+
+postTask bodyTask path decoder =
+    let
+        mappedBody =
+            Task.mapError
+                (\_ -> Http.NetworkError)
+                bodyTask
+
+        onBody body =
+            Http.toTask
+                <| Http.post
+                    (toUrl path)
+                    (Http.jsonBody body)
+                    decoder
     in
-        Http.send onResponse request
+        attemptRequest
+            <| Task.andThen onBody mappedBody
+
+
+attemptRequest
+    :  Task.Task Http.Error res
+    -> (res -> msg)
+    -> (Error.Types.Msg -> msg)
+    -> Cmd msg
+
+attemptRequest task onSuccess onError =
+    Task.attempt (handleResponse onSuccess onError) task
+
+
+toUrl : String -> String
+toUrl path =
+    apiAddress ++ path
+
+
+handleResponse
+    :  (res -> msg)
+    -> (Error.Types.Msg -> msg)
+    -> Result Http.Error res
+    -> msg
+
+handleResponse onSuccess onError response =
+    case response of
+        Ok result ->
+            onSuccess result
+
+        Err error ->
+            onError <| errorMsg error
 
 
 errorMsg : Http.Error -> Error.Types.Msg
