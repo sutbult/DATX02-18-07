@@ -69,8 +69,8 @@ elementTable elements =
         table [class "table is-fullwidth is-hoverable is-striped"]
             [ thead []
                 [ tr []
-                    [ th [] [text "Currency"]
-                    , th [] [text "Shown"]
+                    [ th [style [("width", "30%")]] [text "Currency"]
+                    , th [style [("width", "20%")]] [text "Shown"]
                     ]
                 ]
             , tbody [] (List.map elementRow elements)
