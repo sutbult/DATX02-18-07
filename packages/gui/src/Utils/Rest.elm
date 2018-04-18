@@ -1,6 +1,7 @@
 module Utils.Rest exposing
     ( get
     , post
+    , postTask
     )
 
 import Json.Encode

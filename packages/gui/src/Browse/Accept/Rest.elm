@@ -5,6 +5,9 @@ import Json.Decode
 import Crypto.Hash exposing
     ( sha512
     )
+import Task
+import Time
+import Process
 
 import Browse.Accept.Types exposing (..)
 import Bid.Types exposing
@@ -12,15 +15,15 @@ import Bid.Types exposing
     )
 
 import Utils.Rest exposing
-    ( post
+    ( postTask
     )
 
 
 acceptBid : Model -> Bid -> Cmd Msg
 acceptBid model bid =
     if model.sseID >= 0 then
-        post
-            (encodeAccept model bid)
+        postTask
+            (acceptBidBody model bid)
             "acceptBid"
             (Json.Decode.succeed ())
             (\_ -> Noop)
@@ -29,15 +32,29 @@ acceptBid model bid =
         Cmd.none
 
 
-encodeAccept : Model -> Bid -> Json.Encode.Value
-encodeAccept model bid =
+acceptBidBody : Model -> Bid -> Task.Task Never Json.Encode.Value
+acceptBidBody model bid =
+    let
+        afterDelay _ =
+            Task.andThen onTime Time.now
+
+        onTime time =
+            Task.succeed
+                <| encodeAccept model bid
+                <| toString <| Time.inMilliseconds time
+    in
+        Task.andThen afterDelay <| Process.sleep 50
+
+
+encodeAccept : Model -> Bid -> String -> Json.Encode.Value
+encodeAccept model bid time =
     Json.Encode.object
         [ ("id", Json.Encode.string bid.id)
         , ("clientID", Json.Encode.int model.sseID)
-        , ("seed", Json.Encode.string <| getSeed model)
+        , ("seed", Json.Encode.string <| getSeed model time)
         ]
 
 
-getSeed : Model -> String
-getSeed model =
-    sha512 <| toString model.mousePositions
+getSeed : Model -> String -> String
+getSeed model time =
+    sha512 <| toString model.mousePositions ++ time
