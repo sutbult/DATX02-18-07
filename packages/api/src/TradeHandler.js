@@ -2,7 +2,9 @@ const messenger = require("./OrbitDBHandler")
 const db = require("./DBHandler.js");
 
 function whenBidAccepted(msg){
-    // console.log(message);
+    //remove bid from db to prevent multiple contracts
+
+    
     var jsonObj;
     var message = JSON.parse(msg);
     var fromCurrency = message.bid.from.currency;
@@ -27,9 +29,6 @@ function whenBidAccepted(msg){
             console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
             //Throw error
     }
-
-    //firstSender will wait here until secondSender has sent their contractAdr
-    // messenger.pushDigestInfo(jsonObj, whenBidAccepted2);
 }
 
 function whenBidAccepted2(){
@@ -60,8 +59,8 @@ async function acceptBid(bidID){
             eth.getAddress()
             .then(accs => {
                 console.log("Address");
-                console.log(accs[2]);
-                messenger.acceptBid(bid, accs[2], eth.acceptBid);
+                console.log(accs[1]);
+                messenger.acceptBid(bid, accs[1], eth.acceptBid);
             });
             break;
         case "Ethereum classic":

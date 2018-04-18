@@ -185,7 +185,7 @@ async function sendEtherContract(ethchain, from_address, secret, digest, destina
 
     gen_digest = generateDigest(ethchain, secret, digest);
     args = [gen_digest, destination];
-    sendContract(ethchain, htlc_ether, args, from_address, gen_digest, value_in_wei);
+    return sendContract(ethchain, htlc_ether, args, from_address, gen_digest, value_in_wei);
 }
 
 async function sendContract(ethchain, jsoncontract, args, from_address, digest, value_in_wei){

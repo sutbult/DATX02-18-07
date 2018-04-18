@@ -26,7 +26,7 @@ async function firstSender(message, callback){
         if(accs != null){
             to_adr = message.address;
             wei_value = message.bid.from.amount;
-            from_adr = accs[2];
+            from_adr = accs[1];
             console.log("*******Unlocking account************");
             ETH.unlockAccount(ETH.web3, from_adr, "111")
             .then(result => {

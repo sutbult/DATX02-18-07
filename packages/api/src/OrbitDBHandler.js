@@ -150,11 +150,17 @@ function checkForStep(step, func) {
   console.log(channel.address);
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
   console.log(message);
+  jsonObj = JSON.parse(message);
   //the first step is unnecessary, no one has accepted your bid yet
-  if(JSON.parse(message).step == 1){
-    console.log("it ends here");
+  if(jsonObj.step == 1){
+    console.log("No one has accepted this bid yet");
     close();
     return
+  }
+  var index = require("./index.js")
+  if(!index.acceptedBids.includes(jsonObj.bid)){
+    console.log("************ADDING BID: " + JSON.stringify(jsonObj.bid));
+    index.acceptedBids.push(jsonObj.bid);
   }
   var timer = setInterval(function(){
     if(JSON.parse(message).step != step) {
@@ -167,18 +173,9 @@ function checkForStep(step, func) {
       console.log("Correct step: " + JSON.parse(message).step)
       func(message);
     }
-  }, 1000);
+  }, 5000);
 }
 
-/*
-  Just send address and channel
-  jsonObject = {
-      "step" : "3",
-      "channel" : channelString,
-      "digest" : digestString,
-      "contractAddress" : contractAddressString
-    };
-*/
 async function pushDigestInfo(contractInfo, func) {
 
   var digestMessage = new Object();
@@ -194,14 +191,6 @@ async function pushDigestInfo(contractInfo, func) {
   //Send to blockchain
 }
 
-/*
-  Just send address and channel
-  jsonObject = {
-      "step" : "4",
-      "channel" : channelString,
-      "contractAddress" : contractAddressString
-    };
-*/
 async function pushContractInfo(contractInfo) {
   var contractMessage = new Object();
   contractMessage.step = 4;
@@ -231,20 +220,6 @@ async function close(){
   headless.close()
 }
 
-
-
-
-/*
-var jsonObject = {
-    "step" : "1",
-    "from" : "CURRENCY",
-    "fromAmount" : '5',
-    "to":"CURRENCY",
-    "toAmount" : '5',
-    "address" : 'test',
-    "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
-  };
-*/
 async function getData(amount, db){
   var data = db.iterator({ limit : amount }).collect()
   var bids = []

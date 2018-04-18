@@ -4,6 +4,8 @@ const messenger = require("./OrbitDBHandler")
 const runOnce = require("./runOnce.js");
 const trader = require("./tradeHandler.js");
 
+var acceptedBids = [];
+
 async function init() {
     // messageHandler kommer att vara tillgänglig här
     const messengerPromise = messenger.init();
@@ -14,7 +16,7 @@ async function init() {
     /**check in a set interval if anyone accepted your bid
      * @todo clearInterval once all bids are accepted: https://nodejs.org/en/docs/guides/timers-in-node/
      */
-    setInterval(checkAccBid, 10000);
+    const interval = setInterval(checkAccBid, 10000);
 }
 const ensureInitialized = runOnce(init);
 
@@ -22,6 +24,7 @@ var messageHandler = null;
 function setMessageHandler(messageHandlerArg) {
     messageHandler = messageHandlerArg;
 }
+
 
 // Adds a new bid to the decentralized database
 async function addBid(bid) {
@@ -33,22 +36,17 @@ async function addBid(bid) {
 }
 
 async function checkAccBid(){
-    console.log("It's alive!");
+    console.log("CHECK IF ANY BID IS ACCEPTED");
     /**Not sure how the limit in this function works, but need all userBids, soo
     *@todo someone with knowledge fix this 
     */
     var bids = await db.getUserBids(1000000000000000);
-    //console.log(bids);
+    console.log(bids);
     bids.forEach(bid => {
-        messenger.bidAccepted(bid,trader.whenBidAccepted);
-        //Only testcheck, remove
-        // if(bid.status === "ACTIVE"){
-        //     console.log("Bara att fortsätta vänta");
-        // }
-        // //The big question is if the status will be === ACCEPTED
-        // if(bid.status === "ACCEPTED"){
-        //     trader.whenBidAccepted(bid);
-        // }
+        console.log(acceptedBids);
+        if(!acceptedBids.includes(bid)){
+            messenger.bidAccepted(bid,trader.whenBidAccepted);
+        }
     });
 }
 
@@ -127,6 +125,7 @@ async function getCurrencies() {
 }
 
 module.exports = {
+    acceptedBids,
     addBid,
     getBids,
     acceptBid,
