@@ -42,6 +42,7 @@ function secondContract(message, callback){
                 callback(ETH.sendEtherContract(ETH.web3,from_adr,null,digest,to_adr,wei_value));
             });
         }else{console.log("You don't have an account");}
+    });
 }
 
 
