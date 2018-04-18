@@ -49,7 +49,7 @@ update msg model =
         NotifyBidChanges bids ->
             let
                 oldBids = model.bidList.table.bids
-                newBids = mapFirst (\bid -> {bid | status = Pending}) bids
+                newBids = mapFirst (\bid -> {bid | status = Finished}) bids
             in
                 (model, notifyBidChanges oldBids newBids)
 
@@ -77,16 +77,33 @@ notifyBidChanges old new =
     let
         changedBids = statusChanged old new
     in
-        notifyPending changedBids
+        Cmd.batch
+            [ notifyPending  changedBids
+            , notifyFinished changedBids
+            ]
 
 
 notifyPending : List Bid -> Cmd Msg
 notifyPending =
+    notifyStatus Pending "A bid has been accepted"
+
+
+notifyFinished : List Bid -> Cmd Msg
+notifyFinished =
+    notifyStatus Finished "An accepted bid has been processed"
+
+
+notifyStatus
+    :  Status
+    -> String
+    -> List Bid
+    -> Cmd Msg
+notifyStatus status title =
     let
-        isPending bid = bid.status == Pending
+        isPending bid = bid.status == status
         toMessage bid =
             Ports.notify
-                ( "A bid has been accepted"
+                ( title
                 , bidToMessage bid
                 )
     in
