@@ -10,4 +10,7 @@ port acceptBidResponse : (String -> msg) -> Sub msg
 port updateBids : (() -> msg) -> Sub msg
 
 -- port for recieving mouse movements
-port mouseMove : ((Int, Int) -> msg) -> Sub msg 
+port mouseMove : ((Int, Int) -> msg) -> Sub msg
+
+-- Triggers a notification with specified title and body
+port notify : (String, String) -> Cmd msg

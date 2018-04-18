@@ -27,3 +27,13 @@ es.onmessage = event => {
 document.onmousemove = e => {
     app.ports.mouseMove.send([e.clientX, e.clientY]);
 }
+
+// Notifications
+app.ports.notify.subscribe((content) => {
+    const title = content[0];
+    const body = content[1];
+
+    new Notification(title, {
+        body,
+    });
+})
