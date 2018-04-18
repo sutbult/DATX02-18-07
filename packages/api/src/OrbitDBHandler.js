@@ -157,6 +157,7 @@ async function acceptBid(bid, address, func){
   var JSONObject = JSON.stringify(acceptMessage)
   var returnvalue = await channel.add(JSONObject);
   console.log("What is this " + returnvalue);
+  console.log("**************************************");
 
   checkForStep(3,func); //Might be done at blockchain part
   //Let everybody know that the bid is taken.

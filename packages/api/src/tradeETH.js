@@ -10,8 +10,13 @@ function setBid(_bid){
 
 function getAddress(){
     //The user should get to choose which account
-    console.log(ETH.web3.eth.accounts[0]);
-    return ETH.web3.eth.accounts[0];
+    return ETH.web3.eth.getAccounts();
+    // .then(accs => {return accs[0]});
+}
+
+function getAddressSuccess(result){
+    console.log("Hello");
+    console.log(result);
 }
 
 function acceptBid(message){

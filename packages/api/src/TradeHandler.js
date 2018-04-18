@@ -24,21 +24,21 @@ function whenBidAccepted(bid){
     messenger.pushDigestInfo(jsonObj, whenBidAccepted2);
 }
 
-function whenBidAccepted2(){
-    var toCurrency = bid.to.currency;
-    switch(toCurrency){
-        case "Ethereum":
-            console.log("To Ethereum");
-            require("./tradeEth.js").firstReceiver(bid, message);
-            break;
-        case "Ethereum classic":
-            console.log("To Ethereum classic");
-            //require("./tradeEtc.js").firstReceiver(bid, message);
-            break;
-        default:
-            console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
-    }
-}
+// function whenBidAccepted2(){
+//     var toCurrency = bid.to.currency;
+//     switch(toCurrency){
+//         case "Ethereum":
+//             console.log("To Ethereum");
+//             require("./tradeEth.js").firstReceiver(bid, message);
+//             break;
+//         case "Ethereum classic":
+//             console.log("To Ethereum classic");
+//             //require("./tradeEtc.js").firstReceiver(bid, message);
+//             break;
+//         default:
+//             console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
+//     }
+// }
 
 async function acceptBid(bidID){
     var bid = await db.getBid2(bidID);
@@ -49,8 +49,12 @@ async function acceptBid(bidID){
         case "Ethereum":
             console.log("From Ethereum");
             var eth = require("./tradeEth.js");
-            address = eth.getAddress();
-            messenger.acceptBid(bid, address, eth.acceptBid(bid));
+            eth.getAddress()
+            .then(accs => {
+                console.log("Address");
+                console.log(accs[0]);
+                messenger.acceptBid(bid, accs[0], eth.acceptBid);
+            });
             break;
         case "Ethereum classic":
             console.log("From Ethereum classic");
