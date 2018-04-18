@@ -80,7 +80,7 @@ post("/acceptBid", async body => {
         throw 400;
     }
     else {
-        api.acceptBid(body.id)
+        api.acceptBid(body.id, body.seed)
             .then(() => {
                 sendSSE(body.clientID, {
                     cmd: "acceptBidResponse",

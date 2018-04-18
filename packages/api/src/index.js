@@ -73,11 +73,11 @@ async function getBids() {
 }
 
 // Accepts a bid and starts the swapping process
-async function acceptBid(bidID, callback) {
+async function acceptBid(bidID, seed, callback) {
     await ensureInitialized();
     // TODO: Implementera på riktigt
     //var test = await db.acceptBid("bidID")
-    console.log("User accepts the bid with this ID: %s", bidID);
+    console.log("User accepts the bid with the ID %s using the seed %s", bidID, seed);
     await db.acceptBid(bidID)
 }
 

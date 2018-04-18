@@ -34,7 +34,7 @@ update msg model =
         -- Accept bid
         AcceptBid bid ->
             if model.sseID >= 0 then
-                ({model | processing = True}, acceptBid bid model.sseID)
+                ({model | processing = True}, acceptBid model bid)
             else
                 (model, Cmd.none)
 
