@@ -55,7 +55,7 @@ function claim(message){
         if(secret != null){
             ETH.getPastClaim(ETH.web3, claim_address)
             .then(hash => {
-                console.log("Got hash: " hash);
+                console.log("Got hash: " + hash);
                 ETH.claimContract(ethchain,hash,from_address,claim_address);
             });
         }else{
