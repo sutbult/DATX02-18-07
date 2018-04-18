@@ -36,20 +36,13 @@ async function addBid(bid) {
 }
 
 async function checkAccBid(){
-    console.log("CHECK IF ANY BID IS ACCEPTED");
+    // console.log("CHECK IF ANY BID IS ACCEPTED");
     /**Not sure how the limit in this function works, but need all userBids, soo
     *@todo someone with knowledge fix this 
     */
     var bids = await db.getUserBids(1000000000000000);
-    console.log(bids);
+    // console.log(bids);
     bids.forEach(bid => {
-        console.log("*");
-        console.log("*");
-        console.log("*");
-        console.log(acceptedBids);
-        console.log("*");
-        console.log("*");
-        console.log("*");
         if(!acceptedBids.includes(bid)){
             messenger.bidAccepted(bid,trader.whenBidAccepted);
         }
@@ -92,7 +85,7 @@ async function acceptBid(bidID, callback) {
     await ensureInitialized();
     
     trader.acceptBid(bidID);
-    console.log("User accepts the bid with this ID: %s", bidID);
+    // console.log("User accepts the bid with this ID: %s", bidID);
 }
 
 // Fetches all accounts associated with the user
