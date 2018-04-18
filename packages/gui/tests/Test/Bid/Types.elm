@@ -228,4 +228,97 @@ suite =
                 , fuzz int "Arbitrary integer with Ethereum" <|
                     performTest "ETH" "wei"
                 ]
+        --, describe "statusChanged" statusChangedTests
         ]
+
+
+statusChangedTests : List Test
+statusChangedTests =
+    [ test "Reports nothign when both lists are empty" <|
+        \() ->
+            Expect.equal
+                (statusChanged [] [])
+                []
+
+    , test "Reports nothign when old list is empty" <|
+        \() ->
+            Expect.equal
+                (statusChanged
+                    []
+                    [createBid "0" Active "BTC" "1" "ETH" "1"]
+                )
+                []
+
+    , test "Reports nothign when new list is empty" <|
+        \() ->
+            Expect.equal
+                (statusChanged
+                    [createBid "0" Active "BTC" "1" "ETH" "1"]
+                    []
+                )
+                []
+
+    , test "Reports a single bid" <|
+        \() ->
+            Expect.equal
+                (statusChanged
+                    [ createBid "0" Active  "BTC" "1" "ETH" "1"
+                    ]
+                    [ createBid "0" Pending "BTC" "1" "ETH" "1"
+                    ]
+                )
+                [ createBid "0" Pending "BTC" "1" "ETH" "1"
+                ]
+
+    , test "Doesn't report bids when they have different IDs" <|
+        \() ->
+            Expect.equal
+                (statusChanged
+                    [ createBid "0" Active  "BTC" "1" "ETH" "1"
+                    ]
+                    [ createBid "1" Pending "BTC" "1" "ETH" "1"
+                    ]
+                )
+                []
+
+    , test "Reports change to the bid with the same ID" <|
+        \() ->
+            Expect.equal
+                (statusChanged
+                    [ createBid "0" Active  "BTC" "1" "ETH" "1"
+                    , createBid "1" Active  "BTC" "1" "ETH" "1"
+                    ]
+                    [ createBid "0" Pending "BTC" "1" "ETH" "1"
+                    ]
+                )
+                [ createBid "0" Pending "BTC" "1" "ETH" "1"
+                ]
+
+    , test "Reports change to multiple bids" <|
+        \() ->
+            Expect.equal
+                (statusChanged
+                    [ createBid "0" Active  "BTC" "1" "ETH" "1"
+                    , createBid "1" Active  "BTC" "1" "ETH" "1"
+                    , createBid "2" Active  "BTC" "1" "ETH" "1"
+                    ]
+                    [ createBid "1" Pending "BTC" "1" "ETH" "1"
+                    , createBid "2" Pending "BTC" "1" "ETH" "1"
+                    ]
+                )
+                [ createBid "1" Pending "BTC" "1" "ETH" "1"
+                , createBid "2" Pending "BTC" "1" "ETH" "1"
+                ]
+
+    , test "Reports a single finished bid" <|
+        \() ->
+            Expect.equal
+                (statusChanged
+                    [ createBid "0" Pending  "BTC" "1" "ETH" "1"
+                    ]
+                    [ createBid "0" Finished "BTC" "1" "ETH" "1"
+                    ]
+                )
+                [ createBid "0" Finished "BTC" "1" "ETH" "1"
+                ]
+    ]

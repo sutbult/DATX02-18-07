@@ -8,6 +8,7 @@ module Bid.Types exposing
     , currencyName
     , amountStatus
     , amountString
+    , statusChanged
     )
 
 import Regex exposing (..)
@@ -226,3 +227,10 @@ removeLastZeroes str =
         removeLastZeroes (String.dropRight 1 str)
     else
         str
+
+
+-- Status changed
+
+statusChanged : List Bid -> List Bid -> List Bid
+statusChanged new old =
+    []
