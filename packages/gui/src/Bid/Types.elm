@@ -4,7 +4,8 @@ module Bid.Types exposing
     , Bid
     , AmountStatus(..)
     , createBid
-    , baseUnit
+    , currencyMeta
+    , currencyName
     , amountStatus
     , amountString
     )
@@ -38,6 +39,13 @@ type AmountStatus
     | Success String String
 
 
+type alias CurrencyMeta =
+    { name : String
+    , offset : Int
+    , unit : String
+    }
+
+
 -- Easy constructor for Bid
 createBid
     :  String
@@ -53,20 +61,42 @@ createBid id status fromCurrency fromAmount toCurrency toAmount =
         (Value toCurrency toAmount)
 
 
-baseUnit : String -> (Int, String)
-baseUnit currency =
+currencyMeta : String -> CurrencyMeta
+currencyMeta currency =
     case currency of
-        "Bitcoin" ->
-            (8, "satoshi")
+        "BTC" ->
+            { name = "Bitcoin"
+            , offset = 8
+            , unit = "satoshi"
+            }
 
-        "Bitcoin cash" ->
-            (8, "satoshi")
+        "BCH" ->
+            { name = "Bitcoin Cash"
+            , offset = 8
+            , unit = "satoshi"
+            }
 
-        "Ethereum" ->
-            (18, "wei")
+        "ETH" ->
+            { name = "Ethereum"
+            , offset = 18
+            , unit = "wei"
+            }
+
+        "ETC" ->
+            { name = "Ethereum Classic"
+            , offset = 18
+            , unit = "wei"
+            }
 
         _ ->
-            (0, String.toLower currency)
+            { name = String.toUpper currency
+            , offset = 0
+            , unit = String.toUpper currency
+            }
+
+
+currencyName : String -> String
+currencyName = .name << currencyMeta
 
 
 amountStatus : Bool -> String -> String -> AmountStatus
@@ -79,11 +109,11 @@ amountStatus withFormatting currency amount =
         case amountRegexMatch <| removeApostrophes amount of
             Just (base, dec) ->
                 let
-                    (padding, unit) = baseUnit currency
+                    meta = currencyMeta currency
                     amountValue =
                         removeInitialZeroes <| String.concat
                             [ padZeroes False 1 <| base
-                            , padZeroes True padding <| dec
+                            , padZeroes True meta.offset <| dec
                             ]
                     formattedValue =
                         if withFormatting then
@@ -91,7 +121,7 @@ amountStatus withFormatting currency amount =
                         else
                             amountValue
                 in
-                    Success formattedValue unit
+                    Success formattedValue meta.unit
             Nothing ->
                 Error
 
@@ -104,16 +134,16 @@ removeApostrophes =
 amountString : Value -> String
 amountString account =
     let
-        (basePow, _) = baseUnit account.currency
+        offset = .offset <| currencyMeta account.currency
         amount = account.amount
         base =
             formatNumber
             <| padZeroes False 1
-            <| String.dropRight basePow amount
+            <| String.dropRight offset amount
         dec =
             removeLastZeroes
-            <| padZeroesLeft basePow
-            <| String.right basePow amount
+            <| padZeroesLeft offset
+            <| String.right offset amount
         separator =
             if String.isEmpty dec then
                 ""

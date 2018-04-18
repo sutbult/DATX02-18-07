@@ -10,7 +10,9 @@ import Bid.Types exposing
     ( Value
     , AmountStatus(..)
     , amountStatus
+    , currencyName
     )
+
 
 root : Model -> Html Msg
 root model =
@@ -39,6 +41,7 @@ form model =
                 ]
             ]
 
+
 formBox : List (Html Msg) -> Html Msg
 formBox content =
     div [class "column is-two-fifths"]
@@ -46,12 +49,14 @@ formBox content =
             content
         ]
 
+
 arrowColumn : Html Msg
 arrowColumn =
     div [class "column is-one-fifths"]
         [ arrow "mobile" "right"
         , arrow "tablet" "down"
         ]
+
 
 arrow : String -> String -> Html Msg
 arrow hiddenOn arrowType =
@@ -81,7 +86,7 @@ currencySelector submitting options setter currentValue =
                 , fullWidth
                 , selected (currency == currentValue)
                 ]
-                [ text currency
+                [ text <| currencyName currency
                 ]
     in
         div [class "field"]
@@ -99,6 +104,7 @@ amountField
     -> String
     -> String
     -> Html Msg
+
 amountField submitting setter currency currentValue =
     let
         (extraClass, info) =
@@ -153,6 +159,7 @@ submit model =
                 [ text "Add bid"
                 ]
             ]
+
 
 isJust : Maybe a -> Bool
 isJust maybe =

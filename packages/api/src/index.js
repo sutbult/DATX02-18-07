@@ -91,9 +91,9 @@ async function getWallet() {
         };
     }
     return [
-        Account("Bitcoin",  "100000000000"              ),
-        Account("Ethereum", "10000000000000000000010"   ),
-        Account("Dogecoin", "1000000000"                ), // Wow, such wealth, many monies
+        Account("BTC", "100000000000"               ),
+        Account("ETH", "20000000000000000000010"    ),
+        Account("ETC", "10000000000000000000010"    ),
     ];
 }
 
@@ -111,13 +111,11 @@ async function getAcceptedBids() {
 // Fetches the currencies which is available for the user to create bids with
 async function getCurrencies() {
     await ensureInitialized();
+    // TODO: Implementera på riktigt
     return [
-        "Bitcoin",
-        "Ethereum",
-        "Bitcoin cash",
-        "Ethereum classic",
-        "Monero",
-        "Dogecoin"
+        "BTC",
+        "ETH",
+        "ETC",
     ];
 }
 

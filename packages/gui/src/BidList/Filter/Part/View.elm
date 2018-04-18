@@ -4,6 +4,9 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
+import Bid.Types exposing
+    ( currencyName
+    )
 import BidList.Filter.Part.Types exposing (..)
 
 import Dict
@@ -77,21 +80,24 @@ filterElements : Model -> List (String, Bool)
 filterElements model =
     let
         query = String.toLower (.query model)
-        predicate = String.contains query << String.toLower << Tuple.first
+        predicate = String.contains query
+            << String.toLower
+            << currencyName
+            << Tuple.first
     in
         List.filter predicate <| Dict.toList model.elements
 
 
 elementRow : (String, Bool) -> Html Msg
-elementRow (title, shown) =
+elementRow (currency, shown) =
     tr []
-        [ td [] [text title]
+        [ td [] [text <| currencyName currency]
         , td []
             [ label [class "checkbox"]
                 [ input
                     [ type_ "checkbox"
                     , checked shown
-                    , onClick (Toggle title)
+                    , onClick (Toggle currency)
                     ]
                     []
                 ]

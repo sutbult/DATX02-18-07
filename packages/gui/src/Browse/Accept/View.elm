@@ -9,6 +9,7 @@ import Bid.Types exposing
     ( Bid
     , Value
     , amountString
+    , currencyName
     )
 
 
@@ -125,7 +126,7 @@ valueRows title value =
             [ heading title
             , heading "Currency"
             , ltd
-                [ text value.currency
+                [ text <| currencyName value.currency
                 ]
             ]
         , tr []
