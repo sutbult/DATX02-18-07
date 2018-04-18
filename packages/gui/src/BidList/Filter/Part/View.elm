@@ -18,7 +18,7 @@ root model =
     in
         div [class "column"]
             [ title <| .title model
-            , queryField elements
+            , queryField model.query elements
             , elementTable elements
             ]
 
@@ -27,8 +27,8 @@ title : String -> Html Msg
 title label = h6 [class "title is-5"] (List.singleton (text label))
 
 
-queryField : List (String, Bool) -> Html Msg
-queryField elements =
+queryField : String -> List (String, Bool) -> Html Msg
+queryField query elements =
     let
         empty = List.isEmpty elements
     in
@@ -43,6 +43,7 @@ queryField elements =
                     , type_ "text"
                     , placeholder "Filter"
                     , onInput SetQuery
+                    , value query
                     ]
                     [
                     ]
