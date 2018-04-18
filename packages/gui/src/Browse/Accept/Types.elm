@@ -9,6 +9,7 @@ type alias Model =
     { modal : Maybe Bid
     , processing : Bool
     , sseID : Int
+    , mousePositions : List (Int, Int)
     }
 
 type Msg
@@ -23,5 +24,6 @@ type Msg
 
     -- Misc
     | GetSSEId Int
+    | MouseMove Int Int
     | ToError Error.Types.Msg
     | Noop

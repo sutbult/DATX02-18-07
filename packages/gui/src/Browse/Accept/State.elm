@@ -15,6 +15,7 @@ init =
     (   { modal = Nothing
         , processing = False
         , sseID = -1
+        , mousePositions = []
         }
     , Cmd.none
     )
@@ -58,6 +59,9 @@ update msg model =
         GetSSEId id ->
             ({model | sseID = id}, Cmd.none)
 
+        MouseMove x y ->
+            ({model | mousePositions = (x, y) :: model.mousePositions}, Cmd.none)
+
         Noop ->
             (model, Cmd.none)
 
@@ -67,6 +71,14 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
+    Sub.batch
+        [ processSubs model
+        , mouseMoveSub
+        ]
+
+
+processSubs : Model -> Sub Msg
+processSubs model =
     if model.sseID < 0 then
         Ports.getSSEId GetSSEId
 
@@ -75,3 +87,8 @@ subscriptions model =
 
     else
         Sub.none
+
+
+mouseMoveSub : Sub Msg
+mouseMoveSub =
+    Ports.mouseMove <| uncurry MouseMove

@@ -14,7 +14,7 @@ init =
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-    case Debug.log "Message" msg of
+    case msg of
         ToNavigation subMsg ->
             let
                 (subModel, subCmd) = Navigation.State.update subMsg (.navigation model)
