@@ -11,6 +11,8 @@ import Add.View
 import Wallet.View
 import UserBids.View
 import AcceptedBids.View
+import Settings.View
+
 import Utils.List exposing
     ( singletonWhen
     )
@@ -23,6 +25,7 @@ views =
     , (Wallet, "Your wallets")
     , (UserBids, "Your bids")
     , (AcceptedBids, "Accepted bids")
+    , (Settings, "Settings")
     ]
 
 
@@ -79,3 +82,6 @@ viewSelector model =
 
         AcceptedBids ->
             Html.map ToAcceptedBids <| AcceptedBids.View.root model.models.acceptedBids
+
+        Settings ->
+            Html.map ToSettings <| Settings.View.root model.models.settings

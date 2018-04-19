@@ -5,6 +5,7 @@ import Add.Types
 import Wallet.Types
 import UserBids.Types
 import AcceptedBids.Types
+import Settings.Types
 
 type View
     = Browse
@@ -12,6 +13,7 @@ type View
     | Wallet
     | UserBids
     | AcceptedBids
+    | Settings
 
 type alias Model =
     { shown : View
@@ -21,6 +23,7 @@ type alias Model =
         , wallet : Wallet.Types.Model
         , userBids : UserBids.Types.Model
         , acceptedBids : AcceptedBids.Types.Model
+        , settings : Settings.Types.Model
         }
     }
 
@@ -31,3 +34,4 @@ type Msg
     | ToWallet Wallet.Types.Msg
     | ToUserBids UserBids.Types.Msg
     | ToAcceptedBids AcceptedBids.Types.Msg
+    | ToSettings Settings.Types.Msg

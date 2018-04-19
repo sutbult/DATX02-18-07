@@ -12,6 +12,7 @@ import Add.State
 import Wallet.State
 import UserBids.State
 import AcceptedBids.State
+import Settings.State
 
 -- TODO: Ta fram en lösning för denna och liknande mappar med kombinationer
 -- så att denna och linkande upprepningar undviks
@@ -24,6 +25,7 @@ init =
         (walletModel, walletCmd) = Wallet.State.init
         (userBidsModel, userBidsCmd) = UserBids.State.init
         (acceptedBidsModel, acceptedBidsCmd) = AcceptedBids.State.init
+        (settingsModel, settingsCmd) = Settings.State.init
     in
         (   { shown = Add
             , models =
@@ -32,6 +34,7 @@ init =
                 , wallet = walletModel
                 , userBids = userBidsModel
                 , acceptedBids = acceptedBidsModel
+                , settings = settingsModel
                 }
             }
         , Cmd.batch
@@ -40,6 +43,7 @@ init =
             , Platform.Cmd.map ToWallet walletCmd
             , Platform.Cmd.map ToUserBids userBidsCmd
             , Platform.Cmd.map ToAcceptedBids acceptedBidsCmd
+            , Platform.Cmd.map ToSettings settingsCmd
             ]
         )
 
@@ -89,6 +93,14 @@ update msg model =
             in
                 ({model | models = newModels}, Platform.Cmd.map ToAcceptedBids subCmd)
 
+        ToSettings subMsg ->
+            let
+                (subModel, subCmd) = Settings.State.update subMsg model.models.settings
+                oldModels = model.models
+                newModels = {oldModels | settings = subModel}
+            in
+                ({model | models = newModels}, Platform.Cmd.map ToSettings subCmd)
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -98,4 +110,5 @@ subscriptions model =
         , Sub.map ToWallet <| Wallet.State.subscriptions model.models.wallet
         , Sub.map ToUserBids <| UserBids.State.subscriptions model.models.userBids
         , Sub.map ToAcceptedBids <| AcceptedBids.State.subscriptions model.models.acceptedBids
+        , Sub.map ToSettings <| Settings.State.subscriptions model.models.settings
         ]
