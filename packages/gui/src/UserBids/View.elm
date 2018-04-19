@@ -9,6 +9,6 @@ import BidList.View as BidListView
 root : Model -> Html Msg
 root model =
     div []
-        [ Html.map mapBidListCmd
+        [ Html.map ToBidList
             <| BidListView.root model.bidList
         ]
