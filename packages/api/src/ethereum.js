@@ -50,7 +50,7 @@ function genesisCheck(ethchain){
 
 async function unlockAccount(ethchain, account_address, account_password, time_in_ms = 10000){
     var account = await ethchain.eth.personal.unlockAccount(account_address, account_password, time_in_ms);
-    console.log(account);
+    console.log("Unlocked: " + account);
 }
 
 async function readDigest(ethchain, contract_address){
@@ -202,14 +202,14 @@ async function sendContract(ethchain, jsoncontract, args, from_address, digest, 
     contract = new ethchain.eth.Contract(jsoncontract.abi);
 
     contract_instance = contract.deploy({data: '0x' + jsoncontract.code, arguments: args});
-    console.log(args);
-    console.log(gas_estimate);
-    console.log(from_address);
-    console.log(value_in_wei);
+    // console.log(args);
+    // console.log(gas_estimate);
+    // console.log(from_address);
+    // console.log(value_in_wei);
     var receipt = await contract_instance.send({from: from_address, gasPrice: gas_estimate.toString(), gas: gas_estimate, value: value_in_wei});
 
     contract_address = receipt._address;
-    console.log(receipt._address);
+    // console.log(receipt._address);
     /**@todo send this information to other user */
     console.log("Contract deployed at address " + contract_address);
 
