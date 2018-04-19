@@ -17,8 +17,9 @@ root model =
     div []
         [ div []
             [ h1 [class "subtitle"] [text "Blockchain paths"]
-            , blockchainPathInputList model.settings.blockchainPathList
+            , blockchainPathInputList model.currentSettings.blockchainPathList
             ]
+        , buttonRow model
         ]
 
 
@@ -48,3 +49,25 @@ blockchainPathInput blockchainPath =
                 ] []
             ]
         ]
+
+
+buttonRow : Model -> Html Msg
+buttonRow model =
+    let
+        isDisabled =
+            model.currentSettings == model.savedSettings
+    in
+        div
+            [ style
+                [ ("text-align", "right")
+                , ("margin-top", "20px")
+                ]
+            ]
+            [ button
+                [ class <| "button is-medium"
+                , onClick Reset
+                , disabled isDisabled
+                ]
+                [ text "Reset"
+                ]
+            ]

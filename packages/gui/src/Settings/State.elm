@@ -9,16 +9,20 @@ import Settings.Types exposing (..)
 
 init : (Model, Cmd Msg)
 init =
-    (   { settings =
+    let
+        settings =
             { blockchainPathList =
                 [ BlockchainPath "BTC" ""
                 , BlockchainPath "ETH" ""
                 , BlockchainPath "ETC" ""
                 ]
             }
-        }
-    , Cmd.none
-    )
+    in
+        (   { currentSettings = settings
+            , savedSettings = settings
+            }
+        , Cmd.none
+        )
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -27,7 +31,7 @@ update msg model =
         SetBlockchainPath currency value ->
             let
                 setSetting settings =
-                    {settings
+                    { settings
                         | blockchainPathList = setBlockchainPath
                             currency
                             value
@@ -35,6 +39,11 @@ update msg model =
                     }
             in
                 (changeSettings setSetting model, Cmd.none)
+
+        Reset ->
+            ({ model
+                | currentSettings = model.savedSettings
+            }, Cmd.none)
 
 
 subscriptions : Model -> Sub Msg
@@ -46,7 +55,7 @@ changeSettings
     -> Model
     -> Model
 changeSettings fn model =
-    { model | settings = fn model.settings }
+    { model | currentSettings = fn model.currentSettings }
 
 
 setBlockchainPath

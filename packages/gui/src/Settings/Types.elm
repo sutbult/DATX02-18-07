@@ -10,8 +10,10 @@ type alias Settings =
     }
 
 type alias Model =
-    { settings : Settings
+    { currentSettings : Settings
+    , savedSettings : Settings
     }
 
 type Msg
     = SetBlockchainPath String String
+    | Reset
