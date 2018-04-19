@@ -265,7 +265,7 @@ function subscribeToClaim(contract, block){
 */
 async function getPastClaim(ethchain, contract_address, from_block = 1){
     var contract, events;
-
+    console.log("*************IN GETPASTCLAIM; LEGGO********************");
     contract = new ethchain.eth.Contract(htlc_ether.abi, contract_address);
     events = await contract.getPastEvents('Claim', {
       fromBlock: from_block,

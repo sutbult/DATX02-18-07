@@ -16,7 +16,7 @@ async function firstContract(message, callback){
             to_adr = message.address;
             wei_value = message.bid.from.amount;
             secret = JSON.stringify(message.secret);
-            from_adr = accs[2];
+            from_adr = accs[1];
             console.log("*******Unlocking account for first contract************");
             ETH.unlockAccount(ETH.web3, from_adr, "111")
             .then(result => {
@@ -31,7 +31,7 @@ function secondContract(message, callback, callbackargument){
     getAddress()
     .then(accs => {
         if(accs != null){
-            from_adr = accs[2];
+            from_adr = accs[1];
             digest = message.digest;
             to_adr = message.address;
             wei_value = message.bid.to.amount;
@@ -51,9 +51,9 @@ function claim(message){
     getAddress()
     .then(accs => {
         console.log(accs);
-        from_address = accs[2];
+        from_address = accs[1];
         claim_address = message.contractAddress;
-        if(secret != null){
+        if(message.secret != null){
             console.log("********************Claim first contract***********************");
             pre_image_hash = JSON.stringify(message.secret);
             ETH.claimContract(ethchain,pre_image_hash,from_address,claim_address);
