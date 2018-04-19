@@ -195,14 +195,15 @@ async function pushDigestInfo(contractInfo, func) {
 async function pushContractInfo(contractInfo, message, callback) {
   console.log("********************PUSHCONTRACTINFO********************");
   contractInfo.then(result => {
-    console.log(result);
+    // console.log(result);
     var jsonMessage = message;
     jsonMessage.step = 4; //recycling step 3 data, need to update some values
     jsonMessage.contractAddress = result.contractAddress;
     var contractMessage = JSON.stringify(jsonMessage)
-  
+
+    message.promise = result.promise;
     channel.add(contractMessage);
-    callback(JSON.stringify(message)); //stringify here instead of a lot of JSON.parse's
+    callback(message); //stringify here instead of a lot of JSON.parse's
 
   });
   //Complete transaction
