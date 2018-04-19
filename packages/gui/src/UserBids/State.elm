@@ -46,22 +46,11 @@ update msg model =
                 , ToBidList <| BidListTypes.SetBids bids
                 ]
 
-        NotifyBidChanges bids ->
+        NotifyBidChanges newBids ->
             let
                 oldBids = model.bidList.table.bids
-                newBids = mapFirst (\bid -> {bid | status = Finished}) bids
             in
                 (model, notifyBidChanges oldBids newBids)
-
-
-mapFirst : (a -> a) -> List a -> List a
-mapFirst fn list =
-    case list of
-        [] ->
-            []
-
-        (x :: rest) ->
-            fn x :: rest
 
 
 subscriptions : Model -> Sub Msg
