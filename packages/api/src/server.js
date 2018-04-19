@@ -8,9 +8,12 @@ const api = require("./index.js");
 // Endpoint handlers
 
 function respond(res, code, response) {
+    if(typeof response === "object") {
+        response = JSON.stringify(response);
+    }
     res.status(code);
     res.type("application/json");
-    res.send(JSON.stringify(response));
+    res.send(response);
     res.end();
 }
 const apiRouter = express.Router();
@@ -23,12 +26,10 @@ function createMethod(method) {
             }
             function onError(error) {
                 if(typeof error === "number") {
-                    respond(res, error, {});
+                    respond(res, error, "");
                 }
                 else {
-                    respond(res, 500, {
-                        error,
-                    });
+                    respond(res, 500, error.toString());
                 }
             }
             handler(req.body)
