@@ -7,8 +7,8 @@ var RpcClient = require('bitcoind-rpc');
 
 
 var rpc;
-var htlcTransactionObject;
-
+// let htlcTransactionObject = {};
+let htlcTransactionObject;
 
 function BitcoinClient(user, password, host, port) {
   var config = {
@@ -74,12 +74,12 @@ async function getPrivateKey() {
         resolve(err1);
       } else {
         // resolve(addr.result.toString())
-        console.log(addr);
+        // console.log(addr);
         rpc.dumpPrivKey(addr.result.toString(), (err2, priv) => {
           if (err2) {
             reject(err2)
           } else {
-            console.log(priv);
+            // console.log(priv);
             resolve(priv.result)
           }
         });
@@ -93,17 +93,7 @@ function myFun(word) {
 }
 
 BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16592');
-// DefaultBitcoinClient();
 
-// async function functionName() {
-//   const something = await getBalance();
-//   return something;
-// }
-// functionName().then((a) => console.log(a));
-// console.log("hello");
-// ping(myFun
-
-getPrivateKey().then((a) => console.log(a));
 
 var timeout = getTimeout(110)
 // result = htlcTransactionObject(undefined, undefined, undefined)
@@ -119,24 +109,41 @@ function getTimeout(timeoutBlocks) {
   return bip65.encode({ blocks: timeoutBlocks });
 }
 
-function sendToHTLC(secret, sellerPublicKeyBuffer, satoshis) {
+function sendToHTLC(secret, sellerPublicKeyBuffer, btc) {
+  htlcTransactionObject = new Object();
   getPrivateKey().then((privkey) => {
-    this.htlcTransactionObject = htlcTransactionObject(secret, privkey,
+    this.htlcTransactionObject = createHTLCTransactionObject(secret, privkey,
       sellerPublicKeyBuffer, bitcoinjs.networks.testnet);
-
+    rpc.sendToAddress("2N1aStg5sVBrxbNNcuCYz72TtZtAGrDNNju" /*this.htlcTransactionObject.address*/, btc, (err, ret) => {
+      if (err) {
+        console.log(err);
+      } else {
+        this.htlcTransactionObject.txid = ret.result;
+        rpc.getTransaction(this.htlcTransactionObject.txid, (err2, ret2) => {
+          if (err2) {
+            console.log(err2);
+          } else {
+            this.htlcTransactionObject.vout = ret2.result.details[0].vout;
+            // console.log(ret2);
+            console.log("htlc inside " + JSON.stringify(this.htlcTransactionObject));
+          }
+        });
+        // console.log(ret);
+      }
+    });
   });
 
 }
+
+sendToHTLC(undefined, undefined, 0.2);
+console.log("htlc " + this.htlcTransactionObject);
 
 // function for sending to htlc address and adding id and stuff to htlcTransactionObject
 // htlcTransactionObject global object?
 // function for uploading and sending to htlc calls function above and htlcTransactionObject
 
-//
 
-
-
-function htlcTransactionObject(secret, buyerPrivatekey, sellerPublicKeyBuffer, timeoutBlocks, network) {
+function createHTLCTransactionObject(secret, buyerPrivatekey, sellerPublicKeyBuffer, timeoutBlocks, network) {
   var result = {};
   var hashType = bitcoinjs.Transaction.SIGHASH_ALL;
   result.hashType = hashType;
@@ -149,7 +156,7 @@ function htlcTransactionObject(secret, buyerPrivatekey, sellerPublicKeyBuffer, t
   // Get current block and add timeoutBlocks to that
   var timeout = bip65.encode({ blocks: 110 }) //The block where you can refund the transaction after (in absolute value; check current block height)
   result.timeout = timeout;
-  var redeemScript = htlc(bcrypto.sha256(secret), alice, bob, timeout);
+  var redeemScript = htlc(bcrypto.sha256(secret), alice.getPublicKeyBuffer(), bob, timeout);
   result.redeemScript = redeemScript;
   var scriptPubKey = bitcoinjs.script.scriptHash.output.encode(bitcoinjs.crypto.hash160(redeemScript));
   var address = bitcoinjs.address.fromOutputScript(scriptPubKey, bitcoinjs.networks.testnet);
@@ -186,7 +193,7 @@ function htlc (digest, sellerPublicKeyBuffer, buyerECPair, timeout) {
   ]);
 };
 
-function redeemAsSeller() {
+function redeemAsSeller(htlcTransactionObject) {
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
     bob.sign(signatureHash).toScriptSignature(hashType),
     bob.getPublicKeyBuffer(),
@@ -196,7 +203,7 @@ function redeemAsSeller() {
 }
 
 //
-function redeemAsBuyer(secret) {
+function redeemAsBuyer(htlcTransactionObject, secret) {
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
     bob.sign(signatureHash).toScriptSignature(hashType),
     bob.getPublicKeyBuffer(),
@@ -237,4 +244,4 @@ function buildReedemTransaction(htlcTransObj, htlcTransId, redeemScriptSig, netw
 
 
 
-module.exports = {/*htlc, toDigest, alice, bob, tx, redeemScript*/};
+module.exports = {htlcTransactionObject/*htlc, toDigest, alice, bob, tx, redeemScript*/};
