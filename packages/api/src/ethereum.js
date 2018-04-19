@@ -263,15 +263,18 @@ function subscribeToClaim(contract, block){
 /** Will return the value of the first Claim event it founds.
 *
 */
-async function getPastClaim(ethchain, contract_address, from_block = 1){
+function getPastClaim(ethchain, contract_address, from_block = 10849){
     var contract, events;
     console.log("*************IN GETPASTCLAIM; LEGGO********************");
     contract = new ethchain.eth.Contract(htlc_ether.abi, contract_address);
-    events = await contract.getPastEvents('Claim', {
+    // return contract.getPastEvents('Claim', {
+    //       fromBlock: from_block,
+    //       toBlock: 'latest'
+    //     });
+    return contract.getPastEvents('Claim', {
       fromBlock: from_block,
       toBlock: 'latest'
     });
-    return events[0].returnValues._hash;
 }
 
 function claimContract(ethchain, pre_image_hash, from_address, claim_address){

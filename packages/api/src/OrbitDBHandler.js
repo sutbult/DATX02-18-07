@@ -202,7 +202,7 @@ async function pushContractInfo(contractInfo, message, callback) {
     var contractMessage = JSON.stringify(jsonMessage)
   
     channel.add(contractMessage);
-    callback(message);
+    callback(JSON.stringify(message)); //stringify here instead of a lot of JSON.parse's
 
   });
   //Complete transaction

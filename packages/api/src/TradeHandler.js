@@ -35,10 +35,11 @@ function whenBidAccepted(msg){
 }
 
 function unlockWithSecret(msg){
-    // console.log("Unlock msg");
+    console.log("Unlock msg");
+    console.log(msg);
     var message = JSON.parse(msg);
     message.secret = secret;
-    // console.log(message);
+    console.log(message);
     var toCurrency = message.bid.to.currency;
     switch(toCurrency){
         case "Ethereum":
@@ -67,7 +68,7 @@ async function acceptBid(bidID){
             .then(accs => {
                 // console.log("Address");
                 // console.log(accs[1]);
-                messenger.acceptBid(bid, accs[1], secondContract);
+                messenger.acceptBid(bid, accs[2], secondContract);
             });
             break;
         case "Ethereum classic":
