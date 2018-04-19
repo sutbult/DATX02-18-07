@@ -214,11 +214,12 @@ async function sendContract(ethchain, jsoncontract, args, from_address, digest, 
     console.log("Contract deployed at address " + contract_address);
 
     contract.options.address = contract_address;
-    subscribeToClaim(contract, receipt.blockNumber);
+    var subPromise = subscribeToClaim(contract, receipt.blockNumber);
     var returnObj = new Object();
     returnObj.contractAddress = contract_address;
     returnObj.digest = args[0];
     returnObj.address = from_address; //this is incorrect, remove
+    returnObj.promise = subPromise;
     console.log("The returnObj");
     console.log(returnObj);
     return returnObj;
@@ -253,10 +254,10 @@ function tokensNoDecimals(tokens, decimals) {
 }
 
 function subscribeToClaim(contract, block){
-    /** @todo fix callback
+    /** return a promise
     *
     */
-    contract.events.Claim({fromBlock: "latest"}, function(error, event){console.log(event.returnValues._hash);});
+    return contract.events.Claim({fromBlock: "latest"});//, function(error, event){console.log("*******************CLAIMEVENT***************" + event.returnValues._hash);});
 }
 
 
