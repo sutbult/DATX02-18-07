@@ -69,7 +69,6 @@ function getBalance() {
 }
 BitcoinClient('bitcoinrpc', 'password', '127.0.0.2', '16592');
 
-getBalance();
 
 async function getPrivateKey() {
   return new Promise((resolve, reject) => {
@@ -92,25 +91,10 @@ async function getPrivateKey() {
   });
 }
 
-function myFun(word) {
-  console.log(word);
-}
 
-
-
-var timeout = getTimeout(110)
-// result = htlcTransactionObject(undefined, undefined, undefined)
-// console.log(result);
 // var alice = bitcoinjs.ECPair.fromWIF('cRuoxDPY2ku1LjANJJMBUjqWYejYnF5MwmzbWsAs7i1uoVSqCmzH', bitcoinjs.networks.testnet);
 // console.log(alice.getPublicKeyBuffer());
 
-// redeemScript = result.redeemScript;
-// hashType = result.hashType;
-
-function getTimeout(timeoutBlocks) {
-  //get current blockNumber first and add to timeoutBlocks
-  return bip65.encode({ blocks: timeoutBlocks });
-}
 
 function setHTLCTrans(key, value) {
   if (htlcTransactionObject == undefined) {
@@ -130,6 +114,18 @@ function sendToHTLC(address, btc) {
         resolve(ret);
       }
     })
+  });
+}
+
+async function generateTimeout(timeoutBlocks) {
+  return new Promise((resolve, reject) => {
+    rpc.getBlockCount((err, ret) => {
+      if (err) {
+        reject("Couldn't get current block count");
+      }
+      var timeout = bip65.encode({ blocks: ret.result + timeoutBlocks});
+      resolve(timeout);
+    });
   });
 }
 
@@ -167,34 +163,59 @@ function sendToHTLC(address, btc) {
 // htlcTransactionObject global object?
 // function for uploading and sending to htlc calls function above and htlcTransactionObject
 
-
-function createHTLCTransactionObject(digest, buyerPublicKeyBuffer, sellerPublicKeyBuffer, timeoutBlocks, network) {
+async function createHTLC(secret, selPubKeyBuf, timeoutBlocks, network) {
+  // get private key ECPair and call htlcAddress
   var result = {};
-  var hashType = bitcoinjs.Transaction.SIGHASH_ALL;
-  result.hashType = hashType;
-
-  //dump private key for alice or get fromWIF some other way?
-  var alice = bitcoinjs.ECPair.fromWIF('cRuoxDPY2ku1LjANJJMBUjqWYejYnF5MwmzbWsAs7i1uoVSqCmzH', bitcoinjs.networks.testnet); //Use your own key!
-  //receive bobs fromWif as an arugment
-  var bob = bitcoinjs.ECPair.fromWIF('cRgLkMozC74fjazThBBQipMyk8yyL5z3NeDYe5pQ9ckhyo4Q7kCj', bitcoinjs.networks.testnet); //Use your own key!
-  var secret = "1"
-  // Get current block and add timeoutBlocks to that
-  var timeout = bip65.encode({ blocks: 110 }) //The block where you can refund the transaction after (in absolute value; check current block height)
-  result.timeout = timeout;
-  var redeemScript = htlc(bcrypto.sha256(secret), alice.getPublicKeyBuffer(), bob.getPublicKeyBuffer(), timeout);
-  result.redeemScript = redeemScript;
-  var scriptPubKey = bitcoinjs.script.scriptHash.output.encode(bitcoinjs.crypto.hash160(redeemScript));
-  var address = bitcoinjs.address.fromOutputScript(scriptPubKey, bitcoinjs.networks.testnet);
+  var privkey = await getPrivateKey();
+  var buyerECPair = bitcoinjs.ECPair.fromWIF(privkey, network);
+  var buyPubKeyBuf = buyerECPair.getPublicKeyBuffer();
+  var digest = toDigest(secret);
+  var address = await htlcAddress(digest, selPubKeyBuf, buyPubKeyBuf, timeoutBlocks, network);
+  result.digest = digest;
+  result.timeoutBlocks = timeoutBlocks;
+  result.buyerPublicKeyBuffer = buyPubKeyBuf;
   result.address = address;
-  console.log(address);
   return result;
+}
+
+async function verifyHTLC(digest, buyPubKeyBuf, timeoutBlocks, network, compareAddress) {
+  // generate htlcAddress and make sure it matches htlcAddress
+  
+}
+
+async function htlcAddress(digest, selPubKeyBuf,  buyPubKeyBuf, timeoutBlocks, network) {
+  var hashType = bitcoinjs.Transaction.SIGHASH_ALL;
+  var timeout = await generateTimeout(timeoutBlocks);
+  return new Promise(function(resolve, reject) {
+    var redeemScript = htlc(digest, selPubKeyBuf, buyPubKeyBuf, timeout);
+    var scriptPubKey = bitcoinjs.script.scriptHash.output.encode(bitcoinjs.crypto.hash160(redeemScript));
+    var address = bitcoinjs.address.fromOutputScript(scriptPubKey, network);
+    resolve(address);
+  });
+
+  // //dump private key for alice or get fromWIF some other way?
+  // var alice = bitcoinjs.ECPair.fromWIF('cRuoxDPY2ku1LjANJJMBUjqWYejYnF5MwmzbWsAs7i1uoVSqCmzH', bitcoinjs.networks.testnet); //Use your own key!
+  // //receive bobs fromWif as an arugment
+  // var bob = bitcoinjs.ECPair.fromWIF('cRgLkMozC74fjazThBBQipMyk8yyL5z3NeDYe5pQ9ckhyo4Q7kCj', bitcoinjs.networks.testnet); //Use your own key!
+  // var secret = "1"
+  // // Get current block and add timeoutBlocks to that
+  // var timeout = bip65.encode({ blocks: 110 }) //The block where you can refund the transaction after (in absolute value; check current block height)
+  // result.timeout = timeout;
+  // // var redeemScript = htlc(bcrypto.sha256(secret), alice.getPublicKeyBuffer(), bob.getPublicKeyBuffer(), timeout);
+  // var redeemScript = htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout);
+  // result.redeemScript = redeemScript;
+  // var scriptPubKey = bitcoinjs.script.scriptHash.output.encode(bitcoinjs.crypto.hash160(redeemScript));
+  // var address = bitcoinjs.address.fromOutputScript(scriptPubKey, bitcoinjs.networks.testnet);
+  // result.address = address;
+  // console.log(address);
+  // return result;
 }
 
 function toDigest(secret){
   return bcrypto.sha256(secret);
 }
 
-function htlc (digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
+function htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
   return bitcoinjs.script.compile //CHECKSQUENCEVERIFY REFUSES TO WORK
   ([
     bitcoinjs.opcodes.OP_IF,
