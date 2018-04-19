@@ -102,10 +102,25 @@ async function getUserBids() {
     await ensureInitialized();
     return db.getUserBids(50)
 }
+var acceptedBidFlag = false;
 async function getAcceptedBids() {
     await ensureInitialized();
-    // TODO: Implementera detta
-    return [];
+    // TODO: Implementera detta på riktigt
+    acceptedBidFlag = !acceptedBidFlag;
+    return [
+        {
+            id: "TST",
+            status: acceptedBidFlag ? "PENDING" : "FINISHED",
+            from: {
+                currency: "BTC",
+                amount: "200000000",
+            },
+            to: {
+                currency: "ETH",
+                amount: "10000000000000000000",
+            },
+        },
+    ];
 }
 
 // Fetches the currencies which is available for the user to create bids with
