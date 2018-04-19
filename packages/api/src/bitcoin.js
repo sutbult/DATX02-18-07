@@ -178,9 +178,11 @@ async function createHTLC(secret, selPubKeyBuf, timeoutBlocks, network) {
   return result;
 }
 
-async function verifyHTLC(digest, buyPubKeyBuf, timeoutBlocks, network, compareAddress) {
+// TODO: Make sure that selPubKeyBuf is one of the seller's actual keys or have it saved in a file?
+async function verifyHTLC(digest, selPubKeyBuf, buyPubKeyBuf, timeoutBlocks, network, compareAddress) {
   // generate htlcAddress and make sure it matches htlcAddress
-  
+  var address = htlcAddress(digest, selPubKeyBuf, buyPubKeyBuf, timeoutBlocks, network);
+  return address === compareAddress;
 }
 
 async function htlcAddress(digest, selPubKeyBuf,  buyPubKeyBuf, timeoutBlocks, network) {
