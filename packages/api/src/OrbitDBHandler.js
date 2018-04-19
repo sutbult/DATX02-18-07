@@ -196,12 +196,12 @@ async function pushContractInfo(contractInfo, message, callback) {
   console.log("********************PUSHCONTRACTINFO********************");
   contractInfo.then(result => {
     console.log(result);
-    var contractMessage = message;
-    contractMessage.step = 4; //recycling step 3 data, need to refresh some values
-    contractMessage.contractAddress = result.contractAddress;
-    var JSONContract = JSON.stringify(contractMessage)
+    var jsonMessage = message;
+    jsonMessage.step = 4; //recycling step 3 data, need to update some values
+    jsonMessage.contractAddress = result.contractAddress;
+    var contractMessage = JSON.stringify(jsonMessage)
   
-    channel.add(JSONContract);
+    channel.add(contractMessage);
     callback(message);
 
   });

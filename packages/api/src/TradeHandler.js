@@ -67,7 +67,7 @@ async function acceptBid(bidID){
             .then(accs => {
                 // console.log("Address");
                 // console.log(accs[1]);
-                messenger.acceptBid(bid, accs[1], secondContract);
+                messenger.acceptBid(bid, accs[2], secondContract);
             });
             break;
         case "Ethereum classic":
