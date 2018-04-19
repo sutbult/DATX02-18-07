@@ -11,13 +11,55 @@ import Add.View
 import Wallet.View
 import UserBids.View
 import AcceptedBids.View
+import Utils.List exposing
+    ( singletonWhen
+    )
+
+
+views : List (View, String)
+views =
+    [ (Add, "Add bid")
+    , (Browse, "Browse bids")
+    , (Wallet, "Your wallets")
+    , (UserBids, "Your bids")
+    , (AcceptedBids, "Accepted bids")
+    ]
+
 
 root : Model -> Html Msg
 root model =
-    div []
-        [ tabs model.shown
-        , viewSelector model
+    div [class "columns"]
+        [ div [class "column is-narrow"]
+            [ menu model
+            ]
+        , div [class "column"]
+            [ viewSelector model
+            ]
         ]
+
+
+menu : Model -> Html Msg
+menu model =
+    let
+        option (view, title) =
+            let
+                attribs =
+                    (++)
+                        [onClick (Show view)]
+                        <| singletonWhen
+                            (model.shown == view)
+                            (class "is-active")
+            in
+                li []
+                    [ a attribs
+                        [ text title
+                        ]
+                    ]
+    in
+        aside [class "menu"]
+            [ ul [class "menu-list"]
+                <| List.map option views
+            ]
 
 
 viewSelector : Model -> Html Msg
@@ -37,31 +79,3 @@ viewSelector model =
 
         AcceptedBids ->
             Html.map ToAcceptedBids <| AcceptedBids.View.root model.models.acceptedBids
-
-
-tabs : View -> Html Msg
-tabs shown =
-    div [class "tabs is-centered"]
-        [ ul []
-            <| List.map (tab shown)
-                [ (Add, "Add bid")
-                , (Browse, "Browse bids")
-                , (Wallet, "Your wallets")
-                , (UserBids, "Your bids")
-                , (AcceptedBids, "Accepted bids")
-                ]
-        ]
-
-
-tab : View -> (View, String) -> Html Msg
-tab shown (view, title) =
-    let
-        attribs =
-            if shown == view then
-                [class "is-active"]
-            else
-                []
-    in
-        li attribs
-            [ a [onClick (Show view)] [text title]
-            ]
