@@ -42,8 +42,8 @@ update msg model =
 
         SetBids bids ->
             foldMsg update model
-                [ ToBidList <| BidListTypes.SetBids bids
-                , NotifyBidChanges bids
+                [ NotifyBidChanges bids
+                , ToBidList <| BidListTypes.SetBids bids
                 ]
 
         NotifyBidChanges bids ->
