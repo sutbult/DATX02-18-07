@@ -90,25 +90,35 @@ buttonRow model =
                 " is-loading"
             else
                 ""
+        buttons =
+            [ lbutton "" "Reset" Reset isDisabled
+            , lbutton ("is-link" ++ saveExtraClass) "Save" Save isDisabled
+            ]
     in
         div
             [ style
-                [ ("text-align", "right")
+                [ ("float", "right")
                 , ("margin-top", "20px")
                 ]
             ]
-            [ button
-                [ class <| "button is-medium"
-                , onClick Reset
-                , disabled isDisabled
-                ]
-                [ text "Reset"
-                ]
-            , button
-                [ class <| "button is-link is-medium" ++ saveExtraClass
-                , onClick Save
-                , disabled isDisabled
-                ]
-                [ text "Save"
-                ]
+            [ div [class "field is-grouped"]
+                buttons
             ]
+
+
+lbutton
+    :  String
+    -> String
+    -> Msg
+    -> Bool
+    -> Html Msg
+lbutton extraClasses title msg isDisabled =
+    p [class "control"]
+        [ button
+            [ class <| "button is-medium " ++ extraClasses
+            , onClick msg
+            , disabled isDisabled
+            ]
+            [ text title
+            ]
+        ]
