@@ -10,7 +10,7 @@ function whenBidAccepted(msg){
 
     //use random function to get a good secret
     secret = 1;
-    
+
     var jsonObj;
     var message = JSON.parse(msg);
     message.secret = secret;
@@ -47,7 +47,7 @@ async function acceptBid(bidID){
             var eth = require("./tradeETH.js");
             eth.getAddress()
             .then(accs => {
-                messenger.acceptBid(bid, accs[1], secondContract);
+                messenger.acceptBid(bid, accs[2], secondContract);
             });
             break;
         case "Ethereum classic":

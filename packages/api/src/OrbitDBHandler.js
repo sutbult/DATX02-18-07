@@ -147,7 +147,8 @@ function checkForStep(step, callback) {
   }
   var timer = setInterval(function(){
     if(message.step != step) {
-      message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
+      msg = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
+      message = JSON.parse(message);
     } else {
       clearInterval(timer)
       callback(message);
