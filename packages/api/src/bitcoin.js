@@ -241,54 +241,92 @@ function htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
   ]);
 };
 
-function redeemAsSeller(htlcTransId, sellerECPair, network, destination, btc) {
+function redeemAsSeller(sellerECPair, network, htlcTransId, timeout, destination, btc) {
   var signatureHash = tx.hashForSignature(0, htlcTransObj.redeemScript, htlcTransObj.hashType);
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
-    bob.sign(signatureHash).toScriptSignature(hashType),
-    bob.getPublicKeyBuffer(),
+    sellerECPair.sign(signatureHash).toScriptSignature(hashType),
+    sellerECPair.getPublicKeyBuffer(),
     bitcoinjs.opcodes.OP_FALSE
   ], redeemScript)
-  //call buildReedemTransaction
+  var redeemTransaction = await buildReedemTransaction(htlcTransId, network, timeout,
+    destination, btc, redeemScriptSig);
+
+  return new Promise(function(resolve, reject) {
+    rpc.sendRawTransaction(redeemTransaction, (err, ret) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(ret.result);
+    });
+  });
 }
 
 //
-function redeemAsBuyer(htlcTransId, secret, buyerECPair, network, destination, btc) {
+function redeemAsBuyer(buyerECPair, secret, htlcTransId, network, timeout, destination, btc) {
   var signatureHash = tx.hashForSignature(0, htlcTransObj.redeemScript, htlcTransObj.hashType);
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
-    bob.sign(signatureHash).toScriptSignature(hashType),
-    bob.getPublicKeyBuffer(),
-    Buffer.from("1"), //This is the secret
+    buyerECPair.sign(signatureHash).toScriptSignature(hashType),
+    buyerECPair.getPublicKeyBuffer(),
+    // Buffer.from("1"), //This is the secret
+    Buffer.from(secret);
     bitcoinjs.opcodes.OP_TRUE
   ], redeemScript)
-  //call buildReedemTransaction
+  var redeemTransaction = await buildReedemTransaction(htlcTransId, network, timeout,
+    destination, btc, redeemScriptSig);
+  return new Promise(function(resolve, reject) {
+    rpc.sendRawTransaction(redeemTransaction, (err, ret) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(ret.result);
+    });
+  });
 }
 
-function buildReedemTransaction(htlcTransObj, htlcTransId, redeemScriptSig, network, destination, btc, vout, sequence) {
-  // var txb = new bitcoinjs.TransactionBuilder(bitcoinjs.networks.testnet);
+function buildReedemTransaction(htlcTransId, network, timeout, destination, btc, redeemScriptSig) {
 
-  // txb.setLockTime(timeout) //Transaction needs to have the appropriate locktime
-  // txb.addInput("0c09009f269f682d08cc53abae0b466409c55b95922e08d8a9edbef68de37fbf", 0, 0xfffffffe); //First argument is transaction ID of tx to P2SH address, second vout, third sequence
-  // txb.addOutput("2N6dyyk1a3L6keV5EENZe9jvf5NuXfjPuU2", 9e8); //First argument is destination for money and second is the amount
-  var txb = new bitcoinjs.TransactionBuilder(network);
-  txb.setLockTime(htlcTransObj.timeout);
-  txb.addInput(htlcTransId, vout, 0xfffffffe);
-  txb.addOutput(destination, btc);
+  return new Promise(function(resolve, reject) {
+    rpc.getTransaction(htlcTransId, (err, ret) => {
+      if (err) {
+        reject(err);
+      }
+      var txb = new bitcoinjs.TransactionBuilder(network);
+      txb.setLockTime(timeout);
+      var vout = ret.result.details[0].vout;
+      txb.addInput(htlcTransId, vout, 0xfffffffe);
+      txb.addOutput(destination, btc);
 
-  var tx = txb.buildIncomplete();
+      var tx = txb.buildIncomplete();
+      tx.setInputScript(0, redeemScriptSig);
+      resolve(tx);
+    });
+  });
 
-  // var signatureHash = tx.hashForSignature(0, htlcTransObj.redeemScript, htlcTransObj.hashType);
-  // var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
-  //   bob.sign(signatureHash).toScriptSignature(hashType),
-  //   bob.getPublicKeyBuffer(),
-  //   //Buffer.from("1"), //This is the secret
-  //   //bitcoinjs.opcodes.OP_TRUE
-  //   bitcoinjs.opcodes.OP_FALSE
-  // ], redeemScript)
-
-  tx.setInputScript(0, redeemScriptSig);
-
-  console.log(bitcoinjs.script.decompile(redeemScript));
-  console.log(bcrypto.hash160(alice.getPublicKeyBuffer()).toString('hex'));
+  // // var txb = new bitcoinjs.TransactionBuilder(bitcoinjs.networks.testnet);
+  //
+  // // txb.setLockTime(timeout) //Transaction needs to have the appropriate locktime
+  // // txb.addInput("0c09009f269f682d08cc53abae0b466409c55b95922e08d8a9edbef68de37fbf", 0, 0xfffffffe); //First argument is transaction ID of tx to P2SH address, second vout, third sequence
+  // // txb.addOutput("2N6dyyk1a3L6keV5EENZe9jvf5NuXfjPuU2", 9e8); //First argument is destination for money and second is the amount
+  // var txb = new bitcoinjs.TransactionBuilder(network);
+  // txb.setLockTime(timeout);
+  // txb.addInput(htlcTransId, vout, 0xfffffffe);
+  // txb.addOutput(destination, btc);
+  //
+  // var tx = txb.buildIncomplete();
+  //
+  // // var signatureHash = tx.hashForSignature(0, htlcTransObj.redeemScript, htlcTransObj.hashType);
+  // // var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
+  // //   bob.sign(signatureHash).toScriptSignature(hashType),
+  // //   bob.getPublicKeyBuffer(),
+  // //   //Buffer.from("1"), //This is the secret
+  // //   //bitcoinjs.opcodes.OP_TRUE
+  // //   bitcoinjs.opcodes.OP_FALSE
+  // // ], redeemScript)
+  //
+  // tx.setInputScript(0, redeemScriptSig);
+  //
+  // console.log(bitcoinjs.script.decompile(redeemScript));
+  // console.log(bcrypto.hash160(alice.getPublicKeyBuffer()).toString('hex'));
 
 }
 
