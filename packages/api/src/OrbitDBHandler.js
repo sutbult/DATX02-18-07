@@ -76,7 +76,6 @@ async function addData(data, channelName, address){
   var messaging = await createDB(channelName, "log", "public")
   channel = await getLogDB(messaging)
   await channel.load()
-  // console.log("1: " + messaging);
 
   var initialMessage = new Object();
   initialMessage.step = 1;
@@ -104,22 +103,11 @@ async function getKVData(key, address){
   return data
 }
 
-/*
-  Just send address
-  jsonObject = {
-      "step" : "2",
-      "adress" : adressString
-    };
-*/
-async function acceptBid(bid, address, func){
+async function acceptBid(bid, address, callback){
   var messagingChannel = await createDB(bid.channel, "log", "public")
-  // console.log("MessagingChannel: " + messagingChannel);
   channel = await getLogDB(messagingChannel)
   await channel.load()
-  // console.log("After channel.log");
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-
-  //Send information to blockchain parts
 
   var acceptMessage = new Object();
   acceptMessage.step = 2;
@@ -128,51 +116,41 @@ async function acceptBid(bid, address, func){
 
   var JSONObject = JSON.stringify(acceptMessage)
   var returnvalue = await channel.add(JSONObject);
-  // console.log("What is this " + returnvalue);
-  // console.log("**************************************");
 
-  checkForStep(3,func); //Might be done at blockchain part
-  //Let everybody know that the bid is taken.
-  //Send to blockchain parts
+  checkForStep(3,callback);
 }
 
-async function bidAccepted(bid, func){
+async function bidAccepted(bid, callback){
   var messagingChannel = await createDB(bid.channel, "log", "public")
   channel = await getLogDB(messagingChannel)
   await channel.load()
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
 
-  checkForStep(2,func);
+  checkForStep(2,callback);
 }
 
-function checkForStep(step, func) {
-  // console.log(step);
-  // console.log(channel.address);
+//If correct step is found the information in the channel will be returned to the callback function
+function checkForStep(step, callback) {
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
   if(message != null) jsonObj = JSON.parse(message);
   else return;
-  //the first step is unnecessary, no one has accepted your bid yet
+  //the first step should terminate here, no one has accepted your bid yet
   if(jsonObj.step == 1){
     console.log("No one has accepted this bid yet");
-    close();
+    close(); //Doing only this creates this error: MaxListenersExceededWarning: Possible EventEmitter memory leak detected
     return
   }
   var index = require("./index.js")
 
   if(!index.acceptedBids.includes(jsonObj.bid)){
-    // console.log("************ADDING BID: " + JSON.stringify(jsonObj.bid));
     index.acceptedBids.push(jsonObj.bid);
   }
   var timer = setInterval(function(){
     if(JSON.parse(message).step != step) {
-      // console.log(channel.address);
       message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
-      // console.log("In checkForStep " + JSON.parse(message).step);
-      //return message
     } else {
       clearInterval(timer)
-      // console.log("Correct step: " + JSON.parse(message).step)
-      func(message);
+      callback(message);
     }
   }, 5000);
 }
@@ -186,17 +164,15 @@ async function pushDigestInfo(contractInfo, func) {
   jsonObj.address = contractInfo.address;
   jsonObj.bid = contractInfo.bid;
 
-
   var digestMessage = JSON.stringify(jsonObj)
   await channel.add(digestMessage);
   checkForStep(4,func);
-  //Send to blockchain
 }
 
 async function pushContractInfo(contractInfo, message, callback) {
-  // console.log("********************PUSHCONTRACTINFO********************");
+  //Will wait until the contract is deployed on the blockchain
   contractInfo.then(result => {
-    // console.log(result);
+
     var jsonMessage = message;
     jsonMessage.step = 4; //recycling step 3 data, need to update some values
     jsonMessage.contractAddress = result.contractAddress;
@@ -204,10 +180,8 @@ async function pushContractInfo(contractInfo, message, callback) {
 
     message.promise = result.promise;
     channel.add(contractMessage);
-    callback(message); //stringify here instead of a lot of JSON.parse's
-
+    callback(message);
   });
-  //Complete transaction
 }
 
 

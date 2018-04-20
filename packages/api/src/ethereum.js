@@ -190,27 +190,15 @@ async function sendEtherContract(ethchain, from_address, secret, digest, destina
 
 async function sendContract(ethchain, jsoncontract, args, from_address, digest, value_in_wei){
     var ether, gas_estimate, contract, contract_instance, contract_address;
-    /**If you are bid poster the secret will be keccak256-hashed
-     * else p_digest will contain the hashed secret
-     */
-
-    /**Need to convert the user inputted amount to Wei */
-    //ether = ethchain.utils.toWei(value_in_wei, "wei");
-    gas_estimate =  572810;//web3.eth.estimateGas({data: bytecode});
+    gas_estimate =  572810;
 
 
     contract = new ethchain.eth.Contract(jsoncontract.abi);
 
     contract_instance = contract.deploy({data: '0x' + jsoncontract.code, arguments: args});
-    // console.log(args);
-    // console.log(gas_estimate);
-    // console.log(from_address);
-    // console.log(value_in_wei);
     var receipt = await contract_instance.send({from: from_address, gasPrice: gas_estimate.toString(), gas: gas_estimate, value: value_in_wei});
 
     contract_address = receipt._address;
-    // console.log(receipt._address);
-    /**@todo send this information to other user */
     console.log("Contract deployed at address " + contract_address);
 
     contract.options.address = contract_address;
@@ -220,10 +208,7 @@ async function sendContract(ethchain, jsoncontract, args, from_address, digest, 
     returnObj.digest = args[0];
     returnObj.address = from_address; //this is incorrect, remove
     returnObj.promise = subPromise;
-    // console.log("The returnObj");
-    // console.log(returnObj);
     return returnObj;
-    /**@todo send this information to other user */
 }
 
 function generateDigest(ethchain, secret, digest){

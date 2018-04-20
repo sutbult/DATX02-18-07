@@ -1,11 +1,16 @@
 const messenger = require("./OrbitDBHandler")
 const db = require("./DBHandler.js");
+//"global" variable, will be assigned if function whenBidAccepted is called, otherwise stays null
 var secret = null;
+
+//Called from an interval set in index.js if bid has been accepted
+//bid is accepted if the bid.channel contains a step 2
 function whenBidAccepted(msg){
     //remove bid from db to prevent multiple contracts
 
     //use random function to get a good secret
     secret = 1;
+    
     var jsonObj;
     var message = JSON.parse(msg);
     message.secret = secret;
@@ -28,29 +33,6 @@ function whenBidAccepted(msg){
         default:
             console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
             //Throw error
-    }
-}
-
-function unlockWithSecret(msg){
-    // console.log("Unlock msg");
-    // console.log(msg);
-    var message;
-    if(msg.constructor === {}.constructor) message = msg;
-    else message = JSON.parse(msg);
-    message.secret = secret;
-    // console.log(message);
-    var toCurrency = message.bid.to.currency;
-    switch(toCurrency){
-        case "Ethereum":
-            console.log("To Ethereum");
-            require("./tradeETH.js").claim(message);
-            break;
-        case "Ethereum classic":
-            console.log("To Ethereum classic");
-            //require("./tradeEtc.js").firstReceiver(bid, message);
-            break;
-        default:
-            console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
     }
 }
 
@@ -102,6 +84,26 @@ function secondContract(msg){
             //Throw error
     }
 
+}
+
+function unlockWithSecret(msg){
+    var message;
+    if(msg.constructor === {}.constructor) message = msg;
+    else message = JSON.parse(msg);
+    message.secret = secret;
+    var toCurrency = message.bid.to.currency;
+    switch(toCurrency){
+        case "Ethereum":
+            console.log("To Ethereum");
+            require("./tradeETH.js").claim(message);
+            break;
+        case "Ethereum classic":
+            console.log("To Ethereum classic");
+            //require("./tradeEtc.js").firstReceiver(bid, message);
+            break;
+        default:
+            console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
+    }
 }
 
 module.exports = {
