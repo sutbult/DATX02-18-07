@@ -18,6 +18,8 @@ type Msg
         Navigation.Types.Msg
     | SetPassword String String
     | Submit
+    | ToNavigation Navigation.Types.Msg
+    | Cancel
 
 type Password
     = UncheckedPassword String

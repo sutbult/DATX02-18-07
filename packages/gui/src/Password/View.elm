@@ -9,6 +9,7 @@ import Password.Types exposing (..)
 import Bid.Types exposing
     ( currencyName
     )
+import Navigation.Types
 
 
 root : Model -> Html Msg
@@ -39,6 +40,7 @@ instanceModal instance passwords =
                     List.map
                         (passwordFieldLookup passwords)
                         instance.promptedPasswords
+                , buttonRow instance
                 ]
             ]
         ]
@@ -111,3 +113,43 @@ passwordField currency password =
                     ]
                 ]
             ]
+
+buttonRow : Instance -> Html Msg
+buttonRow instance =
+    div
+        [ class "buttons is-right"
+        , style [("margin-top", "20px")]
+        ]
+        [ cancelButton instance.onCancel
+        , button
+            [ class "button is-link"
+            , onClick Submit
+            ]
+            [ text "Submit"
+            ]
+        ]
+
+
+cancelButton : Maybe Navigation.Types.Msg -> Html Msg
+cancelButton maybeCancel =
+    case maybeCancel of
+        Just _ ->
+            button
+                [ class "button"
+                , onClick Cancel
+                ]
+                [ text "Cancel"
+                ]
+
+        Nothing ->
+            span [] []
+
+
+submitButton : Navigation.Types.Msg -> Html Msg
+submitButton onSubmit =
+    button
+        [ class "button is-link"
+        , onClick Submit
+        ]
+        [ text "Submit"
+        ]

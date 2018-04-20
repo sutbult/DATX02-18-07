@@ -53,6 +53,12 @@ update msg model =
         Submit ->
             (model, Cmd.none)
 
+        Cancel ->
+            (model, Cmd.none)
+
+        ToNavigation _ ->
+            (model, Cmd.none)
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
