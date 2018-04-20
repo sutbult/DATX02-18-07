@@ -134,6 +134,34 @@ async function getCurrencies() {
     ];
 }
 
+var settings = {
+    blockchainPathList: [
+        {
+            currency: "BTC",
+            value: "/home/harambe/bitcoin",
+        },
+        {
+            currency: "ETH",
+            value: "/home/harambe/ethereum",
+        },
+        {
+            currency: "ETC",
+            value: "/home/harambe/ethereumClassic",
+        },
+    ],
+};
+
+async function getSettings() {
+    await ensureInitialized();
+    // TODO: Implementera på riktigt
+    return settings
+}
+async function setSettings(newSettings) {
+    await ensureInitialized();
+    // TODO: Implementera på riktigt
+    settings = newSettings;
+}
+
 module.exports = {
     addBid,
     getBids,
@@ -142,5 +170,7 @@ module.exports = {
     getUserBids,
     getAcceptedBids,
     getCurrencies,
+    getSettings,
+    setSettings,
     setMessageHandler,
 };

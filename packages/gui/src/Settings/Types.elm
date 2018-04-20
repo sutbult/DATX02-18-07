@@ -1,5 +1,7 @@
 module Settings.Types exposing (..)
 
+import Error.Types
+
 type alias BlockchainPath =
     { currency: String
     , value: String
@@ -12,8 +14,13 @@ type alias Settings =
 type alias Model =
     { currentSettings : Settings
     , savedSettings : Settings
+    , loading : Bool
+    , saving : Bool
+    , error : Error.Types.Model
     }
 
 type Msg
-    = SetBlockchainPath String String
+    = ToError Error.Types.Msg
+    | SetBlockchainPath String String
+    | SetSettings Settings
     | Reset

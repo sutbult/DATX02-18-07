@@ -4,30 +4,45 @@ module Settings.State exposing
     , subscriptions
     )
 
+import Platform.Cmd
+
 import Settings.Types exposing (..)
+import Settings.Rest exposing
+    ( getSettings
+    )
+import Error.State
 
 
 init : (Model, Cmd Msg)
 init =
     let
         settings =
-            { blockchainPathList =
-                [ BlockchainPath "BTC" ""
-                , BlockchainPath "ETH" ""
-                , BlockchainPath "ETC" ""
-                ]
+            { blockchainPathList = []
             }
+        (errorModel, errorCmd) = Error.State.init
     in
         (   { currentSettings = settings
             , savedSettings = settings
+            , loading = True
+            , saving = False
+            , error = errorModel
             }
-        , Cmd.none
+        , Cmd.batch
+            [ Platform.Cmd.map ToError errorCmd
+            , getSettings
+            ]
         )
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
+        ToError subMsg ->
+            let
+                (subModel, subCmd) = Error.State.update subMsg model.error
+            in
+                ({model | error = subModel}, Platform.Cmd.map ToError subCmd)
+
         SetBlockchainPath currency value ->
             let
                 setSetting settings =
@@ -43,6 +58,13 @@ update msg model =
         Reset ->
             ({ model
                 | currentSettings = model.savedSettings
+            }, Cmd.none)
+
+        SetSettings settings ->
+            ({ model
+                | currentSettings = settings
+                , savedSettings = settings
+                , loading = False
             }, Cmd.none)
 
 

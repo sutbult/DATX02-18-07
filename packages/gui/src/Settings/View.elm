@@ -10,12 +10,14 @@ import Settings.Types exposing (..)
 import Bid.Types exposing
     ( currencyName
     )
+import Error.View
 
 
 root : Model -> Html Msg
 root model =
     div []
-        [ div []
+        [ Html.map ToError <| Error.View.root model.error
+        , div []
             [ h1 [class "subtitle"] [text "Blockchain paths"]
             , blockchainPathInputList model.currentSettings.blockchainPathList
             ]

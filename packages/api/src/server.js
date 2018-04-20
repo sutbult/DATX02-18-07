@@ -72,6 +72,9 @@ get("/getUserBids", api.getUserBids);
 get("/getAcceptedBids", api.getAcceptedBids);
 get("/getCurrencies", api.getCurrencies);
 
+get("/settings", api.getSettings);
+post("/settings", api.setSettings);
+
 
 // Post endpoints
 
