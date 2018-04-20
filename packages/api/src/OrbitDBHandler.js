@@ -131,6 +131,7 @@ async function bidAccepted(bid, callback){
 
 //If correct step is found the information in the channel will be returned to the callback function
 function checkForStep(step, callback) {
+  console.log(step);
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
   if(message != null) jsonObj = JSON.parse(message);
   else return;
@@ -146,11 +147,15 @@ function checkForStep(step, callback) {
     index.acceptedBids.push(jsonObj.bid);
   }
   var timer = setInterval(function(){
-    if(JSON.parse(message).step != step) {
-      message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
-    } else {
-      clearInterval(timer)
-      callback(message);
+    console.log(message);
+    //after claim it sometimes turns up empty, TODO, fix that bug
+    if(message !== []){
+      if(JSON.parse(message).step != step) {
+        message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
+      } else {
+        clearInterval(timer)
+        callback(message);
+      }
     }
   }, 5000);
 }
