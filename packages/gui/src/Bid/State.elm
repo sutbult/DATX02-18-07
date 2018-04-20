@@ -44,7 +44,7 @@ notifyStatus status title =
     let
         isPending bid = bid.status == status
         toMessage bid =
-            Debug.log "notify" Ports.notify
+            Ports.notify
                 ( title
                 , bidToMessage bid
                 )

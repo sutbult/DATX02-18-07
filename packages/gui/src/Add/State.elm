@@ -47,9 +47,7 @@ update msg model =
 
         Submit ->
             if not model.submitting then
-                -- TODO: Skriv ut fel tydligt vad som är fel
-                -- Gör #36 först
-                case Debug.log "Bid" <| getBid model of
+                case getBid model of
                     Just bid ->
                         ({model | submitting = True}, addBid bid)
 
