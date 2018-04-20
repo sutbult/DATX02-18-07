@@ -154,12 +154,21 @@ var settings = {
 async function getSettings() {
     await ensureInitialized();
     // TODO: Implementera på riktigt
+    await delay(2);
     return settings
 }
 async function setSettings(newSettings) {
     await ensureInitialized();
     // TODO: Implementera på riktigt
     settings = newSettings;
+    console.log("Saved these settings: %s", JSON.stringify(settings, null, 4));
+    await delay(2);
+}
+
+function delay(seconds) {
+    return new Promise(resolve => {
+        setTimeout(resolve, seconds * 1000);
+    });
 }
 
 module.exports = {

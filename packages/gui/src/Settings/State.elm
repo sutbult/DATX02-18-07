@@ -8,7 +8,8 @@ import Platform.Cmd
 
 import Settings.Types exposing (..)
 import Settings.Rest exposing
-    ( getSettings
+    ( loadSettings
+    , saveSettings
     )
 import Error.State
 
@@ -29,7 +30,7 @@ init =
             }
         , Cmd.batch
             [ Platform.Cmd.map ToError errorCmd
-            , getSettings
+            , loadSettings
             ]
         )
 
@@ -53,19 +54,48 @@ update msg model =
                             settings.blockchainPathList
                     }
             in
-                (changeSettings setSetting model, Cmd.none)
+                if model.loading || model.saving then
+                    (model, Cmd.none)
+                else
+                    (changeSettings setSetting model, Cmd.none)
 
         Reset ->
-            ({ model
-                | currentSettings = model.savedSettings
-            }, Cmd.none)
+            if model.loading || model.saving then
+                (model, Cmd.none)
+            else
+                ({ model
+                    | currentSettings = model.savedSettings
+                }, Cmd.none)
 
         SetSettings settings ->
-            ({ model
-                | currentSettings = settings
-                , savedSettings = settings
-                , loading = False
-            }, Cmd.none)
+            if not model.loading || model.saving then
+                (model, Cmd.none)
+            else
+                ({ model
+                    | currentSettings = settings
+                    , savedSettings = settings
+                    , loading = False
+                }, Cmd.none)
+
+        Save ->
+            if model.loading || model.saving then
+                (model, Cmd.none)
+            else
+                (   { model
+                        | saving = True
+                    }
+                , saveSettings model.currentSettings
+                )
+
+        SaveSuccess ->
+            (   {model
+                    | saving = False
+                    , savedSettings = model.currentSettings
+                }
+            , Cmd.none)
+
+        SaveFailure error ->
+            update (ToError error) {model | saving = False}
 
 
 subscriptions : Model -> Sub Msg

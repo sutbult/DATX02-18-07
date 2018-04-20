@@ -19,24 +19,28 @@ root model =
         [ Html.map ToError <| Error.View.root model.error
         , div []
             [ h1 [class "subtitle"] [text "Blockchain paths"]
-            , blockchainPathInputList model.currentSettings.blockchainPathList
+            , blockchainPathInputList
+                (model.loading || model.saving)
+                model.currentSettings.blockchainPathList
             ]
         , buttonRow model
         ]
 
 
 blockchainPathInputList
-    :  List BlockchainPath
+    :  Bool
+    -> List BlockchainPath
     -> Html Msg
-blockchainPathInputList blockchainPathList =
+blockchainPathInputList isDisabled =
     div []
-        <| List.map blockchainPathInput blockchainPathList
+        << List.map (blockchainPathInput isDisabled)
 
 
 blockchainPathInput
-    :  BlockchainPath
+    :  Bool
+    -> BlockchainPath
     -> Html Msg
-blockchainPathInput blockchainPath =
+blockchainPathInput isDisabled blockchainPath =
     div [class "field"]
         [ label [class "label"]
             [ text <| currencyName blockchainPath.currency
@@ -48,6 +52,7 @@ blockchainPathInput blockchainPath =
                 , placeholder "default path"
                 , value blockchainPath.value
                 , onInput (SetBlockchainPath blockchainPath.currency)
+                , disabled isDisabled
                 ] []
             ]
         ]
@@ -57,7 +62,15 @@ buttonRow : Model -> Html Msg
 buttonRow model =
     let
         isDisabled =
+            model.loading ||
+            model.saving ||
             model.currentSettings == model.savedSettings
+
+        saveExtraClass =
+            if model.saving then
+                " is-loading"
+            else
+                ""
     in
         div
             [ style
@@ -71,5 +84,12 @@ buttonRow model =
                 , disabled isDisabled
                 ]
                 [ text "Reset"
+                ]
+            , button
+                [ class <| "button is-link is-medium" ++ saveExtraClass
+                , onClick Save
+                , disabled isDisabled
+                ]
+                [ text "Save"
                 ]
             ]

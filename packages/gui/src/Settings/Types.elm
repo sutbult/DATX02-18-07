@@ -24,3 +24,6 @@ type Msg
     | SetBlockchainPath String String
     | SetSettings Settings
     | Reset
+    | Save
+    | SaveSuccess
+    | SaveFailure Error.Types.Msg
