@@ -46,7 +46,6 @@ function claim(message){
     ethchain = ETH.web3;
     getAddress()
     .then(accs => {
-        console.log(accs);
         from_address = accs[1];
         claim_address = message.contractAddress;
         if(message.secret != null){
