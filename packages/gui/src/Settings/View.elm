@@ -15,15 +15,35 @@ import Error.View
 
 root : Model -> Html Msg
 root model =
+    if model.loading then
+        loading
+    else
+        settingsView model
+
+
+settingsView : Model -> Html Msg
+settingsView model =
     div []
         [ Html.map ToError <| Error.View.root model.error
         , div []
             [ h1 [class "subtitle"] [text "Blockchain paths"]
             , blockchainPathInputList
-                (model.loading || model.saving)
+                model.saving
                 model.currentSettings.blockchainPathList
             ]
         , buttonRow model
+        ]
+
+
+loading : Html Msg
+loading =
+    div []
+        [ p
+            [ class "subtitle"
+            , style [("text-align", "center")]
+            ]
+            [ text "Loading settings"
+            ]
         ]
 
 
@@ -62,7 +82,6 @@ buttonRow : Model -> Html Msg
 buttonRow model =
     let
         isDisabled =
-            model.loading ||
             model.saving ||
             model.currentSettings == model.savedSettings
 
