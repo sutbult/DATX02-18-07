@@ -146,9 +146,8 @@ function checkForStep(step, callback) {
     index.acceptedBids.push(jsonObj.bid);
   }
   var timer = setInterval(function(){
-    if(message.step != step) {
-      msg = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
-      message = JSON.parse(message);
+    if(JSON.parse(message).step != step) {
+      message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
     } else {
       clearInterval(timer)
       callback(message);
