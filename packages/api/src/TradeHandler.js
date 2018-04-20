@@ -15,11 +15,8 @@ function whenBidAccepted(msg){
         case "Ethereum":
             console.log("From Ethereum");
             require("./tradeETH.js").firstContract(message, function(promise){
-                // console.log("whenBidAccepted: " + promise);
                 promise.then(result => {
                     result.bid = message.bid;
-                    // console.log(result);
-                    // console.log("NOW TO PUSH DIGEST INFO*****************");
                     messenger.pushDigestInfo(result, unlockWithSecret);
                 });
             }); 
@@ -35,7 +32,7 @@ function whenBidAccepted(msg){
 }
 
 function unlockWithSecret(msg){
-    console.log("Unlock msg");
+    // console.log("Unlock msg");
     // console.log(msg);
     var message;
     if(msg.constructor === {}.constructor) message = msg;
@@ -68,8 +65,6 @@ async function acceptBid(bidID){
             var eth = require("./tradeETH.js");
             eth.getAddress()
             .then(accs => {
-                // console.log("Address");
-                // console.log(accs[1]);
                 messenger.acceptBid(bid, accs[2], secondContract);
             });
             break;
@@ -82,7 +77,6 @@ async function acceptBid(bidID){
             return;
             //Throw error
     }
-    // messenger.acceptBid(bid, address, acceptBid2);
 }
 
 function secondContract(msg){

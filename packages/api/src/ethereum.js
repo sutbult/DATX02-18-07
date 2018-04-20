@@ -257,9 +257,9 @@ function subscribeToClaim(contract, block){
     /** return a promise
     *
     */
-    contract.events.Claim({fromBlock: "latest"}, function(error,event){console.log("*******************CLAIMEVENT*************** " + event.returnValues._hash);});
+    // contract.events.Claim({fromBlock: "latest"}, function(error,event){console.log("*******************CLAIMEVENT*************** " + event.returnValues._hash);});
     
-    return contract.events.Claim({fromBlock: "latest"});//, function(error, event){console.log("*******************CLAIMEVENT***************" + event.returnValues._hash);});
+    return contract.events.Claim({fromBlock: "latest"});
 }
 
 /** Will return the value of the first Claim event it founds.
@@ -267,12 +267,9 @@ function subscribeToClaim(contract, block){
 */
 function getPastClaim(ethchain, contract_address, from_block = 10849){
     var contract, events;
-    console.log("*************IN GETPASTCLAIM; LEGGO********************");
+    // console.log("*************IN GETPASTCLAIM; LEGGO********************");
     contract = new ethchain.eth.Contract(htlc_ether.abi, contract_address);
-    // return contract.getPastEvents('Claim', {
-    //       fromBlock: from_block,
-    //       toBlock: 'latest'
-    //     });
+    
     return contract.getPastEvents('Claim', {
       fromBlock: from_block,
       toBlock: 'latest'

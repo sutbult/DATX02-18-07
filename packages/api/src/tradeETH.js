@@ -46,7 +46,7 @@ function secondContract(message, callback, callbackargument){
 }
 
 function claim(message){
-    console.log("********In claim function*********");
+    // console.log("********In claim function*********");
     ethchain = ETH.web3;
     getAddress()
     .then(accs => {
@@ -61,11 +61,11 @@ function claim(message){
             console.log("*************Claim second contract********************");
             // console.log(message.promise);
             message.promise.subscribe((error,event) => {
-                console.log("********************GOT THE CLAIMSUBSCRIPTION**************")
+                // console.log("********************GOT THE CLAIMSUBSCRIPTION**************")
                 var hash = event.returnValues._hash;
                 ETH.claimContract(ethchain,hash,from_address,claim_address);
             });
-            console.log("Now trying getPastClaim");
+            // console.log("Now trying getPastClaim");
             // var event = ETH.getPastClaim(ETH.web3, claim_address);
             // event.then(function(error,event){
             //     console.log("Got result: " + event);
