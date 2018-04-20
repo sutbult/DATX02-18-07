@@ -4,14 +4,16 @@ import Dict
 
 import Navigation.Types
 
+type alias PasswordDict = Dict.Dict String Password
+
 type alias Model =
-    { passwords : Dict.Dict String Password
+    { passwords : PasswordDict
     , instance : Maybe Instance
     }
 
 type Msg
     = TriggerPassword
-        List String
+        (List String)
         (Maybe Navigation.Types.Msg)
         Navigation.Types.Msg
     | SetPassword String String
@@ -24,7 +26,7 @@ type Password
 
 type alias Instance =
     { promptedPasswords : List String
-    , onSuccess : Navigation.Types.Msg
+    --, onSuccess : Navigation.Types.Msg
     , onCancel : Maybe Navigation.Types.Msg
     , submitting : Bool
     , error : String
