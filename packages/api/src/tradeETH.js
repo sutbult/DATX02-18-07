@@ -60,18 +60,18 @@ function claim(message){
         }else{
             console.log("*************Claim second contract********************");
             // console.log(message.promise);
-            message.promise.then(function(error,event){
+            message.promise.subscribe((error,event) => {
                 console.log("********************GOT THE CLAIMSUBSCRIPTION**************")
                 var hash = event.returnValues._hash;
                 ETH.claimContract(ethchain,hash,from_address,claim_address);
             });
             console.log("Now trying getPastClaim");
-            var event = ETH.getPastClaim(ETH.web3, claim_address);
-            event.then(function(error,event){
-                console.log("Got result: " + event);
-                var hash = event.returnValues._hash;
-                ETH.claimContract(ethchain,hash,from_address,claim_address);
-            });
+            // var event = ETH.getPastClaim(ETH.web3, claim_address);
+            // event.then(function(error,event){
+            //     console.log("Got result: " + event);
+            //     var hash = event.returnValues._hash;
+            //     ETH.claimContract(ethchain,hash,from_address,claim_address);
+            // });
         }
     });
 }

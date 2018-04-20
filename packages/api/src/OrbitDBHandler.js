@@ -158,6 +158,7 @@ function checkForStep(step, func) {
     return
   }
   var index = require("./index.js")
+
   if(!index.acceptedBids.includes(jsonObj.bid)){
     // console.log("************ADDING BID: " + JSON.stringify(jsonObj.bid));
     index.acceptedBids.push(jsonObj.bid);

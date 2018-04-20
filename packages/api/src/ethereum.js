@@ -257,9 +257,10 @@ function subscribeToClaim(contract, block){
     /** return a promise
     *
     */
+    contract.events.Claim({fromBlock: "latest"}, function(error,event){console.log("*******************CLAIMEVENT*************** " + event.returnValues._hash);});
+    
     return contract.events.Claim({fromBlock: "latest"});//, function(error, event){console.log("*******************CLAIMEVENT***************" + event.returnValues._hash);});
 }
-
 
 /** Will return the value of the first Claim event it founds.
 *
