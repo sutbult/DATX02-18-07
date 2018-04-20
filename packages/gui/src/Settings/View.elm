@@ -61,21 +61,28 @@ blockchainPathInput
     -> BlockchainPath
     -> Html Msg
 blockchainPathInput isDisabled blockchainPath =
-    div [class "field"]
-        [ label [class "label"]
-            [ text <| currencyName blockchainPath.currency
+    let
+        inputId = "blockchain-path-" ++ blockchainPath.currency
+    in
+        div [class "field"]
+            [ label
+                [ class "label"
+                , for inputId
+                ]
+                [ text <| currencyName blockchainPath.currency
+                ]
+            , div [class "control"]
+                [ input
+                    [ class <| "input"
+                    , id inputId
+                    , type_ "text"
+                    , placeholder "default path"
+                    , value blockchainPath.value
+                    , onInput (SetBlockchainPath blockchainPath.currency)
+                    , disabled isDisabled
+                    ] []
+                ]
             ]
-        , div [class "control"]
-            [ input
-                [ class <| "input"
-                , type_ "text"
-                , placeholder "default path"
-                , value blockchainPath.value
-                , onInput (SetBlockchainPath blockchainPath.currency)
-                , disabled isDisabled
-                ] []
-            ]
-        ]
 
 
 buttonRow : Model -> Html Msg

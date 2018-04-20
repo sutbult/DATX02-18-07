@@ -154,7 +154,6 @@ var settings = {
 async function getSettings() {
     await ensureInitialized();
     // TODO: Implementera på riktigt
-    await delay(2);
     return settings
 }
 async function setSettings(newSettings) {
@@ -162,7 +161,6 @@ async function setSettings(newSettings) {
     // TODO: Implementera på riktigt
     settings = newSettings;
     console.log("Saved these settings: %s", JSON.stringify(settings, null, 4));
-    await delay(2);
 }
 
 function delay(seconds) {
