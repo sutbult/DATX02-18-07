@@ -194,7 +194,7 @@ async function pushDigestInfo(contractInfo, func) {
 }
 
 async function pushContractInfo(contractInfo, message, callback) {
-  console.log("********************PUSHCONTRACTINFO********************");
+  // console.log("********************PUSHCONTRACTINFO********************");
   contractInfo.then(result => {
     // console.log(result);
     var jsonMessage = message;

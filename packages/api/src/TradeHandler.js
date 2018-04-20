@@ -65,7 +65,7 @@ async function acceptBid(bidID){
             var eth = require("./tradeETH.js");
             eth.getAddress()
             .then(accs => {
-                messenger.acceptBid(bid, accs[2], secondContract);
+                messenger.acceptBid(bid, accs[1], secondContract);
             });
             break;
         case "Ethereum classic":

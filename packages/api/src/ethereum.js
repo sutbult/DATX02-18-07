@@ -220,8 +220,8 @@ async function sendContract(ethchain, jsoncontract, args, from_address, digest, 
     returnObj.digest = args[0];
     returnObj.address = from_address; //this is incorrect, remove
     returnObj.promise = subPromise;
-    console.log("The returnObj");
-    console.log(returnObj);
+    // console.log("The returnObj");
+    // console.log(returnObj);
     return returnObj;
     /**@todo send this information to other user */
 }
