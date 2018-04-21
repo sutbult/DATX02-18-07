@@ -49,6 +49,13 @@ function genesisCheck(ethchain){
     });
 }
 
+async function getBalance(ethchain, account_address){
+    var balance;
+    
+    balance = await web3.fromWei(ethchain.eth.getBalance(account_address));
+    return balance;
+}
+
 async function unlockAccount(ethchain, account_address, account_password, time_in_ms = 10000){
     var account = await ethchain.eth.personal.unlockAccount(account_address, account_password, time_in_ms);
     console.log(account);

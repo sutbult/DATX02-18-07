@@ -16,11 +16,11 @@ async function init(msgHandler){
 
 
   // Address to the local database containing status of the user's bids
-  var status = await orbitDB.createDB("bidStatus", "keyvalue", "local")
+/*  var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
   statusDB = await orbitDB.getKVDB(status)
   await statusDB.load()
   await orbitDB.close()
-
+*/
   //Add Listeners
   globalDB.events.on('replicated', () => {
     messageHandler({
@@ -28,15 +28,38 @@ async function init(msgHandler){
     });
   });
 
+  globalDB.events.on('write', () => {
+    messageHandler({
+        cmd: "updateBids",
+    });
+  });
+
+/*  statusDB.events.on('replicated', () => {
+    messageHandler({
+        cmd: "updateBids",
+    });
+  });
+
+  statusDB.events.on('write', () => {
+    messageHandler({
+        cmd: "updateBids",
+    });
+  });
+*/
+
 }
 
-function getBid(amount){
-  var bids = getBids(amount, globalDB)
-  // for (var i = bids.length - 1; i >= 0; i--){
-  //   if(bids[i].key == key){
-  //     bids.splice(i,1);
-  //   }
-  // }
+function getBids(amount){
+  var bids = getBid(amount, globalDB)
+  for (var i = bids.length - 1; i >= 0; i--){
+    //var tempAmount = bids[i].from.amount
+    //bids[i].from.amount = bids[i].to.amount
+    //bids[i].to.amount = tempAmount
+    //|| bids[i].status == "PENDING" || bids[i].status == "FINISHED"
+    if(bids[i].key == key){
+      bids.splice(i,1);
+    }
+  }
   return bids
 }
 
@@ -57,11 +80,18 @@ async function addBid(bid){
 
   // Add bid to global database
   //Consult Samuel about structure of bids
-  var key = await globalDB.add(bid) //object instead of bid
+  var id = await globalDB.add(bid) //object instead of bid
   // Add bid to local database
-  await orbitDB.addData("test", bid.channel, "Version x.69") //Placeholder replace with function to get address
+//  await statusDB.put(id, "ACTIVE");
+
+  await orbitDB.addData("test", bid.channel, "PLACEHOLDER") //Placeholder replace with function to get address
   orbitDB.close()
-  await statusDB.put(key, bid);
+
+}
+
+async function acceptBid(bidID) {
+  await statusDB.put(bidID, "PENDING")
+  //await orbitDB.acceptBid(bid);
 }
 
 async function changeBidStatus(bid, status){
@@ -70,7 +100,7 @@ async function changeBidStatus(bid, status){
 }
 
 function getUserBids(amount){
-  var bids = getBids(amount, globalDB)
+  var bids = getBid(amount, globalDB)
   for (var i = bids.length - 1; i >= 0; i--){
     if(bids[i].key != key){
       bids.splice(i,1);
@@ -79,13 +109,14 @@ function getUserBids(amount){
   return bids
 }
 
-function getBids(amount, db){
+function getBid(amount, db){
   var data = db.iterator({ limit : amount }).collect()
   var bids = []
   for (var i = 0; i < data.length; i++) {
     var bid = data[i].payload.value
     bid.id = data[i].hash
     bid.key = data[i].key
+  //  bid.status = statusDB.get(data[i].hash)
     bids.push(bid)
   }
   return bids
@@ -95,6 +126,8 @@ module.exports = {
   addBid,
   getBid,
   getBid2,
+  getBids,
+  acceptBid,
   changeBidStatus,
   getUserBids,
   init
