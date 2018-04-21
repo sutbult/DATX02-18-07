@@ -5,6 +5,7 @@ module Password.State exposing
     )
 
 import Dict
+import Task
 
 import Password.Types exposing (..)
 import Navigation.Types
@@ -21,26 +22,17 @@ init : (Model, Cmd Msg)
 init =
     let
         model =
-            { passwords = Dict.fromList
-                [ ("BTC", UncheckedPassword "")
-                , ("ETH", CorrectPassword 10)
-                , ("ETC", IncorrectPassword "foobar")
-                ]
-            , instance = Just
-                { promptedPasswords =
-                    [ "BTC"
-                    , "ETH"
-                    , "ETC"
-                    ]
-                , submitting = False
-                , error = ""
-                , onSuccess = Navigation.Types.Show Navigation.Types.Settings
-                , onCancel = Just <|
-                    Navigation.Types.Show Navigation.Types.Wallet
-                }
+            { passwords = Dict.empty
+            , instance = Nothing
             }
+        cmd = Task.perform identity
+            <| Task.succeed
+            <| TriggerPassword
+                ["BTC", "ETH", "ETC"]
+                (Just <| Navigation.Types.Show Navigation.Types.Wallet)
+                (Navigation.Types.Show Navigation.Types.Settings)
     in
-        (model , Cmd.none)
+        (model, cmd)
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -57,8 +49,33 @@ update msg model =
             in
                 (newModel, Cmd.none)
 
-        TriggerPassword _ _ _ ->
-            (model, Cmd.none)
+        TriggerPassword passwords onCancel onSuccess ->
+            let
+                promptedPasswords = unsetPasswords passwords model.passwords
+            in
+                if List.isEmpty promptedPasswords then
+                    let
+                        newModel = {model
+                            | instance = Nothing
+                            }
+                    in
+                        (newModel, Cmd.none)
+                else
+                    let
+                        instance =
+                            { promptedPasswords = promptedPasswords
+                            , onSuccess = onSuccess
+                            , onCancel = onCancel
+                            , submitting = False
+                            , error = ""
+                            }
+                        passwords = ensurePasswords promptedPasswords model.passwords
+                        newModel = {model
+                            | instance = Just instance
+                            , passwords = passwords
+                            }
+                    in
+                        (newModel, Cmd.none)
 
         Submit ->
             with model model.instance <| \instance ->
@@ -198,6 +215,41 @@ allCorrect promptedPasswords passwords =
                     False
     in
         List.all predicate promptedPasswords
+
+
+ensurePasswords : List String -> PasswordDict -> PasswordDict
+ensurePasswords =
+    let
+        updater maybePassword =
+            case maybePassword of
+                Just password ->
+                    Just password
+
+                Nothing ->
+                    Just <| UncheckedPassword ""
+
+        folder currency =
+            Dict.update currency updater
+    in
+        flip <| List.foldl folder
+
+
+unsetPasswords : List String -> PasswordDict -> List String
+unsetPasswords promptedPasswords passwords =
+    let
+        isCorrect password =
+            case password of
+                CorrectPassword _ ->
+                    True
+                _ ->
+                    False
+
+        predicate currency = not
+            <| Maybe.withDefault False
+            <| Maybe.map isCorrect
+            <| Dict.get currency passwords
+    in
+        List.filter predicate promptedPasswords
 
 
 setPasswordFromResult : (String, Bool) -> PasswordDict -> PasswordDict
