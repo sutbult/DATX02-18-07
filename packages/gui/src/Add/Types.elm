@@ -37,6 +37,7 @@ type Msg
     | TriggerPassword
         (List String)
         (Maybe Msg)
+        (Maybe Msg)
         Msg
     | Noop
 
@@ -44,6 +45,7 @@ type Msg
 submit : String -> String -> Msg
 submit from to = TriggerPassword
     [from, to]
+    Nothing
     (Just Noop)
     SubmitContinue
 

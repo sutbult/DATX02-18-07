@@ -37,7 +37,7 @@ update msg model =
             in
                 ({model | accept = subModel}, Platform.Cmd.map mapAcceptCmd subCmd)
 
-        TriggerPassword _ _ _ ->
+        TriggerPassword _ _ _ _ ->
             (model, Cmd.none)
 
 

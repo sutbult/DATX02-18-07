@@ -101,7 +101,7 @@ update msg model =
             in
                 ({model | models = newModels}, Platform.Cmd.map ToSettings subCmd)
 
-        TriggerPassword _ _ _ ->
+        TriggerPassword _ _ _ _ ->
             (model, Cmd.none)
 
 

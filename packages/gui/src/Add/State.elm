@@ -79,7 +79,7 @@ update msg model =
             in
                 ({model | error = subModel}, Cmd.map ToError subCmd)
 
-        TriggerPassword _ _ _ ->
+        TriggerPassword _ _ _ _ ->
             (model, Cmd.none)
 
         Noop ->

@@ -35,15 +35,20 @@ type Msg
     | ToUserBids UserBids.Types.Msg
     | ToAcceptedBids AcceptedBids.Types.Msg
     | ToSettings Settings.Types.Msg
-    | TriggerPassword (List String) (Maybe Msg) Msg
+    | TriggerPassword
+        (List String)
+        (Maybe Msg)
+        (Maybe Msg)
+        Msg
 
 
 mapAdd : Add.Types.Msg -> Msg
 mapAdd msg =
     case msg of
-        Add.Types.TriggerPassword promptedPasswords onCancel onSubmit ->
+        Add.Types.TriggerPassword promptedPasswords before onCancel onSubmit ->
             TriggerPassword
                 promptedPasswords
+                (Maybe.map mapAdd before)
                 (Maybe.map mapAdd onCancel)
                 (mapAdd onSubmit)
 
@@ -54,9 +59,10 @@ mapAdd msg =
 mapBrowse : Browse.Types.Msg -> Msg
 mapBrowse msg =
     case msg of
-        Browse.Types.TriggerPassword promptedPasswords onCancel onSubmit ->
+        Browse.Types.TriggerPassword promptedPasswords before onCancel onSubmit ->
             TriggerPassword
                 promptedPasswords
+                (Maybe.map mapBrowse before)
                 (Maybe.map mapBrowse onCancel)
                 (mapBrowse onSubmit)
 

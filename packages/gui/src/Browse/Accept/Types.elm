@@ -25,7 +25,11 @@ type Msg
     -- Misc
     | GetSSEId Int
     | MouseMove Int Int
-    | TriggerPassword (List String) (Maybe Msg) Msg
+    | TriggerPassword
+        (List String)
+        (Maybe Msg)
+        (Maybe Msg)
+        Msg
     | ToError Error.Types.Msg
     | Noop
 
@@ -36,5 +40,6 @@ acceptBidMsg bid =
         [ bid.from.currency
         , bid.to.currency
         ]
-        (Just Noop)
+        (Just CancelModal)
+        (Just <| DisplayModal bid)
         (AcceptBid bid)

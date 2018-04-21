@@ -66,15 +66,31 @@ update msg model =
                     else
                         (newModel, Cmd.none)
 
-        TriggerPassword promptedPasswords onCancel onSuccess ->
+        TriggerPassword promptedPasswords before onCancel onSuccess ->
             let
-                newModel = Tuple.first <|
-                    update (ToPassword <| Password.Types.TriggerPassword promptedPasswords onCancel onSuccess) model
+                (preModel, preCmd) =
+                    case before of
+                        Just msg ->
+                            update (ToNavigation msg) model
+                        Nothing ->
+                            (model, Cmd.none)
+
+                passwordMsg = ToPassword
+                    <| Password.Types.TriggerPassword
+                        promptedPasswords
+                        onCancel
+                        onSuccess
+
+                newModel = Tuple.first
+                    <| update (passwordMsg) preModel
+
+                (afterModel, afterCmd) =
+                    if not <| isJust newModel.password.instance then
+                        update (ToNavigation onSuccess) newModel
+                    else
+                        (newModel, Cmd.none)
             in
-                if not <| isJust newModel.password.instance then
-                    update (ToNavigation onSuccess) newModel
-                else
-                    (newModel, Cmd.none)
+                (afterModel, Cmd.batch [preCmd, afterCmd])
 
 
 subscriptions : Model -> Sub Msg

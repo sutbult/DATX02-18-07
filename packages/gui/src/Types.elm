@@ -16,6 +16,7 @@ type Msg
     | TriggerPassword
         (List String)
         (Maybe Navigation.Types.Msg)
+        (Maybe Navigation.Types.Msg)
         Navigation.Types.Msg
 
 
@@ -35,8 +36,8 @@ mapPasswordCmd msg =
 mapNavigationCmd : Navigation.Types.Msg -> Msg
 mapNavigationCmd msg =
     case msg of
-        Navigation.Types.TriggerPassword promptedPasswords onCancel onSuccess ->
-            TriggerPassword promptedPasswords onCancel onSuccess
+        Navigation.Types.TriggerPassword promptedPasswords before onCancel onSuccess ->
+            TriggerPassword promptedPasswords before onCancel onSuccess
 
         _ ->
             ToNavigation msg
