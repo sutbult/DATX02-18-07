@@ -92,7 +92,11 @@ currencySelector submitting options setter currentValue =
         div [class "field"]
             [ div [class "control"]
                 [ div [class "select", fullWidth]
-                    [ select [fullWidth, onInput setter]
+                    [ select
+                        [ fullWidth
+                        , onInput setter
+                        , disabled submitting
+                        ]
                         <| List.map optionView options
                     ]
                 ]
@@ -149,7 +153,7 @@ submitButton model =
         (clickMsg, isDisabled) =
             case getBid model of
                 Just bid ->
-                    (submit bid.from.currency bid.to.currency, False)
+                    (submit bid.from.currency bid.to.currency, model.submitting)
 
                 Nothing ->
                     (Noop, True)
