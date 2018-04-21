@@ -119,7 +119,7 @@ passwordField submitting currency password =
                 CorrectPassword len ->
                     ( String.repeat len "*"
                     , "is-success"
-                    , ""
+                    , "Password is correct"
                     , True
                     )
         isDisabled = locked || submitting
