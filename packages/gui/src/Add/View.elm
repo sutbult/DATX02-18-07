@@ -19,7 +19,7 @@ root model =
     div []
         [ Html.map ToError (Error.View.root (.error model))
         , form model
-        , submit model
+        , submitButton model
         ]
 
 
@@ -138,34 +138,28 @@ amountField submitting setter currency currentValue =
             ]
 
 
-submit : Model -> Html Msg
-submit model =
+submitButton : Model -> Html Msg
+submitButton model =
     let
         classNameExtra =
             if model.submitting then
                 " is-loading"
             else
                 ""
+        (clickMsg, isDisabled) =
+            case getBid model of
+                Just bid ->
+                    (submit bid.from.currency bid.to.currency, False)
+
+                Nothing ->
+                    (Noop, True)
     in
         div [style [("text-align", "right")]]
             [ button
                 [ class <| "button is-link is-medium" ++ classNameExtra
-                , onClick Submit
-                , disabled
-                    <| not
-                    <| isJust
-                    <| getBid model
+                , onClick clickMsg
+                , disabled isDisabled
                 ]
                 [ text "Add bid"
                 ]
             ]
-
-
-isJust : Maybe a -> Bool
-isJust maybe =
-    case maybe of
-        Just _ ->
-            True
-
-        Nothing ->
-            False

@@ -13,6 +13,10 @@ type Msg
     | ToPassword Password.Types.Msg
     | PasswordCancel
     | PasswordSubmitSuccess Password.Types.SubmitResponse
+    | TriggerPassword
+        (List String)
+        (Maybe Navigation.Types.Msg)
+        Navigation.Types.Msg
 
 
 mapPasswordCmd : Password.Types.Msg -> Msg
@@ -26,3 +30,13 @@ mapPasswordCmd msg =
 
         _ ->
             ToPassword msg
+
+
+mapNavigationCmd : Navigation.Types.Msg -> Msg
+mapNavigationCmd msg =
+    case msg of
+        Navigation.Types.TriggerPassword promptedPasswords onCancel onSuccess ->
+            TriggerPassword promptedPasswords onCancel onSuccess
+
+        _ ->
+            ToNavigation msg

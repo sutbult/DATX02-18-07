@@ -39,7 +39,7 @@ init =
             }
         , Cmd.batch
             [ Platform.Cmd.map ToBrowse browseCmd
-            , Platform.Cmd.map ToAdd addCmd
+            , Platform.Cmd.map mapAdd addCmd
             , Platform.Cmd.map ToWallet walletCmd
             , Platform.Cmd.map ToUserBids userBidsCmd
             , Platform.Cmd.map ToAcceptedBids acceptedBidsCmd
@@ -67,7 +67,7 @@ update msg model =
                 oldModels = model.models
                 newModels = {oldModels | add = subModel}
             in
-                ({model | models = newModels}, Platform.Cmd.map ToAdd subCmd)
+                ({model | models = newModels}, Platform.Cmd.map mapAdd subCmd)
 
         ToWallet subMsg ->
             let
@@ -101,12 +101,15 @@ update msg model =
             in
                 ({model | models = newModels}, Platform.Cmd.map ToSettings subCmd)
 
+        TriggerPassword _ _ _ ->
+            (model, Cmd.none)
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map ToBrowse <| Browse.State.subscriptions model.models.browse
-        , Sub.map ToAdd <| Add.State.subscriptions model.models.add
+        , Sub.map mapAdd <| Add.State.subscriptions model.models.add
         , Sub.map ToWallet <| Wallet.State.subscriptions model.models.wallet
         , Sub.map ToUserBids <| UserBids.State.subscriptions model.models.userBids
         , Sub.map ToAcceptedBids <| AcceptedBids.State.subscriptions model.models.acceptedBids

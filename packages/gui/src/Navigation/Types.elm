@@ -35,3 +35,17 @@ type Msg
     | ToUserBids UserBids.Types.Msg
     | ToAcceptedBids AcceptedBids.Types.Msg
     | ToSettings Settings.Types.Msg
+    | TriggerPassword (List String) (Maybe Msg) Msg
+
+
+mapAdd : Add.Types.Msg -> Msg
+mapAdd msg =
+    case msg of
+        Add.Types.TriggerPassword promptedPasswords onCancel onSubmit ->
+            TriggerPassword
+                promptedPasswords
+                (Maybe.map mapAdd onCancel)
+                (mapAdd onSubmit)
+
+        _ ->
+            ToAdd msg

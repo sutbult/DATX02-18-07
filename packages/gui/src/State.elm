@@ -27,7 +27,7 @@ init =
             }
     in
         (model, Cmd.batch
-            [ Platform.Cmd.map ToNavigation navCmd
+            [ Platform.Cmd.map mapNavigationCmd navCmd
             , Platform.Cmd.map mapPasswordCmd passwordCmd
             ]
         )
@@ -40,7 +40,7 @@ update msg model =
             let
                 (subModel, subCmd) = Navigation.State.update subMsg (.navigation model)
             in
-                ({model | navigation = subModel}, Platform.Cmd.map ToNavigation subCmd)
+                ({model | navigation = subModel}, Platform.Cmd.map mapNavigationCmd subCmd)
 
         ToPassword subMsg ->
             let
@@ -66,10 +66,20 @@ update msg model =
                     else
                         (newModel, Cmd.none)
 
+        TriggerPassword promptedPasswords onCancel onSuccess ->
+            let
+                newModel = Tuple.first <|
+                    update (ToPassword <| Password.Types.TriggerPassword promptedPasswords onCancel onSuccess) model
+            in
+                if not <| isJust newModel.password.instance then
+                    update (ToNavigation onSuccess) newModel
+                else
+                    (newModel, Cmd.none)
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Sub.map ToNavigation <| Navigation.State.subscriptions model.navigation
+        [ Sub.map mapNavigationCmd <| Navigation.State.subscriptions model.navigation
         , Sub.map mapPasswordCmd <| Password.State.subscriptions model.password
         ]

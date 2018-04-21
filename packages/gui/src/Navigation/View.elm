@@ -72,7 +72,7 @@ viewSelector model =
             Html.map ToBrowse <| Browse.View.root model.models.browse
 
         Add ->
-            Html.map ToAdd <| Add.View.root model.models.add
+            Html.map mapAdd <| Add.View.root model.models.add
 
         Wallet ->
             Html.map ToWallet <| Wallet.View.root model.models.wallet

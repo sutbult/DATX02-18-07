@@ -5,10 +5,8 @@ module Password.State exposing
     )
 
 import Dict
-import Task
 
 import Password.Types exposing (..)
-import Navigation.Types
 import Utils.State exposing
     ( with
     )
@@ -25,14 +23,8 @@ init =
             { passwords = Dict.empty
             , instance = Nothing
             }
-        cmd = Task.perform identity
-            <| Task.succeed
-            <| TriggerPassword
-                ["BTC", "ETH", "ETC"]
-                (Just <| Navigation.Types.Show Navigation.Types.Wallet)
-                (Navigation.Types.Show Navigation.Types.Settings)
     in
-        (model, cmd)
+        (model, Cmd.none)
 
 
 update : Msg -> Model -> (Model, Cmd Msg)

@@ -29,11 +29,23 @@ type Msg
     | SetFromAmount String
     | SetToCurrency String
     | SetToAmount String
-    | Submit
+    | SubmitContinue
     | SubmitSuccess
     | SubmitFailure Error.Types.Msg
     | SetCurrencies (List String)
     | ToError Error.Types.Msg
+    | TriggerPassword
+        (List String)
+        (Maybe Msg)
+        Msg
+    | Noop
+
+
+submit : String -> String -> Msg
+submit from to = TriggerPassword
+    [from, to]
+    (Just Noop)
+    SubmitContinue
 
 
 getBid : Model -> Maybe Bid
