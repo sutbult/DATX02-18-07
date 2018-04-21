@@ -174,7 +174,6 @@ async function setPasswords(passwords) {
             success: passwords[i].password === "",
         });
     }
-    await delay(2);
     return result;
 }
 
