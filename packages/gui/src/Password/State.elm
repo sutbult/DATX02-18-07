@@ -65,15 +65,25 @@ update msg model =
                     data = getSubmitData
                         instance.promptedPasswords
                         model.passwords
+                    newInstance = {instance
+                        | submitting = True
+                        }
+                    newModel = {model
+                        | instance = Just newInstance
+                        }
                 in
-                    (model, setPasswords data)
+                    (newModel, setPasswords data)
 
         SubmitSuccess response ->
             with model model.instance <| \instance ->
                 let
                     newPasswords = List.foldl setPasswordFromResult model.passwords response
+                    newInstance = {instance
+                        | submitting = False
+                        }
                     newModel = { model
                         | passwords = newPasswords
+                        , instance = Just newInstance
                         }
                 in
                     if allCorrect instance.promptedPasswords newPasswords then

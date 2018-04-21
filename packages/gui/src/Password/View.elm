@@ -38,7 +38,7 @@ instanceModal instance passwords =
                     ]
                 , div [] <|
                     List.map
-                        (passwordFieldLookup passwords)
+                        (passwordFieldLookup instance.submitting passwords)
                         instance.promptedPasswords
                 , buttonRow instance
                 ]
@@ -46,18 +46,18 @@ instanceModal instance passwords =
         ]
 
 
-passwordFieldLookup : PasswordDict -> String -> Html Msg
-passwordFieldLookup passwordDict currency =
+passwordFieldLookup : Bool -> PasswordDict -> String -> Html Msg
+passwordFieldLookup submitting passwordDict currency =
     case Dict.get currency passwordDict of
         Just password ->
-            passwordField currency password
+            passwordField submitting currency password
 
         Nothing ->
             div [] []
 
 
-passwordField : String -> Password -> Html Msg
-passwordField currency password =
+passwordField : Bool -> String -> Password -> Html Msg
+passwordField submitting currency password =
     let
         inputId = "password-" ++ currency
         ( passwordValue
@@ -86,7 +86,7 @@ passwordField currency password =
                     , ""
                     , True
                     )
-        isDisabled = locked
+        isDisabled = locked || submitting
     in
         div [class "field"]
             [ label
@@ -120,18 +120,19 @@ buttonRow instance =
         [ class "buttons is-right"
         , style [("margin-top", "20px")]
         ]
-        [ cancelButton instance.onCancel
-        , submitButton
+        [ cancelButton instance.submitting instance.onCancel
+        , submitButton instance.submitting
         ]
 
 
-cancelButton : Maybe Navigation.Types.Msg -> Html Msg
-cancelButton maybeCancel =
+cancelButton : Bool -> Maybe Navigation.Types.Msg -> Html Msg
+cancelButton submitting maybeCancel =
     case maybeCancel of
         Just _ ->
             button
                 [ class "button"
                 , onClick Cancel
+                , disabled submitting
                 ]
                 [ text "Cancel"
                 ]
@@ -140,11 +141,19 @@ cancelButton maybeCancel =
             span [] []
 
 
-submitButton : Html Msg
-submitButton =
-    button
-        [ class "button is-link"
-        , onClick Submit --(SubmitSuccess [("BTC", False), ("ETC", True)])
-        ]
-        [ text "Submit"
-        ]
+submitButton : Bool -> Html Msg
+submitButton submitting =
+    let
+        extraClass =
+            if submitting then
+                " is-loading"
+            else
+                ""
+    in
+        button
+            [ class <| "button is-link" ++ extraClass
+            , onClick Submit
+            , disabled submitting
+            ]
+            [ text "Submit"
+            ]
