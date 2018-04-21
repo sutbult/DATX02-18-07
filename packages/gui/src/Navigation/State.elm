@@ -38,10 +38,10 @@ init =
                 }
             }
         , Cmd.batch
-            [ Platform.Cmd.map ToBrowse browseCmd
-            , Platform.Cmd.map ToAdd addCmd
+            [ Platform.Cmd.map mapBrowse browseCmd
+            , Platform.Cmd.map mapAdd addCmd
             , Platform.Cmd.map ToWallet walletCmd
-            , Platform.Cmd.map ToUserBids userBidsCmd
+            , Platform.Cmd.map mapUserBids userBidsCmd
             , Platform.Cmd.map ToAcceptedBids acceptedBidsCmd
             , Platform.Cmd.map ToSettings settingsCmd
             ]
@@ -59,7 +59,7 @@ update msg model =
                 oldModels = model.models
                 newModels = {oldModels | browse = subModel}
             in
-                ({model | models = newModels}, Platform.Cmd.map ToBrowse subCmd)
+                ({model | models = newModels}, Platform.Cmd.map mapBrowse subCmd)
 
         ToAdd subMsg ->
             let
@@ -67,7 +67,7 @@ update msg model =
                 oldModels = model.models
                 newModels = {oldModels | add = subModel}
             in
-                ({model | models = newModels}, Platform.Cmd.map ToAdd subCmd)
+                ({model | models = newModels}, Platform.Cmd.map mapAdd subCmd)
 
         ToWallet subMsg ->
             let
@@ -83,7 +83,7 @@ update msg model =
                 oldModels = model.models
                 newModels = {oldModels | userBids = subModel}
             in
-                ({model | models = newModels}, Platform.Cmd.map ToUserBids subCmd)
+                ({model | models = newModels}, Platform.Cmd.map mapUserBids subCmd)
 
         ToAcceptedBids subMsg ->
             let
@@ -101,14 +101,17 @@ update msg model =
             in
                 ({model | models = newModels}, Platform.Cmd.map ToSettings subCmd)
 
+        TriggerPassword _ _ _ _ ->
+            (model, Cmd.none)
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Sub.map ToBrowse <| Browse.State.subscriptions model.models.browse
-        , Sub.map ToAdd <| Add.State.subscriptions model.models.add
+        [ Sub.map mapBrowse <| Browse.State.subscriptions model.models.browse
+        , Sub.map mapAdd <| Add.State.subscriptions model.models.add
         , Sub.map ToWallet <| Wallet.State.subscriptions model.models.wallet
-        , Sub.map ToUserBids <| UserBids.State.subscriptions model.models.userBids
+        , Sub.map mapUserBids <| UserBids.State.subscriptions model.models.userBids
         , Sub.map ToAcceptedBids <| AcceptedBids.State.subscriptions model.models.acceptedBids
         , Sub.map ToSettings <| Settings.State.subscriptions model.models.settings
         ]

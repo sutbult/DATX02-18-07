@@ -69,16 +69,16 @@ viewSelector : Model -> Html Msg
 viewSelector model =
     case model.shown of
         Browse ->
-            Html.map ToBrowse <| Browse.View.root model.models.browse
+            Html.map mapBrowse <| Browse.View.root model.models.browse
 
         Add ->
-            Html.map ToAdd <| Add.View.root model.models.add
+            Html.map mapAdd <| Add.View.root model.models.add
 
         Wallet ->
             Html.map ToWallet <| Wallet.View.root model.models.wallet
 
         UserBids ->
-            Html.map ToUserBids <| UserBids.View.root model.models.userBids
+            Html.map mapUserBids <| UserBids.View.root model.models.userBids
 
         AcceptedBids ->
             Html.map ToAcceptedBids <| AcceptedBids.View.root model.models.acceptedBids

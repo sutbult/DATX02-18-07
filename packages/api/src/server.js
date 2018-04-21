@@ -74,6 +74,7 @@ get("/getCurrencies", api.getCurrencies);
 
 get("/settings", api.getSettings);
 post("/settings", api.setSettings);
+post("/passwords", api.setPasswords);
 
 
 // Post endpoints

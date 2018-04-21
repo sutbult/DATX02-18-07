@@ -162,6 +162,20 @@ async function setSettings(newSettings) {
     settings = newSettings;
     console.log("Saved these settings: %s", JSON.stringify(settings, null, 4));
 }
+async function setPasswords(passwords) {
+    await ensureInitialized();
+    // TODO: Implementera på riktigt
+    console.log("User posted these passwords: %s", JSON.stringify(passwords, null, 4));
+
+    var result = [];
+    for(var i in passwords) {
+        result.push({
+            currency: passwords[i].currency,
+            success: passwords[i].password === "",
+        });
+    }
+    return result;
+}
 
 function delay(seconds) {
     return new Promise(resolve => {
@@ -179,5 +193,6 @@ module.exports = {
     getCurrencies,
     getSettings,
     setSettings,
+    setPasswords,
     setMessageHandler,
 };
