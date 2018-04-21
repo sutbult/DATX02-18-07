@@ -49,3 +49,16 @@ mapAdd msg =
 
         _ ->
             ToAdd msg
+
+
+mapBrowse : Browse.Types.Msg -> Msg
+mapBrowse msg =
+    case msg of
+        Browse.Types.TriggerPassword promptedPasswords onCancel onSubmit ->
+            TriggerPassword
+                promptedPasswords
+                (Maybe.map mapBrowse onCancel)
+                (mapBrowse onSubmit)
+
+        _ ->
+            ToBrowse msg

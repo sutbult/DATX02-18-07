@@ -69,7 +69,7 @@ viewSelector : Model -> Html Msg
 viewSelector model =
     case model.shown of
         Browse ->
-            Html.map ToBrowse <| Browse.View.root model.models.browse
+            Html.map mapBrowse <| Browse.View.root model.models.browse
 
         Add ->
             Html.map mapAdd <| Add.View.root model.models.add

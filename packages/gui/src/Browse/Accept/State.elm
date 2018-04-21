@@ -62,6 +62,9 @@ update msg model =
         MouseMove x y ->
             ({model | mousePositions = (x, y) :: model.mousePositions}, Cmd.none)
 
+        TriggerPassword _ _ _ ->
+            (model, Cmd.none)
+
         Noop ->
             (model, Cmd.none)
 
