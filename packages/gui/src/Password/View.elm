@@ -37,7 +37,7 @@ instanceModal instance passwords =
                     [ text "You need to write the passwords to these blockchains to continue:"
                     ]
                 , p [class "help is-danger"]
-                    [ text instance.error
+                    [ formatEmpty instance.error
                     ]
                 , div [] <|
                     List.map
@@ -50,6 +50,16 @@ instanceModal instance passwords =
                 ]
             ]
         ]
+
+
+formatEmpty : String -> Html Msg
+formatEmpty str =
+    if String.isEmpty str then
+        span [style [("color", "white")]]
+            [ text "-"
+            ]
+    else
+        text str
 
 
 passwordFieldLookup : Bool -> PasswordDict -> String -> Html Msg
@@ -115,7 +125,7 @@ passwordField submitting currency password =
                     [ class <| "help " ++ extraClass
                     , style [("text-align", "right")]
                     ]
-                    [ text info
+                    [ formatEmpty info
                     ]
                 ]
             ]
