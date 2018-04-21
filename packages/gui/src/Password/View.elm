@@ -41,6 +41,9 @@ instanceModal instance passwords =
                         (passwordFieldLookup instance.submitting passwords)
                         instance.promptedPasswords
                 , buttonRow instance
+                    <| hasIncorrectPasswords
+                        instance.promptedPasswords
+                        passwords
                 ]
             ]
         ]
@@ -114,14 +117,14 @@ passwordField submitting currency password =
                 ]
             ]
 
-buttonRow : Instance -> Html Msg
-buttonRow instance =
+buttonRow : Instance -> Bool -> Html Msg
+buttonRow instance invalid =
     div
         [ class "buttons is-right"
         , style [("margin-top", "20px")]
         ]
         [ cancelButton instance.submitting instance.onCancel
-        , submitButton instance.submitting
+        , submitButton instance.submitting invalid
         ]
 
 
@@ -141,8 +144,8 @@ cancelButton submitting maybeCancel =
             span [] []
 
 
-submitButton : Bool -> Html Msg
-submitButton submitting =
+submitButton : Bool -> Bool -> Html Msg
+submitButton submitting invalid =
     let
         extraClass =
             if submitting then
@@ -153,7 +156,25 @@ submitButton submitting =
         button
             [ class <| "button is-link" ++ extraClass
             , onClick Submit
-            , disabled submitting
+            , disabled <| submitting || invalid
             ]
             [ text "Submit"
             ]
+
+
+hasIncorrectPasswords : List String -> PasswordDict -> Bool
+hasIncorrectPasswords promptedPasswords passwords =
+    let
+        isIncorrect password =
+            case password of
+                IncorrectPassword _ ->
+                    True
+
+                _ ->
+                    False
+        predicate currency =
+            Maybe.withDefault False
+                <| Maybe.map isIncorrect
+                <| Dict.get currency passwords
+    in
+        List.any predicate promptedPasswords
