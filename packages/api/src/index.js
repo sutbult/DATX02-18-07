@@ -171,7 +171,7 @@ async function setPasswords(passwords) {
     for(var i in passwords) {
         result.push({
             currency: passwords[i].currency,
-            success: passwords[i].password === "test",
+            success: passwords[i].password === "",
         });
     }
     await delay(2);
