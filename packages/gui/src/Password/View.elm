@@ -10,6 +10,9 @@ import Bid.Types exposing
     ( currencyName
     )
 import Navigation.Types
+import Utils.Maybe exposing
+    ( isJust
+    )
 
 
 root : Model -> Html Msg
@@ -27,6 +30,7 @@ instanceModal instance passwords =
     div [class "modal is-active"]
         [ div
             [ class "modal-background"
+            , onClick Cancel
             ]
             []
         , div
@@ -49,7 +53,23 @@ instanceModal instance passwords =
                         passwords
                 ]
             ]
+        , quitModalButton
+            <| isJust instance.onCancel
         ]
+
+
+quitModalButton : Bool -> Html Msg
+quitModalButton shown =
+    if shown then
+        button
+            [ class "modal-close is-large"
+            , attribute "aria-label" "close"
+            , onClick Cancel
+            ]
+            []
+    else
+        div [] []
+
 
 
 formatEmpty : String -> Html Msg
