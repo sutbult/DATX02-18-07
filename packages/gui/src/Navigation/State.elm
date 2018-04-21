@@ -41,7 +41,7 @@ init =
             [ Platform.Cmd.map mapBrowse browseCmd
             , Platform.Cmd.map mapAdd addCmd
             , Platform.Cmd.map ToWallet walletCmd
-            , Platform.Cmd.map ToUserBids userBidsCmd
+            , Platform.Cmd.map mapUserBids userBidsCmd
             , Platform.Cmd.map ToAcceptedBids acceptedBidsCmd
             , Platform.Cmd.map ToSettings settingsCmd
             ]
@@ -83,7 +83,7 @@ update msg model =
                 oldModels = model.models
                 newModels = {oldModels | userBids = subModel}
             in
-                ({model | models = newModels}, Platform.Cmd.map ToUserBids subCmd)
+                ({model | models = newModels}, Platform.Cmd.map mapUserBids subCmd)
 
         ToAcceptedBids subMsg ->
             let
@@ -111,7 +111,7 @@ subscriptions model =
         [ Sub.map mapBrowse <| Browse.State.subscriptions model.models.browse
         , Sub.map mapAdd <| Add.State.subscriptions model.models.add
         , Sub.map ToWallet <| Wallet.State.subscriptions model.models.wallet
-        , Sub.map ToUserBids <| UserBids.State.subscriptions model.models.userBids
+        , Sub.map mapUserBids <| UserBids.State.subscriptions model.models.userBids
         , Sub.map ToAcceptedBids <| AcceptedBids.State.subscriptions model.models.acceptedBids
         , Sub.map ToSettings <| Settings.State.subscriptions model.models.settings
         ]

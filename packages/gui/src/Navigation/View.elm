@@ -78,7 +78,7 @@ viewSelector model =
             Html.map ToWallet <| Wallet.View.root model.models.wallet
 
         UserBids ->
-            Html.map ToUserBids <| UserBids.View.root model.models.userBids
+            Html.map mapUserBids <| UserBids.View.root model.models.userBids
 
         AcceptedBids ->
             Html.map ToAcceptedBids <| AcceptedBids.View.root model.models.acceptedBids

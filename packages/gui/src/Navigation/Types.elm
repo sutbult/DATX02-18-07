@@ -68,3 +68,17 @@ mapBrowse msg =
 
         _ ->
             ToBrowse msg
+
+
+mapUserBids : UserBids.Types.Msg -> Msg
+mapUserBids msg =
+    case msg of
+        UserBids.Types.TriggerPassword promptedPasswords before onCancel onSubmit ->
+            TriggerPassword
+                promptedPasswords
+                (Maybe.map mapUserBids before)
+                (Maybe.map mapUserBids onCancel)
+                (mapUserBids onSubmit)
+
+        _ ->
+            ToUserBids msg

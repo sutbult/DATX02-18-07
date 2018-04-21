@@ -14,7 +14,7 @@ init =
         (   { bidList = bidListModel
             }
         , Cmd.batch
-            [ Platform.Cmd.map ToBidList bidListCmd
+            [ Platform.Cmd.map mapBidList bidListCmd
             ]
         )
 
@@ -25,12 +25,15 @@ update msg model =
             let
                 (subModel, subCmd) = BidListState.update subMsg (.bidList model)
             in
-                ({model | bidList = subModel}, Platform.Cmd.map ToBidList subCmd)
+                ({model | bidList = subModel}, Platform.Cmd.map mapBidList subCmd)
+
+        TriggerPassword _ _ _ _ ->
+            (model, Cmd.none)
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Sub.map ToBidList
+        [ Sub.map mapBidList
             <| BidListState.subscriptions model.bidList
         ]
