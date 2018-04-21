@@ -144,7 +144,7 @@ submitButton : Html Msg
 submitButton =
     button
         [ class "button is-link"
-        , onClick SubmitSuccess
+        , onClick (SubmitSuccess [("BTC", False), ("ETC", True)])
         ]
         [ text "Submit"
         ]

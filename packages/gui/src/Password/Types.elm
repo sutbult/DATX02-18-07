@@ -4,8 +4,6 @@ import Dict
 
 import Navigation.Types
 
-type alias PasswordDict = Dict.Dict String Password
-
 type alias Model =
     { passwords : PasswordDict
     , instance : Maybe Instance
@@ -18,10 +16,13 @@ type Msg
         Navigation.Types.Msg
     | SetPassword String String
     | Submit
-    | SubmitSuccess
+    | SubmitSuccess SubmitResponse
     | SubmitFailure
     | ToNavigation Navigation.Types.Msg
     | Cancel
+
+type alias PasswordDict = Dict.Dict String Password
+type alias SubmitResponse = List (String, Bool)
 
 type Password
     = UncheckedPassword String

@@ -9,6 +9,7 @@ import Password.Types
 import Password.State
 import Utils.State exposing
     ( foldMsg
+    , with
     )
 import Utils.Maybe exposing
     ( isJust
@@ -48,30 +49,22 @@ update msg model =
                 ({model | password = subModel}, Platform.Cmd.map mapPasswordCmd subCmd)
 
         PasswordCancel ->
-            case Maybe.andThen .onCancel model.password.instance of
-                Just onCancel ->
-                    foldMsg update model
-                        [ ToPassword Password.Types.Cancel
-                        , ToNavigation onCancel
-                        ]
+            with model (Maybe.andThen .onCancel model.password.instance) <| \onCancel ->
+                foldMsg update model
+                    [ ToPassword Password.Types.Cancel
+                    , ToNavigation onCancel
+                    ]
 
-                Nothing ->
-                    (model, Cmd.none)
-
-        PasswordSubmitSuccess ->
-            case model.password.instance of
-                Just instance ->
-                    let
-                        newModel = Tuple.first <|
-                            update (ToPassword Password.Types.SubmitSuccess) model
-                    in
-                        if not <| isJust newModel.password.instance then
-                            update (ToNavigation instance.onSuccess) newModel
-                        else
-                            (newModel, Cmd.none)
-
-                Nothing ->
-                    (model, Cmd.none)
+        PasswordSubmitSuccess response ->
+            with model model.password.instance <| \instance ->
+                let
+                    newModel = Tuple.first <|
+                        update (ToPassword <| Password.Types.SubmitSuccess response) model
+                in
+                    if not <| isJust newModel.password.instance then
+                        update (ToNavigation instance.onSuccess) newModel
+                    else
+                        (newModel, Cmd.none)
 
 
 subscriptions : Model -> Sub Msg

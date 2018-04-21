@@ -1,5 +1,6 @@
 module Utils.State exposing
     ( foldMsg
+    , with
     )
 
 
@@ -24,3 +25,17 @@ updateCmd fn msg (model, cmd) =
         (nmodel, ncmd) = fn msg model
     in
         nmodel ! [cmd, ncmd]
+
+with
+    :  model
+    -> Maybe a
+    -> (a -> (model, Cmd msg))
+    -> (model, Cmd msg)
+
+with model maybe fn =
+    case maybe of
+        Just value ->
+            fn value
+
+        Nothing ->
+            (model, Cmd.none)

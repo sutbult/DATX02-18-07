@@ -12,7 +12,7 @@ type Msg
     = ToNavigation Navigation.Types.Msg
     | ToPassword Password.Types.Msg
     | PasswordCancel
-    | PasswordSubmitSuccess
+    | PasswordSubmitSuccess Password.Types.SubmitResponse
 
 
 mapPasswordCmd : Password.Types.Msg -> Msg
@@ -21,8 +21,8 @@ mapPasswordCmd msg =
         Password.Types.Cancel ->
             PasswordCancel
 
-        Password.Types.SubmitSuccess ->
-            PasswordSubmitSuccess
+        Password.Types.SubmitSuccess response ->
+            PasswordSubmitSuccess response
 
         _ ->
             ToPassword msg

@@ -8,8 +8,8 @@ import Dict
 
 import Password.Types exposing (..)
 import Navigation.Types
-import Utils.Maybe exposing
-    ( isJust
+import Utils.State exposing
+    ( with
     )
 
 
@@ -59,28 +59,30 @@ update msg model =
         Submit ->
             (model, Cmd.none)
 
-        SubmitSuccess ->
-            let
-                newModel = { model
-                    | instance = Nothing
-                    }
-            in
-                (newModel, Cmd.none)
+        SubmitSuccess response ->
+            with model model.instance <| \instance ->
+                let
+                    newPasswords = List.foldl setPasswordFromResult model.passwords response
+                    newModel = { model
+                        | passwords = newPasswords
+                        }
+                in
+                    if allCorrect instance.promptedPasswords newPasswords then
+                        ({ newModel | instance = Nothing }, Cmd.none)
+                    else
+                        (newModel, Cmd.none)
 
         SubmitFailure ->
             (model, Cmd.none)
 
         Cancel ->
-            if isJust <| Maybe.andThen .onCancel model.instance then
+            with model (Maybe.andThen .onCancel model.instance) <| \_ ->
                 let
                     newModel = { model
                         | instance = Nothing
                         }
                 in
                     (newModel, Cmd.none)
-
-            else
-                (model, Cmd.none)
 
         ToNavigation _ ->
             (model, Cmd.none)
@@ -103,3 +105,56 @@ replacePassword currency value =
 
             CorrectPassword len ->
                 CorrectPassword len
+
+
+allCorrect : List String -> PasswordDict -> Bool
+allCorrect promptedPasswords passwords =
+    let
+        predicate currency =
+            case Dict.get currency passwords of
+                Just password ->
+                    case password of
+                        CorrectPassword _ ->
+                            True
+                        _ ->
+                            False
+                Nothing ->
+                    False
+    in
+        List.all predicate promptedPasswords
+
+
+setPasswordFromResult : (String, Bool) -> PasswordDict -> PasswordDict
+setPasswordFromResult (currency, correct) =
+    if correct then
+        setCorrectPassword currency
+    else
+        setIncorrectPassword currency
+
+
+setIncorrectPassword : String -> PasswordDict -> PasswordDict
+setIncorrectPassword currency =
+    Dict.update currency <| Maybe.map <| \password ->
+        case password of
+            UncheckedPassword value ->
+                IncorrectPassword value
+
+            IncorrectPassword value ->
+                IncorrectPassword value
+
+            _ ->
+                password
+
+
+setCorrectPassword : String -> PasswordDict -> PasswordDict
+setCorrectPassword currency =
+    Dict.update currency <| Maybe.map <| \password ->
+        case password of
+            UncheckedPassword value ->
+                CorrectPassword <| String.length value
+
+            IncorrectPassword value ->
+                CorrectPassword <| String.length value
+
+            _ ->
+                password
