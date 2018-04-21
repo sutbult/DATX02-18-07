@@ -115,7 +115,7 @@ passwordField submitting currency password =
                 [ input
                     [ class <| "input " ++ extraClass
                     , id inputId
-                    , type_ "text"
+                    , type_ "password"
                     , placeholder <| "password to " ++ currencyName currency
                     , value passwordValue
                     , onInput <| SetPassword currency
