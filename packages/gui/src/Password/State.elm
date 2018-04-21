@@ -7,6 +7,7 @@ module Password.State exposing
 import Dict
 
 import Password.Types exposing (..)
+import Navigation.Types
 
 
 init : (Model, Cmd Msg)
@@ -26,7 +27,8 @@ init =
                     ]
                 , submitting = False
                 , error = ""
-                , onCancel = Nothing
+                , onCancel = Just <|
+                    Navigation.Types.Show Navigation.Types.Wallet
                 }
             }
     in
@@ -54,10 +56,29 @@ update msg model =
             (model, Cmd.none)
 
         Cancel ->
-            (model, Cmd.none)
+            if isJust <| Maybe.andThen .onCancel model.instance then
+                let
+                    newModel = { model
+                        | instance = Nothing
+                        }
+                in
+                    (newModel, Cmd.none)
+
+            else
+                (model, Cmd.none)
 
         ToNavigation _ ->
             (model, Cmd.none)
+
+
+isJust : Maybe a -> Bool
+isJust maybe =
+    case maybe of
+        Just _ ->
+            True
+
+        Nothing ->
+            False
 
 
 subscriptions : Model -> Sub Msg

@@ -4,7 +4,13 @@ import Platform.Cmd
 
 import Types exposing (..)
 import Navigation.State
+
+import Password.Types
 import Password.State
+import Utils.State exposing
+    ( foldMsg
+    )
+
 
 init : (Model, Cmd Msg)
 init =
@@ -18,9 +24,10 @@ init =
     in
         (model, Cmd.batch
             [ Platform.Cmd.map ToNavigation navCmd
-            , Platform.Cmd.map ToPassword passwordCmd
+            , Platform.Cmd.map mapPasswordCmd passwordCmd
             ]
         )
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -35,11 +42,23 @@ update msg model =
             let
                 (subModel, subCmd) = Password.State.update subMsg (.password model)
             in
-                ({model | password = subModel}, Platform.Cmd.map ToPassword subCmd)
+                ({model | password = subModel}, Platform.Cmd.map mapPasswordCmd subCmd)
+
+        CancelPassword ->
+            case Maybe.andThen .onCancel model.password.instance of
+                Just onCancel ->
+                    foldMsg update model
+                        [ ToPassword Password.Types.Cancel
+                        , ToNavigation onCancel
+                        ]
+
+                Nothing ->
+                    (model, Cmd.none)
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map ToNavigation <| Navigation.State.subscriptions model.navigation
-        , Sub.map ToPassword <| Password.State.subscriptions model.password
+        , Sub.map mapPasswordCmd <| Password.State.subscriptions model.password
         ]

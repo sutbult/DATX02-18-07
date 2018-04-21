@@ -12,6 +12,6 @@ root model =
     section [class "section"]
         [ div [class "container is-fullhd"]
             [ Html.map ToNavigation (Navigation.View.root model.navigation)
-            , Html.map ToPassword <| Password.View.root model.password
+            , Html.map mapPasswordCmd <| Password.View.root model.password
             ]
         ]
