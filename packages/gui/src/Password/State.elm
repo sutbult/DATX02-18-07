@@ -14,6 +14,9 @@ import Password.Rest exposing
     ( setPasswords
     )
 import Error.Types
+import Bid.Types exposing
+    ( currencyName
+    )
 
 
 init : (Model, Cmd Msg)
@@ -55,7 +58,8 @@ update msg model =
                 else
                     let
                         instance =
-                            { promptedPasswords = promptedPasswords
+                            { promptedPasswords =
+                                List.sortBy currencyName promptedPasswords
                             , onSuccess = onSuccess
                             , onCancel = onCancel
                             , submitting = False
