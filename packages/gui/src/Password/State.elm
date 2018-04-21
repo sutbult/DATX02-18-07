@@ -14,6 +14,7 @@ import Utils.State exposing
 import Password.Rest exposing
     ( setPasswords
     )
+import Error.Types
 
 
 init : (Model, Cmd Msg)
@@ -92,7 +93,17 @@ update msg model =
                         (newModel, Cmd.none)
 
         SubmitFailure error ->
-            (model, Cmd.none)
+            with model model.instance <| \instance ->
+                let
+                    newInstance = {instance
+                        | submitting = False
+                        , error = getErrorText error
+                        }
+                    newModel = {model
+                        | instance = Just newInstance
+                        }
+                in
+                    (newModel, Cmd.none)
 
         Cancel ->
             with model (Maybe.andThen .onCancel model.instance) <| \_ ->
@@ -110,6 +121,16 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.none
+
+
+getErrorText : Error.Types.Msg -> String
+getErrorText error =
+    case error of
+        Error.Types.Display _ message ->
+            message
+
+        Error.Types.Dismiss ->
+            ""
 
 
 replacePassword : String -> String -> PasswordDict -> PasswordDict

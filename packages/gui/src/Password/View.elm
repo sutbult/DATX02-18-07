@@ -36,6 +36,9 @@ instanceModal instance passwords =
                 [ p []
                     [ text "You need to write the passwords to these blockchains to continue:"
                     ]
+                , p [class "help is-danger"]
+                    [ text instance.error
+                    ]
                 , div [] <|
                     List.map
                         (passwordFieldLookup instance.submitting passwords)
