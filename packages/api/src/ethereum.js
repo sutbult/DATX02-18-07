@@ -261,7 +261,6 @@ function subscribeToClaim(contract, block){
 */
 function getPastClaim(ethchain, contract_address, from_block = 10849){
     var contract, events;
-    // console.log("*************IN GETPASTCLAIM; LEGGO********************");
     contract = new ethchain.eth.Contract(htlc_ether.abi, contract_address);
     
     return contract.getPastEvents('Claim', {
@@ -287,6 +286,7 @@ function claimContract(ethchain, pre_image_hash, from_address, claim_address){
 module.exports = {
     web3,
     genesisCheck,
+    getBalance,
     subscribeToClaim,
     unlockAccount,
     getPastClaim,

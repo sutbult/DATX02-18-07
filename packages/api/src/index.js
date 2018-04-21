@@ -76,7 +76,7 @@ function BidFactory() {
 // Fetches all available bids from the decentralized database
 async function getBids() {
     await ensureInitialized();
-    return db.getBid(50)
+    return db.getBids(50);
 
 }
 
@@ -97,11 +97,23 @@ async function getWallet() {
             amount: amount,
         };
     }
-    return [
-        Account("Bitcoin",  "100000000000"              ),
-        Account("Ethereum", "10000000000000000000010"   ),
-        Account("Dogecoin", "1000000000"                ), // Wow, such wealth, many monies
-    ];
+    var returnArr = [];
+    // return [
+    //     Account("Bitcoin",  "100000000000"              ),
+    //     Account("Ethereum", "10000000000000000000010"   ),
+    //     Account("Dogecoin", "1000000000"                ), // Wow, such wealth, many monies
+    // ];
+    var eth = require("./ethereum.js");
+    if(eth.web3 != undefined){ 
+        console.log("here");
+        var amount = await eth.web3.eth.getBalance(eth.accounts[2]);
+        console.log(amount);
+        returnArr.push(Account("Ethereum",eth.web3.fromWei(amount))); 
+
+
+        console.log(returnArr);
+    }
+    return returnArr;
 }
 
 // Fetches all bids associated with the user
