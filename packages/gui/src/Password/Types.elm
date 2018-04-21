@@ -3,6 +3,7 @@ module Password.Types exposing (..)
 import Dict
 
 import Navigation.Types
+import Error.Types
 
 type alias Model =
     { passwords : PasswordDict
@@ -17,7 +18,7 @@ type Msg
     | SetPassword String String
     | Submit
     | SubmitSuccess SubmitResponse
-    | SubmitFailure
+    | SubmitFailure Error.Types.Msg
     | ToNavigation Navigation.Types.Msg
     | Cancel
 

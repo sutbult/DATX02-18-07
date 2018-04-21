@@ -11,6 +11,9 @@ import Navigation.Types
 import Utils.State exposing
     ( with
     )
+import Password.Rest exposing
+    ( setPasswords
+    )
 
 
 init : (Model, Cmd Msg)
@@ -57,7 +60,13 @@ update msg model =
             (model, Cmd.none)
 
         Submit ->
-            (model, Cmd.none)
+            with model model.instance <| \instance ->
+                let
+                    data = getSubmitData
+                        instance.promptedPasswords
+                        model.passwords
+                in
+                    (model, setPasswords data)
 
         SubmitSuccess response ->
             with model model.instance <| \instance ->
@@ -72,7 +81,7 @@ update msg model =
                     else
                         (newModel, Cmd.none)
 
-        SubmitFailure ->
+        SubmitFailure error ->
             (model, Cmd.none)
 
         Cancel ->
@@ -105,6 +114,42 @@ replacePassword currency value =
 
             CorrectPassword len ->
                 CorrectPassword len
+
+
+getSubmitData : List String -> PasswordDict -> List (String, String)
+getSubmitData promptedPasswords passwords =
+    List.concat
+        <| List.map toList
+        <| List.map (getSubmitPassword passwords)
+        <| promptedPasswords
+
+
+toList : Maybe a -> List a
+toList maybe =
+    case maybe of
+        Just value ->
+            [value]
+
+        Nothing ->
+            []
+
+
+getSubmitPassword : PasswordDict -> String -> Maybe (String, String)
+getSubmitPassword passwords currency =
+    let
+        transform password =
+            case password of
+                UncheckedPassword value ->
+                    Just (currency, value)
+
+                IncorrectPassword value ->
+                    Just (currency, value)
+
+                CorrectPassword _ ->
+                    Nothing
+    in
+        Maybe.andThen transform <|
+            Dict.get currency passwords
 
 
 allCorrect : List String -> PasswordDict -> Bool
