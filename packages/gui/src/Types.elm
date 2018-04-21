@@ -11,14 +11,18 @@ type alias Model =
 type Msg
     = ToNavigation Navigation.Types.Msg
     | ToPassword Password.Types.Msg
-    | CancelPassword
+    | PasswordCancel
+    | PasswordSubmitSuccess
 
 
 mapPasswordCmd : Password.Types.Msg -> Msg
 mapPasswordCmd msg =
     case msg of
         Password.Types.Cancel ->
-            CancelPassword
+            PasswordCancel
+
+        Password.Types.SubmitSuccess ->
+            PasswordSubmitSuccess
 
         _ ->
             ToPassword msg

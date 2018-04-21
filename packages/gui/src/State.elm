@@ -10,6 +10,9 @@ import Password.State
 import Utils.State exposing
     ( foldMsg
     )
+import Utils.Maybe exposing
+    ( isJust
+    )
 
 
 init : (Model, Cmd Msg)
@@ -44,13 +47,28 @@ update msg model =
             in
                 ({model | password = subModel}, Platform.Cmd.map mapPasswordCmd subCmd)
 
-        CancelPassword ->
+        PasswordCancel ->
             case Maybe.andThen .onCancel model.password.instance of
                 Just onCancel ->
                     foldMsg update model
                         [ ToPassword Password.Types.Cancel
                         , ToNavigation onCancel
                         ]
+
+                Nothing ->
+                    (model, Cmd.none)
+
+        PasswordSubmitSuccess ->
+            case model.password.instance of
+                Just instance ->
+                    let
+                        newModel = Tuple.first <|
+                            update (ToPassword Password.Types.SubmitSuccess) model
+                    in
+                        if not <| isJust newModel.password.instance then
+                            update (ToNavigation instance.onSuccess) newModel
+                        else
+                            (newModel, Cmd.none)
 
                 Nothing ->
                     (model, Cmd.none)

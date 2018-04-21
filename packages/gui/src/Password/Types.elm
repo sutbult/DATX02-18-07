@@ -18,6 +18,8 @@ type Msg
         Navigation.Types.Msg
     | SetPassword String String
     | Submit
+    | SubmitSuccess
+    | SubmitFailure
     | ToNavigation Navigation.Types.Msg
     | Cancel
 
@@ -28,7 +30,7 @@ type Password
 
 type alias Instance =
     { promptedPasswords : List String
-    --, onSuccess : Navigation.Types.Msg
+    , onSuccess : Navigation.Types.Msg
     , onCancel : Maybe Navigation.Types.Msg
     , submitting : Bool
     , error : String

@@ -121,12 +121,7 @@ buttonRow instance =
         , style [("margin-top", "20px")]
         ]
         [ cancelButton instance.onCancel
-        , button
-            [ class "button is-link"
-            , onClick Submit
-            ]
-            [ text "Submit"
-            ]
+        , submitButton
         ]
 
 
@@ -145,11 +140,11 @@ cancelButton maybeCancel =
             span [] []
 
 
-submitButton : Navigation.Types.Msg -> Html Msg
-submitButton onSubmit =
+submitButton : Html Msg
+submitButton =
     button
         [ class "button is-link"
-        , onClick Submit
+        , onClick SubmitSuccess
         ]
         [ text "Submit"
         ]
