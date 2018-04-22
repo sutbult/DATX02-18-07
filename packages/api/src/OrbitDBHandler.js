@@ -164,10 +164,10 @@ function checkForStep(step, callback) {
 
 async function pushDigestInfo(contractInfo, func) {
 
-  var messaging = await createDB(contractInfo.channel, "log", "public"); //Additions
-  channel = await getLogDB(messaging);
-  await channel.load();
-  close();
+  // var messaging = await createDB(contractInfo.channel, "log", "public"); //Additions
+  // channel = await getLogDB(messaging);
+  // await channel.load();
+  // close();
 
   var jsonObj = new Object();
   jsonObj.step = 2;
