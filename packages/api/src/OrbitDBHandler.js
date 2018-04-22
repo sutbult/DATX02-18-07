@@ -210,6 +210,13 @@ async function getData(amount, db){
   return bids
 }
 
+async function changeStatus(message, newStatus){
+  message.status = newStatus;
+  
+  channel.add(message);
+
+}
+
 module.exports = {
   init,
   addData,
@@ -224,5 +231,6 @@ module.exports = {
   getKVData,
   getLogDB,
   getKVDB,
+  changeStatus,
   close
 }

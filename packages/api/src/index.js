@@ -41,7 +41,8 @@ async function checkAccBid(){
     var bids = await db.getUserBids(1000000000000000);
     // console.log(bids);
     bids.forEach(bid => {
-        messenger.bidAccepted(bid,trader.whenBidAccepted);
+        console.log(bid);
+        if(bid.status == "ACTIVE") messenger.bidAccepted(bid,trader.whenBidAccepted);
     });
 }
 
