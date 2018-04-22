@@ -7,6 +7,12 @@ var key
 async function init(msgHandler){
   var messageHandler = msgHandler
 
+  // Address to the local database containing status of the user's bids
+  var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
+  statusDB = await orbitDB.getKVDB(status)
+  await statusDB.load()
+  await orbitDB.close()
+
   // Address to the global database containing all bids
   var bids = await orbitDB.createDB("Bids", "log", "public")
   globalDB = await orbitDB.getLogDB(bids)
@@ -15,11 +21,7 @@ async function init(msgHandler){
   key = globalDB.key.getPublic('hex')
 
 
-  // Address to the local database containing status of the user's bids
-  var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
-  statusDB = await orbitDB.getKVDB(status)
-  await statusDB.load()
-  await orbitDB.close()
+
 
   //Add Listeners
 /*  globalDB.events.on('replicated', () => {
