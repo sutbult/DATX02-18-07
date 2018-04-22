@@ -8,7 +8,8 @@ var key
 async function init(msgHandler){
   var messageHandler = msgHandler
 
-  // Address to the database containing status of the bids
+  // Address to a global keyvalue database containing status of the bids
+
   var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
   statusDB = await orbitDB.getKVDB(status)
   await statusDB.load()
@@ -108,9 +109,12 @@ async function acceptBid(bidID) {
   //await orbitDB.acceptBid(bid);
 }
 
-async function changeBidStatus(bid, status){
-  bid.status = status
-  await orbitDB.addKVData(bid.id, bid, statusDB)
+/*
+Change bid status ("ACTIVE", "PENDING", "FINISHED")
+*/
+
+async function changeBidStatus(bidID, status){
+  await statusDB.put(bidID, status)
 }
 
 function getUserBids(amount){
