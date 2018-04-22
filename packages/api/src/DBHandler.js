@@ -23,10 +23,10 @@ async function init(msgHandler){
   key = globalDB.key.getPublic('hex')
 
 
-  // Address to the local database containing status of the user's bids
-  var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
-  statusDB = await orbitDB.getKVDB(status)
-  await statusDB.load()
+  // Address to the local databaes containing accepted bidStatus
+  var localbids = await orbitDB.createDB("acceptedBids", "keyvalue", "local")
+  localDB = await orbitDB.getKVDB(localbids)
+  await localDB.load()
   await orbitDB.close()
 
   //Add Listeners
