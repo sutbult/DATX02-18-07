@@ -220,7 +220,7 @@ async function getData(amount, db){
 }
 
 async function changeStatus(message, newStatus){
-  message.status = newStatus;
+  message.bid.status = newStatus;
 
   channel.add(message);
 
