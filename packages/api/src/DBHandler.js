@@ -96,6 +96,7 @@ async function addBid(bid){
   var id = await globalDB.add(bid) //object instead of bid
   // Add bid to local database
   await statusDB.put(id, "ACTIVE");
+  console.log("***********StatusDB: %o", statusDB.get(id));
 
   await orbitDB.addData(bid.channel);
   orbitDB.close()
@@ -139,8 +140,7 @@ function getAcceptedBids(amount){
 }
 
 function getBidStatus(bidID){
-  return localDB.get(bidID);
-
+  return statusDB.get(bidID);
 }
 
 function getBid(amount, db){

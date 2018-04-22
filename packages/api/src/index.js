@@ -27,6 +27,7 @@ function setMessageHandler(messageHandlerArg) {
 // Adds a new bid to the decentralized database
 async function addBid(bid) {
     await ensureInitialized();
+    console.log("Is this thing on");
     bid.status = "ACTIVE"
     bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 
@@ -39,13 +40,14 @@ async function checkAccBid(){
     *@todo someone with knowledge fix this 
     */
     var bids = await db.getUserBids(1000000000000000);
-    console.log("*********Lets see ******");
-    console.log(db.getAcceptedBids());
-    console.log(db.getBidStatus());
+    // console.log("*********Lets see ******");
+    // console.log(db.getAcceptedBids(50));
     // console.log(bids);
     bids.forEach(bid => {
-        console.log(bid);
-        if(bid.status == "ACTIVE") messenger.bidAccepted(bid,trader.whenBidAccepted);
+        // console.log(bid);
+        console.log(db.getBidStatus(bid.id)); //bidStatus in statusDB is changed in tradeHandler if accepted
+        //This is to stop multiple deploys
+        if(bid.status == "ACTIVE" && db.getBidStatus(bid.id) == "ACTIVE") messenger.bidAccepted(bid,trader.whenBidAccepted);
     });
 }
 
@@ -83,7 +85,7 @@ async function getBids() {
 // Accepts a bid and starts the swapping process
 async function acceptBid(bidID, callback) {
     await ensureInitialized();
-    
+    // db.acceptBid(bidID);
     trader.acceptBid(bidID);
     // console.log("User accepts the bid with this ID: %s", bidID);
 }

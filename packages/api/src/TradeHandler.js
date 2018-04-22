@@ -20,8 +20,8 @@ function whenBidAccepted(msg){
         switch(fromCurrency){
             case "Ethereum":
                 console.log("From Ethereum");
-                //Make sure only one contract is deployed
-                // messenger.changeStatus(message, "ACCEPTED");
+                //Make sure only one contract is deployed, this does that by changing status to pending
+                db.acceptBid(message.bid.id);
                 require("./tradeETH.js").firstContract(message, function(promise){
                     promise.then(result => {
                         result.bid = message.bid;
