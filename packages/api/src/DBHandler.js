@@ -69,9 +69,9 @@ function getBids(amount){
     //var tempAmount = bids[i].from.amount
     //bids[i].from.amount = bids[i].to.amount
     //bids[i].to.amount = tempAmount
-    if(bids[i].key == key || bids[i].status == "PENDING" || bids[i].status == "FINISHED"){
+    // if(bids[i].key == key || bids[i].status == "PENDING" || bids[i].status == "FINISHED"){
   //    bids.splice(i,1);
-    }
+    // }
   // }
   return bids
 }
