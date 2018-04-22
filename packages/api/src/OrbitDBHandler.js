@@ -147,7 +147,7 @@ function checkForStep(step, callback) {
   }
   var timer = setInterval(function(){
     //after claim it sometimes turns up empty, TODO, fix that bug
-    if(message !== []){
+    if(message !== [] || message != null){
       if(JSON.parse(message).step != step) {
         message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
       } else {
