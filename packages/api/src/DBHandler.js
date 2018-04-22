@@ -1,13 +1,14 @@
 const orbitDB = require("./OrbitDBHandler.js")
 var globalDB
 var statusDB
+var localDB
 var messageHandler
 var key
 
 async function init(msgHandler){
   var messageHandler = msgHandler
 
-  // Address to the local database containing status of the user's bids
+  // Address to the database containing status of the bids
   var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
   statusDB = await orbitDB.getKVDB(status)
   await statusDB.load()
@@ -19,6 +20,14 @@ async function init(msgHandler){
   await globalDB.load()
   await orbitDB.close()
   key = globalDB.key.getPublic('hex')
+
+
+  // Address to the local databaes containing accepted bidStatus
+  var localbids = await orbitDB.createDB("acceptedBids", "keyvalue", "local")
+  localDB = await orbitDB.getKVDB(localbids)
+  await localDB.load()
+  await orbitDB.close()
+
 
 
 
@@ -48,6 +57,13 @@ async function init(msgHandler){
     });
   });
 
+    localDB.events.on('write', () => {
+    messageHandler({
+        cmd: "updateBids",
+    });
+  })
+
+
 
 }
 
@@ -58,7 +74,7 @@ function getBids(amount){
     //bids[i].from.amount = bids[i].to.amount
     //bids[i].to.amount = tempAmount
     if(bids[i].key == key || bids[i].status == "PENDING" || bids[i].status == "FINISHED"){
-      bids.splice(i,1);
+  //    bids.splice(i,1);
     }
   }
   return bids
@@ -88,6 +104,7 @@ async function addBid(bid){
 
 async function acceptBid(bidID) {
   await statusDB.put(bidID, "PENDING")
+  await localDB.put(bidID, "PENDING")
   //await orbitDB.acceptBid(bid);
 }
 
@@ -100,6 +117,16 @@ function getUserBids(amount){
   var bids = getBid(amount, globalDB)
   for (var i = bids.length - 1; i >= 0; i--){
     if(bids[i].key != key){
+      bids.splice(i,1);
+    }
+  }
+  return bids
+}
+
+function getAcceptedBids(amount){
+  var bids = getBids(amount)
+  for (var i = bids.length - 1; i >= 0; i--){
+    if(localDB.get(bids[i].id) == undefined){
       bids.splice(i,1);
     }
   }
@@ -125,5 +152,6 @@ module.exports = {
   acceptBid,
   changeBidStatus,
   getUserBids,
+  getAcceptedBids,
   init
 }
