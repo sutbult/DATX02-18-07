@@ -4,8 +4,6 @@ const messenger = require("./OrbitDBHandler")
 const runOnce = require("./runOnce.js");
 const trader = require("./tradeHandler.js");
 
-var acceptedBids = [];
-
 async function init() {
     // messageHandler kommer att vara tillgänglig här
     const messengerPromise = messenger.init();
@@ -43,9 +41,8 @@ async function checkAccBid(){
     var bids = await db.getUserBids(1000000000000000);
     // console.log(bids);
     bids.forEach(bid => {
-        if(!acceptedBids.includes(bid)){
-            messenger.bidAccepted(bid,trader.whenBidAccepted);
-        }
+        console.log(bid);
+        if(bid.status == "ACTIVE") messenger.bidAccepted(bid,trader.whenBidAccepted);
     });
 }
 
@@ -136,7 +133,6 @@ async function getCurrencies() {
 }
 
 module.exports = {
-    acceptedBids,
     addBid,
     getBids,
     acceptBid,

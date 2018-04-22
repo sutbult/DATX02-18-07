@@ -114,14 +114,14 @@ async function acceptBid(bid, address, callback){
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
 
   var acceptMessage = new Object();
-  acceptMessage.step = 2;
+  acceptMessage.step = 1;
   acceptMessage.address = address;
   acceptMessage.bid = bid;
 
   var JSONObject = JSON.stringify(acceptMessage)
   var returnvalue = await channel.add(JSONObject);
 
-  checkForStep(3,callback);
+  checkForStep(2,callback);
 }
 
 async function bidAccepted(bid, callback){
@@ -130,28 +130,23 @@ async function bidAccepted(bid, callback){
   await channel.load()
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
 
-  checkForStep(2,callback);
+  checkForStep(1,callback);
 }
 
 //If correct step is found the information in the channel will be returned to the callback function
 function checkForStep(step, callback) {
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-  if(message != null) jsonObj = JSON.parse(message);
-  else return;
-  //the first step should terminate here, no one has accepted your bid yet
-  if(jsonObj.step == 1){
-    console.log("No one has accepted this bid yet");
-    close(); //Doing only this creates this error: MaxListenersExceededWarning: Possible EventEmitter memory leak detected
+  try{
+    console.log(message);
+    jsonObj = JSON.parse(message);
+  } catch(e) {
+    console.log("No one has accepted this bid yet: " + e);
     return
-  }
-  var index = require("./index.js")
-
-  if(!index.acceptedBids.includes(jsonObj.bid)){
-    index.acceptedBids.push(jsonObj.bid);
   }
   var timer = setInterval(function(){
     //after claim it sometimes turns up empty, TODO, fix that bug
-    if(message !== []){
+    if(message != null && message != []){
+      console.log(message);
       if(JSON.parse(message).step != step) {
         message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
       } else {
@@ -170,7 +165,7 @@ async function pushDigestInfo(contractInfo, func) {
   close();
 
   var jsonObj = new Object();
-  jsonObj.step = 3;
+  jsonObj.step = 2;
   jsonObj.digest = contractInfo.digest;
   jsonObj.contractAddress = contractInfo.contractAddress;
   jsonObj.address = contractInfo.address;
@@ -178,7 +173,7 @@ async function pushDigestInfo(contractInfo, func) {
 
   var digestMessage = JSON.stringify(jsonObj)
   await channel.add(digestMessage);
-  checkForStep(4,func);
+  checkForStep(3,func);
 }
 
 async function pushContractInfo(contractInfo, message, callback) {
@@ -186,7 +181,7 @@ async function pushContractInfo(contractInfo, message, callback) {
   contractInfo.then(result => {
 
     var jsonMessage = message;
-    jsonMessage.step = 4; //recycling step 3 data, need to update some values
+    jsonMessage.step = 3; //recycling step 3 data, need to update some values
     jsonMessage.contractAddress = result.contractAddress;
     var contractMessage = JSON.stringify(jsonMessage)
 
@@ -224,6 +219,13 @@ async function getData(amount, db){
   return bids
 }
 
+async function changeStatus(message, newStatus){
+  message.status = newStatus;
+
+  channel.add(message);
+
+}
+
 module.exports = {
   init,
   addData,
@@ -238,5 +240,6 @@ module.exports = {
   getKVData,
   getLogDB,
   getKVDB,
+  changeStatus,
   close
 }

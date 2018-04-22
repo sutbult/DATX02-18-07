@@ -16,11 +16,11 @@ async function init(msgHandler){
 
 
   // Address to the local database containing status of the user's bids
-/*  var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
+  var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
   statusDB = await orbitDB.getKVDB(status)
   await statusDB.load()
   await orbitDB.close()
-*/
+
   //Add Listeners
   globalDB.events.on('replicated', () => {
     messageHandler({
@@ -34,7 +34,7 @@ async function init(msgHandler){
     });
   });
 
-/*  statusDB.events.on('replicated', () => {
+  statusDB.events.on('replicated', () => {
     messageHandler({
         cmd: "updateBids",
     });
@@ -45,7 +45,7 @@ async function init(msgHandler){
         cmd: "updateBids",
     });
   });
-*/
+
 
 }
 
@@ -82,9 +82,9 @@ async function addBid(bid){
   //Consult Samuel about structure of bids
   var id = await globalDB.add(bid) //object instead of bid
   // Add bid to local database
-//  await statusDB.put(id, "ACTIVE");
+  await statusDB.put(id, "ACTIVE");
 
-  await orbitDB.addData("test", bid.channel, "PLACEHOLDER") //Placeholder replace with function to get address
+  await orbitDB.addData(bid.channel);
   orbitDB.close()
 
 }
