@@ -147,11 +147,16 @@ function checkForStep(step, callback) {
     //after claim it sometimes turns up empty, TODO, fix that bug
     if(message != null && message != []){
       console.log(message);
-      if(JSON.parse(message).step != step) {
-        message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
-      } else {
-        clearInterval(timer)
-        callback(message);
+      try{
+        if(JSON.parse(message).step != step) {
+          message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
+        } else {
+          clearInterval(timer)
+          callback(message);
+        }
+
+      }catch(e){
+        console.log("For some reason an incorrect message: " + e);
       }
     }
   }, 5000);
