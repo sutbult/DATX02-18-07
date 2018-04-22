@@ -13,6 +13,11 @@ type alias Model =
 type Msg
     = ToBidList BidListTypes.Msg
     | ToAccept AcceptTypes.Msg
+    | TriggerPassword
+        (List String)
+        (Maybe Msg)
+        (Maybe Msg)
+        Msg
 
 
 mapBidListCmd : BidListTypes.Msg -> Msg
@@ -30,6 +35,13 @@ mapAcceptCmd msg =
     case msg of
         AcceptTypes.ToError error ->
             ToBidList <| BidListTypes.ToError error
+
+        AcceptTypes.TriggerPassword promptedPasswords before onCancel onSuccess ->
+            TriggerPassword
+                promptedPasswords
+                (Maybe.map mapAcceptCmd before)
+                (Maybe.map mapAcceptCmd onCancel)
+                (mapAcceptCmd onSuccess)
 
         subMsg ->
             ToAccept subMsg

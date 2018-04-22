@@ -2,14 +2,14 @@ module AcceptedBids.State exposing (..)
 
 import Platform.Cmd
 
-import BidList.State as BidListState
+import BidList.NotifiedState as BidListState
 import AcceptedBids.Types exposing (..)
 
 
 init : (Model, Cmd Msg)
 init =
     let
-        (bidListModel, bidListCmd) = BidListState.init False "getAcceptedBids"
+        (bidListModel, bidListCmd) = BidListState.init True "getAcceptedBids"
     in
         (   { bidList = bidListModel
             }

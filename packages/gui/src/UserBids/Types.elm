@@ -1,9 +1,12 @@
 module UserBids.Types exposing (..)
 
+import BidList.Types as BidListTypes
 import Bid.Types exposing
     ( Bid
     )
-import BidList.Types as BidListTypes
+import Utils.List exposing
+    ( nub
+    )
 
 type alias Model =
     { bidList : BidListTypes.Model
@@ -11,15 +14,27 @@ type alias Model =
 
 type Msg
     = ToBidList BidListTypes.Msg
-    | SetBids (List Bid)
-    | NotifyBidChanges (List Bid)
+    | TriggerPassword
+        (List String)
+        (Maybe Msg)
+        (Maybe Msg)
+        Msg
 
-
-mapBidListCmd : BidListTypes.Msg -> Msg
-mapBidListCmd msg =
+mapBidList : BidListTypes.Msg -> Msg
+mapBidList msg =
     case msg of
         BidListTypes.SetBids bids ->
-            SetBids bids
+            TriggerPassword
+                (involvedCurrencies bids)
+                Nothing
+                Nothing
+                (ToBidList <| BidListTypes.SetBids bids)
 
-        subMsg ->
-            ToBidList subMsg
+        _ ->
+            ToBidList msg
+
+involvedCurrencies : List Bid -> List String
+involvedCurrencies = nub
+    << (List.map .currency)
+    << List.concat
+    << (List.map <| \bid -> [bid.from, bid.to])

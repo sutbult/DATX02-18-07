@@ -116,7 +116,13 @@ errorMessage error =
             "The request timed out."
 
         Http.BadStatus response ->
-            "The server responded with the status " ++ toString response.status.code ++ "."
+            let
+                code = toString response.status.code
+                body = response.body
+            in
+                "The server responded with the status "
+                    ++ code ++ " and the error message '"
+                    ++ body ++ "'."
 
         Http.BadPayload descr _ ->
             "The response is incorrectly formatted. See '" ++ descr ++ "'"

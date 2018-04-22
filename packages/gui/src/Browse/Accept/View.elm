@@ -90,7 +90,7 @@ bidModal bid =
                         ]
                     , button
                         [ class "button is-link"
-                        , onClick (AcceptBid bid)
+                        , onClick (acceptBidMsg bid)
                         ]
                         [ text "Accept bid"
                         ]

@@ -102,10 +102,25 @@ async function getUserBids() {
     await ensureInitialized();
     return db.getUserBids(50)
 }
+var acceptedBidFlag = false;
 async function getAcceptedBids() {
     await ensureInitialized();
-    // TODO: Implementera detta
-    return [];
+    // TODO: Implementera detta på riktigt
+    acceptedBidFlag = !acceptedBidFlag;
+    return [
+        {
+            id: "TST",
+            status: acceptedBidFlag ? "PENDING" : "FINISHED",
+            from: {
+                currency: "BTC",
+                amount: "200000000",
+            },
+            to: {
+                currency: "ETH",
+                amount: "10000000000000000000",
+            },
+        },
+    ];
 }
 
 // Fetches the currencies which is available for the user to create bids with
@@ -119,6 +134,55 @@ async function getCurrencies() {
     ];
 }
 
+var settings = {
+    blockchainPathList: [
+        {
+            currency: "BTC",
+            value: "/home/harambe/bitcoin",
+        },
+        {
+            currency: "ETH",
+            value: "/home/harambe/ethereum",
+        },
+        {
+            currency: "ETC",
+            value: "/home/harambe/ethereumClassic",
+        },
+    ],
+};
+
+async function getSettings() {
+    await ensureInitialized();
+    // TODO: Implementera på riktigt
+    return settings
+}
+async function setSettings(newSettings) {
+    await ensureInitialized();
+    // TODO: Implementera på riktigt
+    settings = newSettings;
+    console.log("Saved these settings: %s", JSON.stringify(settings, null, 4));
+}
+async function setPasswords(passwords) {
+    await ensureInitialized();
+    // TODO: Implementera på riktigt
+    console.log("User posted these passwords: %s", JSON.stringify(passwords, null, 4));
+
+    var result = [];
+    for(var i in passwords) {
+        result.push({
+            currency: passwords[i].currency,
+            success: passwords[i].password === "",
+        });
+    }
+    return result;
+}
+
+function delay(seconds) {
+    return new Promise(resolve => {
+        setTimeout(resolve, seconds * 1000);
+    });
+}
+
 module.exports = {
     addBid,
     getBids,
@@ -127,5 +191,8 @@ module.exports = {
     getUserBids,
     getAcceptedBids,
     getCurrencies,
+    getSettings,
+    setSettings,
+    setPasswords,
     setMessageHandler,
 };
