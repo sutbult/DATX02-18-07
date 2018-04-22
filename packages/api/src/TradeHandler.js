@@ -15,13 +15,13 @@ function whenBidAccepted(msg){
     var message = JSON.parse(msg);
     message.secret = secret;
     var fromCurrency = message.bid.from.currency;
-    console.log("****LETS SEE WHAT WE HAVE HERE %s and the whole thing %o", message.bid.status, message);
+    // console.log("****LETS SEE WHAT WE HAVE HERE %s and the whole thing %o", message.bid.status, message);
     if(message.bid.status == "ACTIVE"){
         switch(fromCurrency){
             case "Ethereum":
                 console.log("From Ethereum");
                 //Make sure only one contract is deployed
-                messenger.changeStatus(message, "ACCEPTED");
+                // messenger.changeStatus(message, "ACCEPTED");
                 require("./tradeETH.js").firstContract(message, function(promise){
                     promise.then(result => {
                         result.bid = message.bid;
