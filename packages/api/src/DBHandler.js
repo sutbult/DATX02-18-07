@@ -138,6 +138,11 @@ function getAcceptedBids(amount){
   return bids
 }
 
+function getBidStatus(bidID){
+  return localDB.get(bidID);
+
+}
+
 function getBid(amount, db){
   var data = db.iterator({ limit : amount }).collect()
   var bids = []
@@ -160,5 +165,6 @@ module.exports = {
   changeBidStatus,
   getUserBids,
   getAcceptedBids,
+  getBidStatus,
   init
 }

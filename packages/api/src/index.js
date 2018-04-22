@@ -39,6 +39,9 @@ async function checkAccBid(){
     *@todo someone with knowledge fix this 
     */
     var bids = await db.getUserBids(1000000000000000);
+    console.log("*********Lets see ******");
+    console.log(db.getAcceptedBids());
+    console.log(db.getBidStatus());
     // console.log(bids);
     bids.forEach(bid => {
         console.log(bid);
