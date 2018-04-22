@@ -109,8 +109,10 @@ async function acceptBid(bidID) {
   //await orbitDB.acceptBid(bid);
 }
 
-/*
-Change bid status ("ACTIVE", "PENDING", "FINISHED")
+/**
+* Change the status of a bid
+* @param bidID The id of the bid (bid.id)
+* @param status The new status of the bid ("ACTIVE", "PENDING", "FINISHED")
 */
 
 async function changeBidStatus(bidID, status){
