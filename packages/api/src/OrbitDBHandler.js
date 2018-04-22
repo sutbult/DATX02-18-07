@@ -72,7 +72,7 @@ async function createDB(name, type, permission){
   return headless.createDB(name, type, permission)
 }
 
-async function addData(data, channelName, address){
+async function addData(channelName){
   var messaging = await createDB(channelName, "log", "public")
   channel = await getLogDB(messaging)
   await channel.load()
