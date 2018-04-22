@@ -72,21 +72,24 @@ async function createDB(name, type, permission){
   return headless.createDB(name, type, permission)
 }
 
+/*
+Remove
+*/
 async function addData(data, channelName, address){
-  var messaging = await createDB(channelName, "log", "public")
-  channel = await getLogDB(messaging)
-  await channel.load()
+  //var messaging = await createDB(channelName, "log", "public")
+  //channel = await getLogDB(messaging)
+  //await channel.load()
 
-  var initialMessage = new Object();
-  initialMessage.step = 1;
-  initialMessage.address = address;
+  //var initialMessage = new Object();
+  //initialMessage.step = 1;
+  //initialMessage.address = address;
 
-  var initialJSON = JSON.stringify(initialMessage);
+  //var initialJSON = JSON.stringify(initialMessage);
 
-  var key = await channel.add(initialJSON)
+  //var key = await channel.add(initialJSON)
 
   //For testing
-  const date = channel.iterator({ limit: -1 }).collect().map((e) => e.payload.value)
+  //const date = channel.iterator({ limit: -1 }).collect().map((e) => e.payload.value)
 }
 
 // Used for keyvalue database
@@ -107,6 +110,7 @@ async function acceptBid(bid, address, callback){
   var messagingChannel = await createDB(bid.channel, "log", "public")
   channel = await getLogDB(messagingChannel)
   await channel.load()
+  close();
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
 
   var acceptMessage = new Object();
@@ -159,6 +163,11 @@ function checkForStep(step, callback) {
 }
 
 async function pushDigestInfo(contractInfo, func) {
+
+  var messaging = await createDB(contractInfo.channel, "log", "public"); //Additions
+  channel = await getLogDB(messaging);
+  await channel.load();
+  close();
 
   var jsonObj = new Object();
   jsonObj.step = 3;
