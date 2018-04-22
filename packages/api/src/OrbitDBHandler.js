@@ -136,18 +136,21 @@ function checkForStep(step, callback) {
   if(message != null && message != []){
     jsonObj = JSON.parse(message);
   } 
-  else return;
-  //the first step should terminate here, no one has accepted your bid yet
-  if(jsonObj.step == 1){
+  else {
     console.log("No one has accepted this bid yet");
-    close(); //Doing only this creates this error: MaxListenersExceededWarning: Possible EventEmitter memory leak detected
     return
   }
-  var index = require("./index.js")
+  //the first step should terminate here, no one has accepted your bid yet
+  // if(jsonObj.step == 1){
+  //   console.log("No one has accepted this bid yet");
+  //   close(); //Doing only this creates this error: MaxListenersExceededWarning: Possible EventEmitter memory leak detected
+  //   return
+  // }
+  // var index = require("./index.js")
 
-  if(!index.acceptedBids.includes(jsonObj.bid)){
-    index.acceptedBids.push(jsonObj.bid);
-  }
+  // if(!index.acceptedBids.includes(jsonObj.bid)){
+  //   index.acceptedBids.push(jsonObj.bid);
+  // }
   var timer = setInterval(function(){
     //after claim it sometimes turns up empty, TODO, fix that bug
     if(message != null && message !== []){
