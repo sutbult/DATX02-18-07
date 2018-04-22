@@ -118,6 +118,11 @@ async function getUserBids() {
     await ensureInitialized();
     return db.getUserBids(50)
 }
+var acceptedBidFlag = false;
+async function getAcceptedBids() {
+    await ensureInitialized();
+    return db.getAcceptedBids(50)
+}
 
 // Fetches the currencies which is available for the user to create bids with
 async function getCurrencies() {

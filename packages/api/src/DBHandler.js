@@ -1,11 +1,19 @@
 const orbitDB = require("./OrbitDBHandler.js")
 var globalDB
 var statusDB
+var localDB
 var messageHandler
 var key
 
 async function init(msgHandler){
   var messageHandler = msgHandler
+
+  // Address to a global keyvalue database containing status of the bids
+
+  var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
+  statusDB = await orbitDB.getKVDB(status)
+  await statusDB.load()
+  await orbitDB.close()
 
   // Address to the global database containing all bids
   var bids = await orbitDB.createDB("Bids", "log", "public")
@@ -33,7 +41,6 @@ async function init(msgHandler){
         cmd: "updateBids",
     });
   });
-
   statusDB.events.on('replicated', () => {
     messageHandler({
         cmd: "updateBids",
@@ -46,6 +53,13 @@ async function init(msgHandler){
     });
   });
 
+  localDB.events.on('write', () => {
+    messageHandler({
+        cmd: "updateBids",
+    });
+  })
+
+
 
 }
 
@@ -55,10 +69,9 @@ function getBids(amount){
     //var tempAmount = bids[i].from.amount
     //bids[i].from.amount = bids[i].to.amount
     //bids[i].to.amount = tempAmount
-    //|| bids[i].status == "PENDING" || bids[i].status == "FINISHED"
-  //   if(bids[i].key == key){
-  //     bids.splice(i,1);
-  //   }
+    if(bids[i].key == key || bids[i].status == "PENDING" || bids[i].status == "FINISHED"){
+  //    bids.splice(i,1);
+    }
   // }
   return bids
 }
@@ -91,18 +104,34 @@ async function addBid(bid){
 
 async function acceptBid(bidID) {
   await statusDB.put(bidID, "PENDING")
+  await localDB.put(bidID, "PENDING")
   //await orbitDB.acceptBid(bid);
 }
 
-async function changeBidStatus(bid, status){
-  bid.status = status
-  await orbitDB.addKVData(bid.id, bid, statusDB)
+/**
+* Change the status of a bid
+* @param bidID The id of the bid (bid.id)
+* @param status The new status of the bid ("ACTIVE", "PENDING", "FINISHED")
+*/
+
+async function changeBidStatus(bidID, status){
+  await statusDB.put(bidID, status)
 }
 
 function getUserBids(amount){
   var bids = getBid(amount, globalDB)
   for (var i = bids.length - 1; i >= 0; i--){
     if(bids[i].key != key){
+      bids.splice(i,1);
+    }
+  }
+  return bids
+}
+
+function getAcceptedBids(amount){
+  var bids = getBids(amount)
+  for (var i = bids.length - 1; i >= 0; i--){
+    if(localDB.get(bids[i].id) == undefined){
       bids.splice(i,1);
     }
   }
@@ -116,7 +145,7 @@ function getBid(amount, db){
     var bid = data[i].payload.value
     bid.id = data[i].hash
     bid.key = data[i].key
-  //  bid.status = statusDB.get(data[i].hash)
+    bid.status = statusDB.get(data[i].hash)
     bids.push(bid)
   }
   return bids
@@ -130,5 +159,6 @@ module.exports = {
   acceptBid,
   changeBidStatus,
   getUserBids,
+  getAcceptedBids,
   init
 }
