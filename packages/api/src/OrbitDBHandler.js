@@ -77,16 +77,16 @@ async function addData(data, channelName, address){
   channel = await getLogDB(messaging)
   await channel.load()
 
-  var initialMessage = new Object();
-  initialMessage.step = 1;
-  initialMessage.address = address;
+  // var initialMessage = new Object();
+  // initialMessage.step = 1;
+  // initialMessage.address = address;
 
-  var initialJSON = JSON.stringify(initialMessage);
+  // var initialJSON = JSON.stringify(initialMessage);
 
-  var key = await channel.add(initialJSON)
+  // var key = await channel.add(initialJSON)
 
   //For testing
-  const date = channel.iterator({ limit: -1 }).collect().map((e) => e.payload.value)
+  // const date = channel.iterator({ limit: -1 }).collect().map((e) => e.payload.value)
 }
 
 // Used for keyvalue database
@@ -110,14 +110,14 @@ async function acceptBid(bid, address, callback){
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
 
   var acceptMessage = new Object();
-  acceptMessage.step = 2;
+  acceptMessage.step = 1;
   acceptMessage.address = address;
   acceptMessage.bid = bid;
 
   var JSONObject = JSON.stringify(acceptMessage)
   var returnvalue = await channel.add(JSONObject);
 
-  checkForStep(3,callback);
+  checkForStep(2,callback);
 }
 
 async function bidAccepted(bid, callback){
@@ -126,13 +126,13 @@ async function bidAccepted(bid, callback){
   await channel.load()
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
 
-  checkForStep(2,callback);
+  checkForStep(1,callback);
 }
 
 //If correct step is found the information in the channel will be returned to the callback function
 function checkForStep(step, callback) {
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-  console.log(message);
+  // console.log(message);
   if(message != null && message != []){
     jsonObj = JSON.parse(message);
   } 
@@ -150,7 +150,7 @@ function checkForStep(step, callback) {
   }
   var timer = setInterval(function(){
     //after claim it sometimes turns up empty, TODO, fix that bug
-    if(message !== []){
+    if(message != null && message !== []){
       if(JSON.parse(message).step != step) {
         message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
       } else {
@@ -164,7 +164,7 @@ function checkForStep(step, callback) {
 async function pushDigestInfo(contractInfo, func) {
 
   var jsonObj = new Object();
-  jsonObj.step = 3;
+  jsonObj.step = 2;
   jsonObj.digest = contractInfo.digest;
   jsonObj.contractAddress = contractInfo.contractAddress;
   jsonObj.address = contractInfo.address;
@@ -172,7 +172,7 @@ async function pushDigestInfo(contractInfo, func) {
 
   var digestMessage = JSON.stringify(jsonObj)
   await channel.add(digestMessage);
-  checkForStep(4,func);
+  checkForStep(3,func);
 }
 
 async function pushContractInfo(contractInfo, message, callback) {
@@ -180,7 +180,7 @@ async function pushContractInfo(contractInfo, message, callback) {
   contractInfo.then(result => {
 
     var jsonMessage = message;
-    jsonMessage.step = 4; //recycling step 3 data, need to update some values
+    jsonMessage.step = 3; //recycling step 3 data, need to update some values
     jsonMessage.contractAddress = result.contractAddress;
     var contractMessage = JSON.stringify(jsonMessage)
 
