@@ -132,28 +132,17 @@ async function bidAccepted(bid, callback){
 //If correct step is found the information in the channel will be returned to the callback function
 function checkForStep(step, callback) {
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-  // console.log(message);
-  if(message != null && message != []){
+  try{
+    console.log(message);
     jsonObj = JSON.parse(message);
-  } 
-  else {
-    console.log("No one has accepted this bid yet");
+  } catch(e) {
+    console.log("No one has accepted this bid yet: " + e);
     return
   }
-  //the first step should terminate here, no one has accepted your bid yet
-  // if(jsonObj.step == 1){
-  //   console.log("No one has accepted this bid yet");
-  //   close(); //Doing only this creates this error: MaxListenersExceededWarning: Possible EventEmitter memory leak detected
-  //   return
-  // }
-  // var index = require("./index.js")
-
-  // if(!index.acceptedBids.includes(jsonObj.bid)){
-  //   index.acceptedBids.push(jsonObj.bid);
-  // }
   var timer = setInterval(function(){
     //after claim it sometimes turns up empty, TODO, fix that bug
-    if(message != null && message !== []){
+    if(message != null && message != []){
+      console.log(message);
       if(JSON.parse(message).step != step) {
         message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
       } else {
