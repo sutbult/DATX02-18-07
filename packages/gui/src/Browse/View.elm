@@ -1,18 +1,17 @@
 module Browse.View exposing (root)
 
 import Browse.Types exposing (..)
-
-import BidList.View as BidListView
-import Browse.Accept.View as AcceptView
+import Browse.Filter.Types exposing (getFilter)
+import Browse.Bids.View as BidsView
+import Browse.Filter.View as FilterView
+import Error.View as ErrorView
 
 import Html exposing (..)
 
 root : Model -> Html Msg
 root model =
     div []
-        [ Html.map mapBidListCmd
-            <| BidListView.root model.bidList
-
-        , Html.map mapAcceptCmd
-            <| AcceptView.root model.accept
+        [ Html.map Error (ErrorView.root (.error model))
+        , Html.map Filter (FilterView.root (.filter model))
+        , Html.map Bids (BidsView.root (.bids model) (Debug.log "Filter" <| getFilter <| .filter model))
         ]

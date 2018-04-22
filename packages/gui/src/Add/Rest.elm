@@ -10,15 +10,12 @@ import Bid.Types exposing
 import Bid.Rest exposing
     ( encodeBid
     )
-import Utils.Rest exposing
-    ( get
-    , post
-    )
+import Rest
 
 
 getCurrencies : Cmd Msg
 getCurrencies =
-    get
+    Rest.get
         "getCurrencies"
         decodeCurrencies
         SetCurrencies
@@ -27,7 +24,7 @@ getCurrencies =
 
 addBid : Bid -> Cmd Msg
 addBid bid =
-    post
+    Rest.post
         (encodeBid bid)
         "addBid"
         (Json.Decode.succeed ())

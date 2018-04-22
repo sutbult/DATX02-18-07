@@ -1,5 +1,6 @@
 module Bid.Rest exposing
     ( encodeBid
+    , encodeBidId
     , decodeBid
     , decodeValue
     )
@@ -27,6 +28,14 @@ encodeValue value =
     Json.Encode.object
         [ ("currency", Json.Encode.string value.currency)
         , ("amount", Json.Encode.string value.amount)
+        ]
+
+
+encodeBidId : Bid -> Int -> Json.Encode.Value
+encodeBidId bid sseID =
+    Json.Encode.object
+        [ ("id", Json.Encode.string bid.id)
+        , ("clientID", Json.Encode.int sseID)
         ]
 
 

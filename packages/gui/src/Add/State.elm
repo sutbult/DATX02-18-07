@@ -45,9 +45,11 @@ update msg model =
         SetToAmount value ->
             ({model | toAmount = value}, Cmd.none)
 
-        SubmitContinue ->
+        Submit ->
             if not model.submitting then
-                case getBid model of
+                -- TODO: Skriv ut fel tydligt vad som är fel
+                -- Gör #36 först
+                case Debug.log "Bid" <| getBid model of
                     Just bid ->
                         ({model | submitting = True}, addBid bid)
 
@@ -78,13 +80,6 @@ update msg model =
                 (subModel, subCmd) = Error.State.update subMsg model.error
             in
                 ({model | error = subModel}, Cmd.map ToError subCmd)
-
-        TriggerPassword _ _ _ _ ->
-            (model, Cmd.none)
-
-        Noop ->
-            (model, Cmd.none)
-
 
 
 firstOption : List String -> String

@@ -1,39 +1,45 @@
 module UserBids.State exposing (..)
 
-import Platform.Cmd
-
-import BidList.NotifiedState as BidListState
 import UserBids.Types exposing (..)
+import UserBids.Rest exposing (getUserBids)
+import Error.State
+import Ports
 
 
 init : (Model, Cmd Msg)
 init =
     let
-        (bidListModel, bidListCmd) = BidListState.init True "getUserBids"
+        (errorModel, errorCmd) = Error.State.init
     in
-        (   { bidList = bidListModel
+        (   { bids = []
+            , error = errorModel
             }
         , Cmd.batch
-            [ Platform.Cmd.map mapBidList bidListCmd
+            [ getUserBids
+            , Cmd.map ToError errorCmd
             ]
         )
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        ToBidList subMsg ->
-            let
-                (subModel, subCmd) = BidListState.update subMsg (.bidList model)
-            in
-                ({model | bidList = subModel}, Platform.Cmd.map mapBidList subCmd)
-
-        TriggerPassword _ _ _ _ ->
+        Noop ->
             (model, Cmd.none)
+
+        SetBids bids ->
+            ({model | bids = bids}, Cmd.none)
+
+        ToError subMsg ->
+            let
+                (subModel, subCmd) = Error.State.update subMsg model.error
+            in
+                ({model | error = subModel}, Cmd.map ToError subCmd)
+
+        UpdateBids ->
+            (model, getUserBids)
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Sub.map mapBidList
-            <| BidListState.subscriptions model.bidList
-        ]
+subscriptions _ =
+    Ports.updateBids <| (\_ -> UpdateBids)

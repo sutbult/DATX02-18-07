@@ -10,16 +10,14 @@ import Bid.Types exposing
     ( Value
     , AmountStatus(..)
     , amountStatus
-    , currencyName
     )
-
 
 root : Model -> Html Msg
 root model =
     div []
         [ Html.map ToError (Error.View.root (.error model))
         , form model
-        , submitButton model
+        , submit model
         ]
 
 
@@ -41,7 +39,6 @@ form model =
                 ]
             ]
 
-
 formBox : List (Html Msg) -> Html Msg
 formBox content =
     div [class "column is-two-fifths"]
@@ -49,14 +46,12 @@ formBox content =
             content
         ]
 
-
 arrowColumn : Html Msg
 arrowColumn =
     div [class "column is-one-fifths"]
         [ arrow "mobile" "right"
         , arrow "tablet" "down"
         ]
-
 
 arrow : String -> String -> Html Msg
 arrow hiddenOn arrowType =
@@ -86,17 +81,13 @@ currencySelector submitting options setter currentValue =
                 , fullWidth
                 , selected (currency == currentValue)
                 ]
-                [ text <| currencyName currency
+                [ text currency
                 ]
     in
         div [class "field"]
             [ div [class "control"]
                 [ div [class "select", fullWidth]
-                    [ select
-                        [ fullWidth
-                        , onInput setter
-                        , disabled submitting
-                        ]
+                    [ select [fullWidth, onInput setter]
                         <| List.map optionView options
                     ]
                 ]
@@ -108,7 +99,6 @@ amountField
     -> String
     -> String
     -> Html Msg
-
 amountField submitting setter currency currentValue =
     let
         (extraClass, info) =
@@ -142,28 +132,33 @@ amountField submitting setter currency currentValue =
             ]
 
 
-submitButton : Model -> Html Msg
-submitButton model =
+submit : Model -> Html Msg
+submit model =
     let
         classNameExtra =
             if model.submitting then
                 " is-loading"
             else
                 ""
-        (clickMsg, isDisabled) =
-            case getBid model of
-                Just bid ->
-                    (submit bid.from.currency bid.to.currency, model.submitting)
-
-                Nothing ->
-                    (Noop, True)
     in
         div [style [("text-align", "right")]]
             [ button
                 [ class <| "button is-link is-medium" ++ classNameExtra
-                , onClick clickMsg
-                , disabled isDisabled
+                , onClick Submit
+                , disabled
+                    <| not
+                    <| isJust
+                    <| getBid model
                 ]
                 [ text "Add bid"
                 ]
             ]
+
+isJust : Maybe a -> Bool
+isJust maybe =
+    case maybe of
+        Just _ ->
+            True
+
+        Nothing ->
+            False
