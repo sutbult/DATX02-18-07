@@ -7,7 +7,7 @@ import Wallet.Types exposing (..)
 import Error.View
 
 import Bid.Types exposing
-    ( baseUnit
+    ( currencyName
     , amountString
     )
 
@@ -39,7 +39,7 @@ accountView : Account -> Html Msg
 accountView account =
     tr []
         [ td []
-            [ text account.currency
+            [ text <| currencyName account.currency
             ]
         , td []
             [ text <| amountString account

@@ -8,9 +8,12 @@ const api = require("./index.js");
 // Endpoint handlers
 
 function respond(res, code, response) {
+    if(typeof response === "object") {
+        response = JSON.stringify(response);
+    }
     res.status(code);
     res.type("application/json");
-    res.send(JSON.stringify(response));
+    res.send(response);
     res.end();
 }
 const apiRouter = express.Router();
@@ -23,12 +26,10 @@ function createMethod(method) {
             }
             function onError(error) {
                 if(typeof error === "number") {
-                    respond(res, error, {});
+                    respond(res, error, "");
                 }
                 else {
-                    respond(res, 500, {
-                        error,
-                    });
+                    respond(res, 500, error.toString());
                 }
             }
             handler(req.body)
@@ -68,7 +69,12 @@ apiRouter.use((req, res, next) => {
 get("/getBids", api.getBids);
 get("/getWallet", api.getWallet);
 get("/getUserBids", api.getUserBids);
+get("/getAcceptedBids", api.getAcceptedBids);
 get("/getCurrencies", api.getCurrencies);
+
+get("/settings", api.getSettings);
+post("/settings", api.setSettings);
+post("/passwords", api.setPasswords);
 
 
 // Post endpoints
@@ -79,11 +85,18 @@ post("/acceptBid", async body => {
         throw 400;
     }
     else {
-        api.acceptBid(body.id)
+        api.acceptBid(body.id, body.seed)
             .then(() => {
                 sendSSE(body.clientID, {
                     cmd: "acceptBidResponse",
                     status: "ok",
+                });
+            })
+            .catch(error => {
+                sendSSE(body.clientID, {
+                    cmd: "acceptBidResponse",
+                    status: "error",
+                    error,
                 });
             });
     }

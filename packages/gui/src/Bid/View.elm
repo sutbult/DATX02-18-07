@@ -11,6 +11,7 @@ import Bid.Types exposing
     , Value
     , Status
     , amountString
+    , currencyName
     )
 
 
@@ -24,7 +25,9 @@ withStatus showStatus value =
 
 bidList : Bool -> (Bid -> msg) -> List Bid -> Html msg
 bidList showStatus onClick bids =
-    table [class "table is-fullwidth is-hoverable is-striped"]
+    table
+        [ class "table is-fullwidth is-hoverable is-striped"
+        ]
         [ head showStatus
         , tbody []
             <| List.map (bidView showStatus onClick) bids
@@ -35,10 +38,10 @@ head : Bool -> Html msg
 head showStatus =
     thead []
         [ tr [] <|
-            [ th [] [text "From"]
-            , th [] []
-            , th [] [text "To"]
-            , th [] []
+            [ th [style [("width", "30%")]] [text "From"]
+            , th [style [("width", "20%")]] []
+            , th [style [("width", "30%")]] [text "To"]
+            , th [style [("width", "20%")]] []
             ] ++ (withStatus showStatus <| th [] [text "Status"])
         , tr [] <|
             [ th [] [text "Currency"]
@@ -68,8 +71,12 @@ bidView showStatus onClick bid =
 
 valueView : Value -> List (Html msg)
 valueView value =
-    [ td [] <| [ text value.currency]
-    , td [] <| [ text <| amountString value]
+    [ td []
+        [ text <| currencyName value.currency
+        ]
+    , td []
+        [ text <| amountString value
+        ]
     ]
 
 
