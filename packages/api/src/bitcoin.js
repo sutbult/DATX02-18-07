@@ -6,6 +6,13 @@ var bip65 = require('bip65')
 var RpcClient = require('bitcoind-rpc');
 
 
+async function main() {
+  BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16592');
+  var sellerECPair = bitcoinjs.ECPair.fromWIF('cNiKyruX5QiVhywUXPjbL6VZf5s8yrfsmzFXef5pRnpP5EoHaEhQ', bitcoinjs.networks.testnet);
+  var htlc = await createHTLC("1", sellerECPair.getPublicKeyBuffer(), 10, bitcoinjs.networks.testnet);
+  console.log(htlc);
+}
+
 var rpc;
 // let htlcTransactionObject = {};
 var htlcTransactionObject = new Object();
@@ -54,7 +61,6 @@ function getBalance() {
     }
     rpc.getBalance((err, ret) => {
       if (err) {
-        console.log(err);
         reject(err);
         //result.error = err;
       } else {
@@ -67,8 +73,8 @@ function getBalance() {
     });
   });
 }
-BitcoinClient('bitcoinrpc', 'password', '127.0.0.2', '16592');
 
+main();
 
 async function getPrivateKey() {
   return new Promise((resolve, reject) => {
@@ -95,15 +101,6 @@ async function getPrivateKey() {
 // var alice = bitcoinjs.ECPair.fromWIF('cRuoxDPY2ku1LjANJJMBUjqWYejYnF5MwmzbWsAs7i1uoVSqCmzH', bitcoinjs.networks.testnet);
 // console.log(alice.getPublicKeyBuffer());
 
-
-function setHTLCTrans(key, value) {
-  if (htlcTransactionObject == undefined) {
-    htlcTransactionObject = {}
-  }
-  console.log("Setting htlc trans");
-  htlcTransactionObject.key = value;
-  console.log(JSON.stringify(htlcTransactionObject));
-}
 
 function sendToHTLC(address, btc) {
   return new Promise((resolve, reject) => {
@@ -163,6 +160,14 @@ async function generateTimeout(timeoutBlocks) {
 // htlcTransactionObject global object?
 // function for uploading and sending to htlc calls function above and htlcTransactionObject
 
+
+// TODO: Make sure that selPubKeyBuf is one of the seller's actual keys or have it saved in a file?
+async function verifyHTLC(digest, selPubKeyBuf, buyPubKeyBuf, timeoutBlocks, network, compareAddress) {
+  // generate htlcAddress and make sure it matches htlcAddress
+  var address = htlcAddress(digest, selPubKeyBuf, buyPubKeyBuf, timeoutBlocks, network);
+  return address === compareAddress;
+}
+
 async function createHTLC(secret, selPubKeyBuf, timeoutBlocks, network) {
   // get private key ECPair and call htlcAddress
   var result = {};
@@ -176,13 +181,6 @@ async function createHTLC(secret, selPubKeyBuf, timeoutBlocks, network) {
   result.buyerPublicKeyBuffer = buyPubKeyBuf;
   result.address = address;
   return result;
-}
-
-// TODO: Make sure that selPubKeyBuf is one of the seller's actual keys or have it saved in a file?
-async function verifyHTLC(digest, selPubKeyBuf, buyPubKeyBuf, timeoutBlocks, network, compareAddress) {
-  // generate htlcAddress and make sure it matches htlcAddress
-  var address = htlcAddress(digest, selPubKeyBuf, buyPubKeyBuf, timeoutBlocks, network);
-  return address === compareAddress;
 }
 
 async function htlcAddress(digest, selPubKeyBuf,  buyPubKeyBuf, timeoutBlocks, network) {
@@ -213,9 +211,6 @@ async function htlcAddress(digest, selPubKeyBuf,  buyPubKeyBuf, timeoutBlocks, n
   // return result;
 }
 
-function toDigest(secret){
-  return bcrypto.sha256(secret);
-}
 
 function htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
   return bitcoinjs.script.compile //CHECKSQUENCEVERIFY REFUSES TO WORK
@@ -241,7 +236,7 @@ function htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
   ]);
 };
 
-function redeemAsSeller(sellerECPair, network, htlcTransId, timeout, destination, btc) {
+async function redeemAsSeller(sellerECPair, network, htlcTransId, timeout, destination, btc) {
   var signatureHash = tx.hashForSignature(0, htlcTransObj.redeemScript, htlcTransObj.hashType);
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
     sellerECPair.sign(signatureHash).toScriptSignature(hashType),
@@ -261,14 +256,17 @@ function redeemAsSeller(sellerECPair, network, htlcTransId, timeout, destination
   });
 }
 
+function toDigest(secret){
+  return bcrypto.sha256(secret);
+}
 //
-function redeemAsBuyer(buyerECPair, secret, htlcTransId, network, timeout, destination, btc) {
+async function redeemAsBuyer(buyerECPair, secret, htlcTransId, network, timeout, destination, btc) {
   var signatureHash = tx.hashForSignature(0, htlcTransObj.redeemScript, htlcTransObj.hashType);
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
     buyerECPair.sign(signatureHash).toScriptSignature(hashType),
     buyerECPair.getPublicKeyBuffer(),
     // Buffer.from("1"), //This is the secret
-    Buffer.from(secret);
+    Buffer.from(secret),
     bitcoinjs.opcodes.OP_TRUE
   ], redeemScript)
   var redeemTransaction = await buildReedemTransaction(htlcTransId, network, timeout,
