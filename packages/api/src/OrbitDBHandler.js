@@ -132,7 +132,10 @@ async function bidAccepted(bid, callback){
 //If correct step is found the information in the channel will be returned to the callback function
 function checkForStep(step, callback) {
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-  if(message != null) jsonObj = JSON.parse(message);
+  console.log(message);
+  if(message != null && message != []){
+    jsonObj = JSON.parse(message);
+  } 
   else return;
   //the first step should terminate here, no one has accepted your bid yet
   if(jsonObj.step == 1){
