@@ -110,7 +110,6 @@ async function acceptBid(bid, address, callback){
   var messagingChannel = await createDB(bid.channel, "log", "public")
   channel = await getLogDB(messagingChannel)
   await channel.load()
-  close();
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
 
   var acceptMessage = new Object();
@@ -200,18 +199,15 @@ async function pushContractInfo(contractInfo, message, callback) {
 
 async function getLogDB(address){
   var db = await orbitdb.log(address)
+  headless.close()
     return db
 
 }
 
 async function getKVDB(address){
   var db = await orbitdb.keyvalue(address)
-  return db
-}
-
-
-async function close(){
   headless.close()
+  return db
 }
 
 async function getData(amount, db){
@@ -245,6 +241,5 @@ module.exports = {
   getKVData,
   getLogDB,
   getKVDB,
-  changeStatus,
-  close
+  changeStatus
 }
