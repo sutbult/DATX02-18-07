@@ -36,8 +36,7 @@ let container = document.getElementById("container");
 let app = Elm.Main.embed(container);
 
 // SSE
-var es = new EventSource("http://localhost:51337/sse");
-es.onmessage = event => {
+function onSSEmessage(event) {
     var msg = JSON.parse(event.data);
     switch(msg.cmd) {
         case "ack":
@@ -52,6 +51,10 @@ es.onmessage = event => {
             app.ports.updateBids.send(null);
             break;
     }
+}
+function setupSSE() {
+    var es = new EventSource("http://localhost:51337/sse");
+    es.onmessage = onSSEmessage;
 }
 
 // Mouse movements
@@ -70,5 +73,6 @@ app.ports.notify.subscribe((content) => {
 });
 
 startAPI().then(() => {
+    setupSSE();
     app.ports.apiStarted.send(null);
 });

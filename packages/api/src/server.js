@@ -143,6 +143,6 @@ app.use("/api", apiRouter);
 
 const server = http.createServer(app);
 server.listen(51337, "localhost", () => {
-    console.log("Daemon is now running");
 	setupSSE();
+    console.log("Daemon is now running");
 });
