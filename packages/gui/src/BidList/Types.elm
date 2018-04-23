@@ -13,6 +13,7 @@ type alias Model =
     , filter : FilterTypes.Model
     , error : Error.Types.Model
     , bidPath : String
+    , initialized : Bool
     }
 
 

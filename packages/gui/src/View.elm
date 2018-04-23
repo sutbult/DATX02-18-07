@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 
 import Types exposing (..)
+import Navigation.Types
 import Navigation.View
 import Password.View
 
@@ -21,8 +22,12 @@ navigation : Model -> Html Msg
 navigation model =
     case model.navigation of
         Just navigation ->
-            Html.map mapNavigationCmd <|
-                Navigation.View.root navigation
+            if navigationInitialized navigation then
+                Html.map mapNavigationCmd <|
+                    Navigation.View.root navigation
+
+            else
+                loading "Fetching initial data"
 
         Nothing ->
             loading "Starting blockchain API server"
@@ -38,3 +43,12 @@ loading status =
             [ text status
             ]
         ]
+
+navigationInitialized : Navigation.Types.Model -> Bool
+navigationInitialized navigation = True
+    && navigation.models.add.initialized
+    && navigation.models.browse.bidList.initialized
+    && navigation.models.userBids.bidList.initialized
+    && navigation.models.acceptedBids.bidList.initialized
+    && navigation.models.wallet.initialized
+    && not navigation.models.settings.loading

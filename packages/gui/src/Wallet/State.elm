@@ -16,6 +16,7 @@ init =
     in
         (   { accounts = []
             , error = errorModel
+            , initialized = False
             }
         , Cmd.batch
             [ getWallet
@@ -28,13 +29,23 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         SetAccounts accounts ->
-            ({model | accounts = accounts}, Cmd.none)
+            let
+                newModel = {model
+                    | accounts = accounts
+                    , initialized = True
+                    }
+            in
+                (newModel, Cmd.none)
 
         ToError subMsg ->
             let
                 (subModel, subCmd) = Error.State.update subMsg model.error
+                newModel = {model
+                    | error = subModel
+                    , initialized = True
+                    }
             in
-                ({model | error = subModel}, Cmd.map ToError subCmd)
+                (newModel, Cmd.map ToError subCmd)
 
 
 subscriptions : Model -> Sub Msg
