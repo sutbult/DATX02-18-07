@@ -72,7 +72,11 @@ app.ports.notify.subscribe((content) => {
     });
 });
 
-startAPI().then(() => {
-    setupSSE();
-    app.ports.apiStarted.send(null);
-});
+startAPI()
+    .then(() => {
+        setupSSE();
+        app.ports.apiStarted.send(null);
+    })
+    .catch(error => {
+        console.error("The API server could not be started");
+    });

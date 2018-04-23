@@ -6,7 +6,7 @@
     "scripts": {
         "postinstall": "lerna bootstrap --npm-client=yarn",
         "test": "lerna run test --stream",
-        "debug": "lerna run elm:installBuild --stream && lerna run start --parallel"
+        "debug": "lerna run elm:build --stream && lerna run start --parallel"
     },
     "devDependencies": {
         "lerna": "^2.9.0",
