@@ -25,6 +25,16 @@ navigation model =
                 Navigation.View.root navigation
 
         Nothing ->
-            p []
-                [ text "Loading"
-                ]
+            loading "Starting blockchain API server"
+
+
+loading : String -> Html Msg
+loading status =
+    div []
+        [ p
+            [ class "subtitle"
+            , style [("text-align", "center")]
+            ]
+            [ text status
+            ]
+        ]
