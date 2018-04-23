@@ -14,21 +14,20 @@ import Utils.State exposing
 import Utils.Maybe exposing
     ( isJust
     )
+import Ports
 
 
 init : (Model, Cmd Msg)
 init =
     let
-        (navModel, navCmd) = Navigation.State.init
         (passwordModel, passwordCmd) = Password.State.init
         model =
-            { navigation = navModel
+            { navigation = Nothing
             , password = passwordModel
             }
     in
         (model, Cmd.batch
-            [ Platform.Cmd.map mapNavigationCmd navCmd
-            , Platform.Cmd.map mapPasswordCmd passwordCmd
+            [ Platform.Cmd.map mapPasswordCmd passwordCmd
             ]
         )
 
@@ -36,11 +35,28 @@ init =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        ToNavigation subMsg ->
+        ApiStarted ->
             let
-                (subModel, subCmd) = Navigation.State.update subMsg (.navigation model)
+                (navigationModel, navigationCmd) = Navigation.State.init
+                newModel = { model
+                    | navigation = Just navigationModel
+                    }
             in
-                ({model | navigation = subModel}, Platform.Cmd.map mapNavigationCmd subCmd)
+                ( newModel
+                , Platform.Cmd.map mapNavigationCmd navigationCmd
+                )
+
+        ToNavigation subMsg ->
+            with model model.navigation <| \navigation ->
+                let
+                    (subModel, subCmd) = Navigation.State.update subMsg navigation
+                    newModel = {model
+                        | navigation = Just subModel
+                        }
+                in
+                    ( newModel
+                    , Platform.Cmd.map mapNavigationCmd subCmd
+                    )
 
         ToPassword subMsg ->
             let
@@ -96,6 +112,16 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Sub.map mapNavigationCmd <| Navigation.State.subscriptions model.navigation
+        [ navigationSubscriptions model
         , Sub.map mapPasswordCmd <| Password.State.subscriptions model.password
         ]
+
+navigationSubscriptions : Model -> Sub Msg
+navigationSubscriptions model =
+    case model.navigation of
+        Just navigation ->
+            Sub.map mapNavigationCmd
+                <| Navigation.State.subscriptions navigation
+
+        Nothing ->
+            Ports.apiStarted (\() -> ApiStarted)

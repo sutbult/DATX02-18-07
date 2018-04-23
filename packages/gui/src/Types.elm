@@ -4,7 +4,7 @@ import Navigation.Types
 import Password.Types
 
 type alias Model =
-    { navigation : Navigation.Types.Model
+    { navigation : Maybe Navigation.Types.Model
     , password : Password.Types.Model
     }
 
@@ -18,6 +18,7 @@ type Msg
         (Maybe Navigation.Types.Msg)
         (Maybe Navigation.Types.Msg)
         Navigation.Types.Msg
+    | ApiStarted
 
 
 mapPasswordCmd : Password.Types.Msg -> Msg

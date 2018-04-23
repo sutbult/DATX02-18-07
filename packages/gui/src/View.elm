@@ -11,10 +11,20 @@ root : Model -> Html Msg
 root model =
     section [class "section"]
         [ div [class "container is-fullhd"]
-            [ Html.map mapNavigationCmd <|
-                Navigation.View.root model.navigation
-
+            [ navigation model
             , Html.map mapPasswordCmd <|
                 Password.View.root model.password
             ]
         ]
+
+navigation : Model -> Html Msg
+navigation model =
+    case model.navigation of
+        Just navigation ->
+            Html.map mapNavigationCmd <|
+                Navigation.View.root navigation
+
+        Nothing ->
+            p []
+                [ text "Loading"
+                ]

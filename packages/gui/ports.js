@@ -1,5 +1,36 @@
 "use strict"
 const Elm = require("./elm.js");
+const child_process = require("child_process");
+
+function startAPI() {
+    return new Promise((resolve, reject) => {
+        const api = child_process.spawn("node", ["src/server.js"], {
+            cwd: "../api",
+        });
+        function kill() {
+            api.kill();
+        }
+        api.stdout.on("data", data => {
+            const msg = data.toString("utf-8");
+            if(msg.startsWith("Daemon is now running")) {
+                resolve();
+            }
+            else {
+                console.log("API: %s", msg);
+            }
+        });
+        api.stderr.on("data", data => {
+            const msg = data.toString("utf-8");
+            console.error("API: %s", msg);
+            reject(msg);
+        });
+        api.on("close", code => {
+            console.log("API exited with code %s", code);
+        });
+        process.on("exit", kill);
+        window.addEventListener("beforeunload", kill);
+    });
+}
 
 let container = document.getElementById("container");
 let app = Elm.Main.embed(container);
@@ -36,4 +67,8 @@ app.ports.notify.subscribe((content) => {
     new Notification(title, {
         body,
     });
-})
+});
+
+startAPI().then(() => {
+    app.ports.apiStarted.send(null);
+});
