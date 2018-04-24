@@ -14,12 +14,11 @@ async function main() {
   var buyerECPair = bitcoinjs.ECPair.fromWIF('cURBHxPBAKuUUE6hp5DBPASNid4cKAD2RwAuCZnTmDEDMGe2nazx', bitcoinjs.networks.testnet);
   var htlc = await createHTLC("1", buyerECPair.getPublicKeyBuffer(), 10, bitcoinjs.networks.testnet);
   // var ok = await htlcAddress(htlc.digest, sellerECPair.getPublicKeyBuffer(), htlc.buyerPublicKeyBuffer, 10, bitcoinjs.networks.testnet);
-  console.log(htlc);
   //buyer verifies contract and sends funds to it
   BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16593');
   var balance = await getBalance();
   console.log(balance);
-  // var ok = await verifyHTLC(htlc.digest, htlc.sellerPublicKeyBuffer, buyerECPair.getPublicKeyBuffer(), 10, bitcoinjs.networks.testnet, htlc.address);
+  var ok = await verifyHTLC(htlc.digest, htlc.sellerPublicKeyBuffer, buyerECPair.getPublicKeyBuffer(), 10, bitcoinjs.networks.testnet, htlc.address);
   if (ok) {
     var txid = await sendToHTLC(htlc.address, 0.1)
     var balance = await getBalance();
@@ -34,19 +33,22 @@ async function main() {
     console.log(generate);
     var address = await getAddress();
     console.log(address);
-    var redeem = await redeemAsSeller(htlc.sellerECPair, "1", txid, bitcoinjs.networks.testnet, result.timeout, address, 0.09999)
-    console.log(redeem);
+    setTimeout(async function() {
+      var redeem = await redeemAsSeller(htlc.sellerECPair, "1", txid, bitcoinjs.networks.testnet, result.timeout, address, 9990000, htlc.htlc.redeemScript);
+      console.log(redeem);
+    }, 3000);
+
   }
 }
 async function functionName() {
   BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16592');
-  var block = await generateBlock();
+  var block = await voutFromTransaction('0af1cbc7f9c8a7e7794b82956eb011f05981ec94b31c8c366829abbe788c41ae');
   console.log(block);
-
 }
-// functionName();
 var rpc;
+// functionName();
 main();
+
 // let htlcTransactionObject = {};
 var htlcTransactionObject = new Object();
 
@@ -126,6 +128,26 @@ function generateBlock() {
         reject(err);
       }
       resolve(ret.result);
+    });
+  });
+}
+
+async function voutFromTransaction(transId) {
+  return new Promise((resolve, reject) => {
+    rpc.getRawTransaction(transId, (err, ret) => {
+      if (err) {
+        console.log("error happened!");
+        reject(err);
+      }
+      console.log(ret);
+      var rawTransaction = ret.result;
+      rpc.decodeRawTransaction(rawTransaction, (err1, ret1) => {
+        if (err1) {
+          reject(err1);
+        }
+        var vout = ret1.result.vout[0].n;
+        resolve(vout);
+      });
     });
   });
 }
@@ -304,18 +326,18 @@ function htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
   ]);
 };
 
-async function redeemAsBuyer(buyerECPair, network, htlcTransId, timeout, destination, btc) {
+async function redeemAsBuyer(buyerECPair, network, htlcTransId, timeout, destination, btc, redeemScript) {
   var tx = await buildReedemTransaction(htlcTransId, network, timeout,
     destination, btc);
-  var signatureHash = tx.hashForSignature(0, htlcTransObj.redeemScript, htlcTransObj.hashType);
+  var signatureHash = tx.hashForSignature(0, redeemScript, bitcoinjs.Transaction.SIGHASH_ALL);
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
-    buyerECPair.sign(signatureHash).toScriptSignature(hashType),
+    buyerECPair.sign(signatureHash).toScriptSignature(bitcoinjs.Transaction.SIGHASH_ALL),
     buyerECPair.getPublicKeyBuffer(),
     bitcoinjs.opcodes.OP_FALSE
   ], redeemScript);
   tx.setInputScript(0, redeemScriptSig);
   return new Promise(function(resolve, reject) {
-    rpc.sendRawTransaction(redeemTransaction, (err, ret) => {
+    rpc.sendRawTransaction(tx, (err, ret) => {
       if (err) {
         reject(err);
       }
@@ -325,51 +347,47 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, timeout, destina
 }
 
 //
-async function redeemAsSeller(sellerECPair, secret, htlcTransId, network, timeout, destination, btc) {
+async function redeemAsSeller(sellerECPair, secret, htlcTransId, network, timeout, destination, btc, redeemScript) {
   console.log("Inside redeemAsSeller");
   var tx = await buildReedemTransaction(htlcTransId, network, timeout,
     destination, btc);
   console.log(tx);
-  var signatureHash = tx.hashForSignature(0, htlcTransObj.redeemScript, htlcTransObj.hashType);
+  var signatureHash = tx.hashForSignature(0, redeemScript, bitcoinjs.Transaction.SIGHASH_ALL);
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
-    sellerECPair.sign(signatureHash).toScriptSignature(hashType),
+    sellerECPair.sign(signatureHash).toScriptSignature(bitcoinjs.Transaction.SIGHASH_ALL),
     sellerECPair.getPublicKeyBuffer(),
     // Buffer.from("1"), //This is the secret
     Buffer.from(secret),
     bitcoinjs.opcodes.OP_TRUE
   ], redeemScript);
   tx.setInputScript(0, redeemScriptSig);
+  console.log("tx");
+  console.log(tx.toHex());
   return new Promise(function(resolve, reject) {
-    rpc.sendRawTransaction(redeemTransaction, (err, ret) => {
+    rpc.sendRawTransaction(tx.toHex(), (err, ret) => {
       if (err) {
+        console.log(err);
         reject(err);
       }
+      console.log(ret);
       resolve(ret.result);
     });
   });
 }
 
-function buildReedemTransaction(htlcTransId, network, timeout, destination, btc) {
+async function buildReedemTransaction(htlcTransId, network, timeout, destination, btc) {
   console.log(htlcTransId);
-  return new Promise(function(resolve, reject) {
-    rpc.getTransaction(htlcTransId, (err, ret) => {
-      if (err) {
-        console.log("error happened!");
-        reject(err);
-      }
-      var txb = new bitcoinjs.TransactionBuilder(network);
-      txb.setLockTime(timeout);
-      console.log(ret);
-      var vout = ret.result.details[0].vout;
-      txb.addInput(htlcTransId, vout, 0xfffffffe);
-      txb.addOutput(destination, btc);
-
-      var tx = txb.buildIncomplete();
-      resolve(tx);
-
-    });
+  return new Promise(async function(resolve, reject) {
+    var vout = await voutFromTransaction(htlcTransId);
+    var txb = new bitcoinjs.TransactionBuilder(network);
+    txb.setLockTime(0);
+    txb.addInput(htlcTransId, vout, 0xfffffffe);
+    txb.addOutput(destination, btc);
+    var tx = txb.buildIncomplete();
+    console.log(tx);
+    resolve(tx);
   });
-
+}
   // // var txb = new bitcoinjs.TransactionBuilder(bitcoinjs.networks.testnet);
   //
   // // txb.setLockTime(timeout) //Transaction needs to have the appropriate locktime
@@ -395,9 +413,6 @@ function buildReedemTransaction(htlcTransId, network, timeout, destination, btc)
   //
   // console.log(bitcoinjs.script.decompile(redeemScript));
   // console.log(bcrypto.hash160(alice.getPublicKeyBuffer()).toString('hex'));
-
-}
-
 
 
 module.exports = {htlcTransactionObject/*htlc, toDigest, alice, bob, tx, redeemScript*/};
