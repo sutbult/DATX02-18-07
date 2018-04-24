@@ -4,7 +4,7 @@ const child_process = require("child_process");
 
 function startAPI() {
     return new Promise((resolve, reject) => {
-        const api = child_process.spawn("node", ["src/server.js"], {
+        const api = child_process.spawn("./node_modules/node/bin/node", ["src/server.js"], {
             cwd: "../api",
         });
         function kill() {
