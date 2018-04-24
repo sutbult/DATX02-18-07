@@ -11,7 +11,8 @@
         ]
     },
     "scripts": {
-        "build": "node_modules/.bin/electron-builder build",
+        "build": "node_modules/.bin/electron-builder build --dir",
+        "distribute": "node_modules/.bin/electron-builder build",
         "postinstall": "lerna bootstrap --npm-client=yarn",
         "test": "lerna run test --stream",
         "debug": "lerna run elm:build --stream && lerna run start --parallel"
