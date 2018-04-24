@@ -1,11 +1,14 @@
 'use strict'
 const electron = require('electron');
-const chokidar = require('chokidar');
 
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
 let mainWindow;
+
+function isDev() {
+    return process.mainModule.filename.indexOf('app.asar') === -1;
+}
 
 // Temporär fix
 //app.on('ready', createWindow);
@@ -13,17 +16,20 @@ app.on('ready', () => {
     setTimeout(createWindow, 1000);
 });
 
-const WATCH = [
-    'ports.js',
-    'index.html',
-    'elm.js',
-];
+function setupChokidar() {
+    const chokidar = require('chokidar');
 
-chokidar.watch(WATCH).on('change', () => {
-    if(mainWindow) {
-        mainWindow.reload();
-    }
-});
+    const WATCH = [
+        'ports.js',
+        'index.html',
+        'elm.js',
+    ];
+    chokidar.watch(WATCH).on('change', () => {
+        if(mainWindow) {
+            mainWindow.reload();
+        }
+    });
+}
 function createWindow () {
     mainWindow = new BrowserWindow({
         width: 1024,
@@ -35,6 +41,9 @@ function createWindow () {
     mainWindow.on('closed', function () {
         mainWindow = null;
     });
+    mainWindow.custom = {
+        development: isDev(),
+    };
 }
 app.on('window-all-closed', () => {
     if(process.platform !== 'darwin') {
@@ -46,3 +55,6 @@ app.on('activate', () => {
         createWindow()
     }
 });
+if(isDev()) {
+    setupChokidar();
+}
