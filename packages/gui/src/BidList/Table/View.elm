@@ -27,7 +27,25 @@ root model filter =
             error "Selected filter doesn't match any bids"
 
         else
-            bidList model.showStatus Click bids
+            div []
+                [ bidList model.showStatus Click bids
+                , pagination 1 1
+                , pagination 1 2
+                , pagination 1 3
+                , pagination 2 3
+                , pagination 3 3
+                , pagination 1 4
+                , pagination 1 100
+                , pagination 2 100
+                , pagination 3 100
+                , pagination 4 100
+                , pagination 45 100
+                , pagination 96 100
+                , pagination 97 100
+                , pagination 98 100
+                , pagination 99 100
+                , pagination 100 100
+                ]
 
 
 -- Error
@@ -52,3 +70,117 @@ filterBid : Filter -> Bid -> Bool
 filterBid filter bid =
     List.member (.currency <| .from bid) (.from filter) &&
     List.member (.currency <| .to bid) (.to filter)
+
+
+-- Pagination
+
+ariaLabel : String -> Html.Attribute Msg
+ariaLabel = attribute "aria-label"
+
+
+role : String -> Html.Attribute Msg
+role = attribute "role"
+
+
+pagination : Int -> Int -> Html Msg
+pagination current last =
+    nav
+        [ class "pagination is-centered"
+        , role "navigation"
+        , ariaLabel "pagination"
+        ]
+        [ a
+            [ class "pagination-previous"
+            , disabled <| current == 1
+            ]
+            [ text "Previous page"
+            ]
+        , a
+            [ class "pagination-next"
+            , disabled <| current == last
+            ]
+            [ text "Next page"
+            ]
+        , ul [class "pagination-list"]
+            [ paginationList current last
+            ]
+        ]
+
+paginationList : Int -> Int -> Html Msg
+paginationList current last =
+    let
+        toEntry maybePage =
+            case maybePage of
+                Just page ->
+                    paginationLink page <| page == current
+
+                Nothing ->
+                    paginationEllipsis
+    in
+        li []
+            <| List.map toEntry
+            <| paginationEntries current last
+
+
+paginationLink : Int -> Bool -> Html Msg
+paginationLink page isCurrent =
+    let
+        extraClass =
+            if isCurrent then
+                " is-current"
+            else
+                ""
+    in
+        a
+            [ class <| "pagination-link" ++ extraClass
+            , ariaLabel <| "Go to page " ++ toString page
+            ]
+            [ text <| toString page
+            ]
+
+paginationEllipsis : Html Msg
+paginationEllipsis =
+    span [class "pagination-ellipsis"]
+        [text "\x2026"
+        ]
+
+
+paginationEntries : Int -> Int -> List (Maybe Int)
+paginationEntries current last =
+    List.concat
+        -- First entry
+        [ itemIf True
+            <| Just 1
+
+        -- First ellipsis
+        , itemIf (current >= 4)
+            <| Nothing
+
+        -- Page before
+        , itemIf (current >= 3)
+            <| Just <| current - 1
+
+        -- Current page
+        , itemIf (current >= 2 && current <= last - 1)
+            <| Just current
+
+        -- Page after
+        , itemIf (current <= last - 2)
+            <| Just <| current + 1
+
+        -- Second ellipsis
+        , itemIf (current <= last - 3)
+            <| Nothing
+
+        -- Last entry
+        , itemIf (last > 1)
+            <| Just last
+        ]
+
+
+itemIf : Bool -> a -> List a
+itemIf condition value =
+    if condition then
+        [value]
+    else
+        []
