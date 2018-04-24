@@ -37,7 +37,9 @@ function createWindow () {
     });
     electron.Menu.setApplicationMenu(null);
     mainWindow.loadURL(`file://${ __dirname }/index.html`);
-    mainWindow.webContents.openDevTools();
+    if(isDev()) {
+        mainWindow.webContents.openDevTools();
+    }
     mainWindow.on('closed', function () {
         mainWindow = null;
     });
