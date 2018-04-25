@@ -14,6 +14,9 @@ import BidList.Table.Types exposing (..)
 import Bid.View exposing
     ( bidList
     )
+import Utils.List exposing
+    ( takeWhilePlusOne
+    )
 
 
 root : Model -> Html Msg
@@ -31,7 +34,7 @@ root model =
 
         else
             div []
-                [ bidsPerPageSelector model.bidsPerPage
+                [ bidsPerPageSelector model.bidsPerPage <| List.length bids
                 , bidList model.showStatus Click shownBids
                 , pagination model.page pageCount
                 ]
@@ -63,8 +66,8 @@ filterBid filter bid =
 
 -- Pagination
 
-bidsPerPageSelector : Int -> Html Msg
-bidsPerPageSelector currentValue =
+bidsPerPageSelector : Int -> Int -> Html Msg
+bidsPerPageSelector currentValue bidCount =
     let
         optionView count =
             option
@@ -87,14 +90,14 @@ bidsPerPageSelector currentValue =
                     [ onInput inputToMsg
                     ]
                     <| List.map optionView
-                        [ 20
-                        , 50
-                        , 100
-                        , 250
-                        , 500
-                        ]
+                    <| filteredBidsPerPageOptions bidCount
                 ]
             ]
+
+
+filteredBidsPerPageOptions : Int -> List Int
+filteredBidsPerPageOptions count =
+    takeWhilePlusOne (\o -> o < count) bidsPerPageOptions
 
 
 divUp : Int -> Int -> Int

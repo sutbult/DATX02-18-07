@@ -22,3 +22,17 @@ type Msg
     | SetPage Int
     | SetBidsPerPage Int
     | Noop
+
+
+bidsPerPageDefaultOption : Int
+bidsPerPageDefaultOption = 20
+
+
+bidsPerPageOptions : List Int
+bidsPerPageOptions =
+    [ bidsPerPageDefaultOption
+    , 50
+    , 100
+    , 250
+    , 500
+    ]

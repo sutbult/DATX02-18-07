@@ -1,6 +1,7 @@
 module Utils.List exposing
     ( nub
     , singletonWhen
+    , takeWhilePlusOne
     )
 
 
@@ -23,3 +24,17 @@ singletonWhen cond value =
         [value]
     else
         []
+
+
+takeWhilePlusOne : (a -> Bool) -> List a -> List a
+takeWhilePlusOne cond list =
+    case list of
+        [] ->
+            []
+
+        (x :: rest) ->
+            if cond x then
+                x :: takeWhilePlusOne cond rest
+
+            else
+                [x]
