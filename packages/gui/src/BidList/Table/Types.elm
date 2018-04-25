@@ -11,9 +11,11 @@ type alias Model =
     { bids : List Bid
     , showStatus : Bool
     , filter : Filter
+    , page : Int
     }
 
 type Msg
     = SetBids (List Bid)
     | Click Bid
     | SetFilter Filter
+    | SetPage Int

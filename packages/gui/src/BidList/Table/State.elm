@@ -10,6 +10,7 @@ init showStatus =
             { from = []
             , to = []
             }
+        , page = 1
         }
     , Cmd.none
     )
@@ -25,7 +26,16 @@ update msg model =
             (model, Cmd.none)
 
         SetFilter filter ->
-            ({model | filter = filter}, Cmd.none)
+            let
+                newModel = {model
+                    | filter = filter
+                    , page = 1
+                    }
+            in
+                (newModel, Cmd.none)
+
+        SetPage page ->
+            ({model | page = page}, Cmd.none)
 
 
 subscriptions : Model -> Sub Msg

@@ -1,6 +1,7 @@
 module BidList.Table.View exposing (root)
 
 import Html exposing (..)
+import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 
 import Bid.Types exposing
@@ -29,6 +30,8 @@ root model =
         else
             div []
                 [ bidList model.showStatus Click bids
+                , pagination model.page 100
+                {-
                 , pagination 1 1
                 , pagination 1 2
                 , pagination 1 3
@@ -45,6 +48,7 @@ root model =
                 , pagination 98 100
                 , pagination 99 100
                 , pagination 100 100
+                -}
                 ]
 
 
@@ -92,12 +96,14 @@ pagination current last =
         [ paginationDirectionLink
             "pagination-previous"
             "Previous page"
-            <| current == 1
+            (current == 1)
+            (current - 1)
 
         , paginationDirectionLink
             "pagination-next"
             "Next page"
-            <| current == last
+            (current == last)
+            (current + 1)
 
         , ul [class "pagination-list"]
             [ paginationList current last
@@ -105,13 +111,14 @@ pagination current last =
         ]
 
 
-paginationDirectionLink : String -> String -> Bool -> Html Msg
-paginationDirectionLink className title isDisabled =
+paginationDirectionLink : String -> String -> Bool -> Int -> Html Msg
+paginationDirectionLink className title isDisabled page =
     let
         attributes =
             [ class className
             ]
             ++ (itemIf isDisabled <| attribute "disabled" "")
+            ++ (itemIf (not isDisabled) <| onClick <| SetPage page)
     in
         a
             attributes
@@ -147,6 +154,7 @@ paginationLink page isCurrent =
         a
             [ class <| "pagination-link" ++ extraClass
             , ariaLabel <| "Go to page " ++ toString page
+            , onClick <| SetPage page
             ]
             [ text <| toString page
             ]
