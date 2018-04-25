@@ -31,7 +31,8 @@ root model =
 
         else
             div []
-                [ bidList model.showStatus Click
+                [ bidsPerPageSelector
+                , bidList model.showStatus Click
                     <| pageBids model.page bidsPerPage bids
                 , pagination model.page pageCount
                 {-
@@ -80,6 +81,30 @@ filterBid filter bid =
 
 
 -- Pagination
+
+bidsPerPageSelector : Html Msg
+bidsPerPageSelector =
+    let
+        optionView count =
+            option
+                [ value <| toString count
+                ]
+                [ text <| toString count ++ " bids shown"
+                ]
+    in
+        div [class "field is-grouped is-grouped-right"]
+            [ div [class "select"]
+                [ select []
+                    <| List.map optionView
+                        [ 20
+                        , 50
+                        , 100
+                        , 250
+                        , 500
+                        ]
+                ]
+            ]
+
 
 divUp : Int -> Int -> Int
 divUp numerator denominator =
