@@ -65,7 +65,7 @@ function getBids(amount){
 
 async function addBid(bid){
 
-  var channelName = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) //randomly generated String https://gist.github.com/6174/6062387
+  //var channelName = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) //randomly generated String https://gist.github.com/6174/6062387
 
   //var bidStringify = JSON.stringify(bid);
   //var bidParsed = JSON.parse(bidStringify)
@@ -80,7 +80,7 @@ async function addBid(bid){
   // Add bid to local database
 //  await statusDB.put(id, "ACTIVE");
 
-  await orbitDB.addData("test", bid.channel, "PLACEHOLDER") //Placeholder replace with function to get address
+  //await orbitDB.addData("test", bid.channel, "PLACEHOLDER") //Placeholder replace with function to get address
   orbitDB.close()
 
 }
