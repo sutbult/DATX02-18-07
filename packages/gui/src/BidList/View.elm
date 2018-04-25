@@ -3,6 +3,7 @@ module BidList.View exposing
     )
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 
 import BidList.Filter.Types exposing
     ( getFilter
@@ -16,10 +17,25 @@ import Error.View as ErrorView
 
 root : Model -> Html Msg
 root model =
+    if model.loading then
+        loading
+    else
+        div []
+            [ Html.map ToError (ErrorView.root (.error model))
+            , Html.map ToFilter (FilterView.root (.filter model))
+            , Html.map mapTableCmd
+                <| TableView.root model.table
+                <| getFilter model.filter
+            ]
+
+
+loading : Html Msg
+loading =
     div []
-        [ Html.map ToError (ErrorView.root (.error model))
-        , Html.map ToFilter (FilterView.root (.filter model))
-        , Html.map mapTableCmd
-            <| TableView.root model.table
-            <| getFilter model.filter
+        [ p
+            [ class "subtitle"
+            , style [("text-align", "center")]
+            ]
+            [ text "Loading bids"
+            ]
         ]
