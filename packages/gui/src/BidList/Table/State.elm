@@ -6,6 +6,10 @@ init : Bool -> (Model, Cmd Msg)
 init showStatus =
     (   { bids = []
         , showStatus = showStatus
+        , filter =
+            { from = []
+            , to = []
+            }
         }
     , Cmd.none
     )
@@ -19,6 +23,9 @@ update msg model =
 
         Click _ ->
             (model, Cmd.none)
+
+        SetFilter filter ->
+            ({model | filter = filter}, Cmd.none)
 
 
 subscriptions : Model -> Sub Msg

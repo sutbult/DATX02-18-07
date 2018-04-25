@@ -15,10 +15,10 @@ import Bid.View exposing
     )
 
 
-root : Model -> Filter -> Html Msg
-root model filter =
+root : Model -> Html Msg
+root model =
     let
-        bids = filteredBids model filter
+        bids = filteredBids model model.filter
     in
         if List.isEmpty model.bids then
             error "There is no bids to display"
