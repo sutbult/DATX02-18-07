@@ -9,8 +9,10 @@ async function createDB(){
     config: {
       Addresses: {
         Swarm: [
-      //    '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
-          '/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star'
+        //  '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
+        // '/dnsaddr/ws-star-signal-1.servep2p.com/tcp/443/wss/p2p-websocket-star',
+         '/dnsaddr/ws-star-signal-2.servep2p.com/tcp/443/wss/p2p-websocket-star',
+         '/dnsaddr/ws-star-signal-3.servep2p.com/tcp/443/wss/p2p-websocket-star',
         ]
       }
     },

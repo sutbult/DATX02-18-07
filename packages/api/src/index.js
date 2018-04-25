@@ -30,7 +30,6 @@ async function addBid(bid) {
     console.log("Is this thing on");
     bid.status = "ACTIVE"
     bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-
     await db.addBid(bid);
 }
 
