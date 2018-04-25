@@ -20,6 +20,8 @@ root : Model -> Html Msg
 root model =
     let
         bids = filteredBids model model.filter
+        bidsPerPage = 20
+        pageCount = divUp (List.length bids) bidsPerPage
     in
         if List.isEmpty model.bids then
             error "There is no bids to display"
@@ -29,8 +31,9 @@ root model =
 
         else
             div []
-                [ bidList model.showStatus Click bids
-                , pagination model.page 100
+                [ bidList model.showStatus Click
+                    <| pageBids model.page bidsPerPage bids
+                , pagination model.page pageCount
                 {-
                 , pagination 1 1
                 , pagination 1 2
@@ -77,6 +80,18 @@ filterBid filter bid =
 
 
 -- Pagination
+
+divUp : Int -> Int -> Int
+divUp numerator denominator =
+    (numerator // denominator) +
+    (if rem numerator denominator == 0 then 0 else 1)
+
+
+pageBids : Int -> Int -> List Bid -> List Bid
+pageBids page bidsPerPage = identity
+    << List.take bidsPerPage
+    << List.drop ((page - 1) * bidsPerPage)
+
 
 ariaLabel : String -> Html.Attribute Msg
 ariaLabel = attribute "aria-label"
