@@ -11,6 +11,7 @@ init showStatus =
             , to = []
             }
         , page = 1
+        , bidsPerPage = 20
         }
     , Cmd.none
     )
@@ -36,6 +37,18 @@ update msg model =
 
         SetPage page ->
             ({model | page = page}, Cmd.none)
+
+        SetBidsPerPage bidsPerPage ->
+            let
+                newModel = {model
+                    | bidsPerPage = bidsPerPage
+                    , page = 1
+                    }
+            in
+                (newModel, Cmd.none)
+
+        Noop ->
+            (model, Cmd.none)
 
 
 subscriptions : Model -> Sub Msg

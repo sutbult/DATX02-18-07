@@ -20,8 +20,8 @@ root : Model -> Html Msg
 root model =
     let
         bids = filteredBids model model.filter
-        bidsPerPage = 20
-        pageCount = divUp (List.length bids) bidsPerPage
+        pageCount = divUp (List.length bids) model.bidsPerPage
+        shownBids = pageBids model.page model.bidsPerPage bids
     in
         if List.isEmpty model.bids then
             error "There is no bids to display"
@@ -31,28 +31,9 @@ root model =
 
         else
             div []
-                [ bidsPerPageSelector
-                , bidList model.showStatus Click
-                    <| pageBids model.page bidsPerPage bids
+                [ bidsPerPageSelector model.bidsPerPage
+                , bidList model.showStatus Click shownBids
                 , pagination model.page pageCount
-                {-
-                , pagination 1 1
-                , pagination 1 2
-                , pagination 1 3
-                , pagination 2 3
-                , pagination 3 3
-                , pagination 1 4
-                , pagination 1 100
-                , pagination 2 100
-                , pagination 3 100
-                , pagination 4 100
-                , pagination 45 100
-                , pagination 96 100
-                , pagination 97 100
-                , pagination 98 100
-                , pagination 99 100
-                , pagination 100 100
-                -}
                 ]
 
 
@@ -82,19 +63,29 @@ filterBid filter bid =
 
 -- Pagination
 
-bidsPerPageSelector : Html Msg
-bidsPerPageSelector =
+bidsPerPageSelector : Int -> Html Msg
+bidsPerPageSelector currentValue =
     let
         optionView count =
             option
                 [ value <| toString count
+                , selected <| currentValue == count
                 ]
                 [ text <| toString count ++ " bids shown"
                 ]
+        inputToMsg value =
+            case String.toInt value of
+                Ok bidsPerPage ->
+                    SetBidsPerPage bidsPerPage
+
+                Err _ ->
+                    Noop
     in
         div [class "field is-grouped is-grouped-right"]
             [ div [class "select"]
-                [ select []
+                [ select
+                    [ onInput inputToMsg
+                    ]
                     <| List.map optionView
                         [ 20
                         , 50

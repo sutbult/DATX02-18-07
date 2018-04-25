@@ -12,6 +12,7 @@ type alias Model =
     , showStatus : Bool
     , filter : Filter
     , page : Int
+    , bidsPerPage : Int
     }
 
 type Msg
@@ -19,3 +20,5 @@ type Msg
     | Click Bid
     | SetFilter Filter
     | SetPage Int
+    | SetBidsPerPage Int
+    | Noop
