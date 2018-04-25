@@ -103,27 +103,30 @@ role = attribute "role"
 
 pagination : Int -> Int -> Html Msg
 pagination current last =
-    nav
-        [ class "pagination is-centered"
-        , role "navigation"
-        , ariaLabel "pagination"
-        ]
-        [ paginationDirectionLink
-            "pagination-previous"
-            "Previous page"
-            (current == 1)
-            (current - 1)
-
-        , paginationDirectionLink
-            "pagination-next"
-            "Next page"
-            (current == last)
-            (current + 1)
-
-        , ul [class "pagination-list"]
-            [ paginationList current last
+    if last > 1 then
+        nav
+            [ class "pagination is-centered"
+            , role "navigation"
+            , ariaLabel "pagination"
             ]
-        ]
+            [ paginationDirectionLink
+                "pagination-previous"
+                "Previous page"
+                (current == 1)
+                (current - 1)
+
+            , paginationDirectionLink
+                "pagination-next"
+                "Next page"
+                (current == last)
+                (current + 1)
+
+            , ul [class "pagination-list"]
+                [ paginationList current last
+                ]
+            ]
+    else
+        div [] []
 
 
 paginationDirectionLink : String -> String -> Bool -> Int -> Html Msg
