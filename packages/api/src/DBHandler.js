@@ -27,17 +27,6 @@ async function init(msgHandler){
   await localDB.load()
 
   //Add Listeners
-  globalDB.events.on('replicated', () => {
-    messageHandler({
-        cmd: "updateBids",
-    });
-  });
-
-  globalDB.events.on('write', () => {
-    messageHandler({
-        cmd: "updateBids",
-    });
-  });
   statusDB.events.on('replicated', () => {
     messageHandler({
         cmd: "updateBids",

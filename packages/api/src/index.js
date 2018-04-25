@@ -10,7 +10,7 @@ async function init() {
     await messengerPromise;
     const dbPromise = db.init(messageHandler);
     await dbPromise;
-    
+
     /**check in a set interval if anyone accepted your bid
      * @todo clearInterval once all bids are accepted: https://nodejs.org/en/docs/guides/timers-in-node/
      */
@@ -37,7 +37,7 @@ async function addBid(bid) {
 async function checkAccBid(){
     // console.log("CHECK IF ANY BID IS ACCEPTED");
     /**Not sure how the limit in this function works, but need all userBids, soo
-    *@todo someone with knowledge fix this 
+    *@todo someone with knowledge fix this
     */
     var bids = await db.getUserBids(1000000000000000);
     // console.log("*********Lets see ******");
@@ -49,30 +49,6 @@ async function checkAccBid(){
         //This is to stop multiple deploys
         if(bid.status == "ACTIVE" && db.getBidStatus(bid.id) == "ACTIVE") messenger.bidAccepted(bid,trader.whenBidAccepted);
     });
-}
-
-
-// Temporär
-function BidFactory() {
-    var idCounter = 1;
-    function Bid(fromCurrency, fromAmount, toCurrency, toAmount, status) {
-        if(!status) {
-            status = "ACTIVE";
-        }
-        return {
-            id: "VeryRandomID" + idCounter++,
-            status: status,
-            from: {
-                currency: fromCurrency,
-                amount: fromAmount,
-            },
-            to: {
-                currency: toCurrency,
-                amount: toAmount,
-            }
-        }
-    }
-    return Bid;
 }
 
 // Fetches all available bids from the decentralized database
@@ -103,7 +79,7 @@ async function getWallet() {
     var returnArr = [];
     try{
         var eth = require("./ethereum.js");
-        if(eth.web3 != undefined){ 
+        if(eth.web3 != undefined){
             var address = eth.web3.eth.getAccounts()
             .then(accs => {
                 eth.web3.eth.getBalance(accs[2])
@@ -112,7 +88,7 @@ async function getWallet() {
                 });
             });
         }
-        
+
     } catch(e){
         console.log("Error in index.getWallet(): " + e);
     }
@@ -127,7 +103,6 @@ async function getUserBids() {
     await ensureInitialized();
     return db.getUserBids(50)
 }
-var acceptedBidFlag = false;
 async function getAcceptedBids() {
     await ensureInitialized();
     return db.getAcceptedBids(50)
