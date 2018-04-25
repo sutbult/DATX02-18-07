@@ -51,14 +51,14 @@ async function init(msgHandler){
 
 function getBids(amount){
   var bids = getBid(amount, globalDB)
-  // for (var i = bids.length - 1; i >= 0; i--){
-    //var tempAmount = bids[i].from.amount
-    //bids[i].from.amount = bids[i].to.amount
-    //bids[i].to.amount = tempAmount
-    // if(bids[i].key == key || bids[i].status == "PENDING" || bids[i].status == "FINISHED"){
-  //    bids.splice(i,1);
-    // }
-  // }
+   for (var i = bids.length - 1; i >= 0; i--){
+     var temp = bids[i].from
+     bids[i].from = bids[i].to
+     bids[i].to = temp
+     if(/*bids[i].key == key ||*/ bids[i].status == "PENDING" || bids[i].status == "FINISHED"){
+      bids.splice(i,1);
+     }
+   }
   return bids
 }
 

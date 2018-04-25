@@ -1,6 +1,9 @@
 const Ipfs = require('ipfs')
 const OrbitDB = require('orbit-db')
 const headless = require("./Headless.js")
+const wrtc = require('wrtc') 
+const WStar = require('libp2p-webrtc-star')
+const wstar = new WStar({ wrtc: wrtc })
 
 async function init() {
     const orbitDBPromise = initOrbitDB();
@@ -30,14 +33,19 @@ function initOrbitDB() {
             repo: "ipfs/shared",
             config: {
                 Addresses: {
-                    Swarm: [
-          //            '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
-          // '/dnsaddr/ws-star-signal-1.servep2p.com/tcp/443/wss/p2p-websocket-star',
-           '/dnsaddr/ws-star-signal-2.servep2p.com/tcp/443/wss/p2p-websocket-star',
-           '/dnsaddr/ws-star-signal-3.servep2p.com/tcp/443/wss/p2p-websocket-star',
-                    ],
-                },
-            },
+                  Swarm: [
+      "/ip4/0.0.0.0/tcp/4002",
+      "/ip4/127.0.0.1/tcp/4003/ws",
+      "/dns4/wrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star"
+    ]
+  }
+},
+libp2p: {
+  modules: {
+    transport: [wstar],
+    discovery: [wstar.discovery]
+  }
+},
             EXPERIMENTAL: {
                 // OrbitDB requires pubsub
                 pubsub: true,
