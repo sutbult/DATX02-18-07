@@ -89,22 +89,35 @@ pagination current last =
         , role "navigation"
         , ariaLabel "pagination"
         ]
-        [ a
-            [ class "pagination-previous"
-            , disabled <| current == 1
-            ]
-            [ text "Previous page"
-            ]
-        , a
-            [ class "pagination-next"
-            , disabled <| current == last
-            ]
-            [ text "Next page"
-            ]
+        [ paginationDirectionLink
+            "pagination-previous"
+            "Previous page"
+            <| current == 1
+
+        , paginationDirectionLink
+            "pagination-next"
+            "Next page"
+            <| current == last
+
         , ul [class "pagination-list"]
             [ paginationList current last
             ]
         ]
+
+
+paginationDirectionLink : String -> String -> Bool -> Html Msg
+paginationDirectionLink className title isDisabled =
+    let
+        attributes =
+            [ class className
+            ]
+            ++ (itemIf isDisabled <| attribute "disabled" "")
+    in
+        a
+            attributes
+            [ text title
+            ]
+
 
 paginationList : Int -> Int -> Html Msg
 paginationList current last =
