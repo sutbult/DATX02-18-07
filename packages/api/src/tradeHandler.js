@@ -18,7 +18,7 @@ function whenBidAccepted(msg){
     // console.log("****LETS SEE WHAT WE HAVE HERE %s and the whole thing %o", message.bid.status, message);
     if(message.bid.status == "ACTIVE"){
         switch(fromCurrency){
-            case "Ethereum":
+            case "ETH":
                 console.log("From Ethereum");
                 //Make sure only one contract is deployed, this does that by changing status to pending
                 db.acceptBid(message.bid.id);
@@ -29,7 +29,7 @@ function whenBidAccepted(msg){
                     });
                 }); 
                 break;
-            case "Ethereum classic":
+            case "ETC":
                 console.log("From Ethereum classic");
                 jsonObj = require("./tradeETC.js").firstContract(message, function(promise){
                     promise.then(result => {
@@ -54,7 +54,7 @@ async function acceptBid(bidID){
     var address;
     var fromCurrency = bid.from.currency;
     switch(fromCurrency){
-        case "Ethereum":
+        case "ETH":
             console.log("From Ethereum");
             
             require("./tradeETH.js").getAddress()
@@ -62,7 +62,7 @@ async function acceptBid(bidID){
                 messenger.acceptBid(bid, accs[2], secondContract);
             });
             break;
-        case "Ethereum classic":
+        case "ETC":
             console.log("From Ethereum classic");
             
             require("./tradeETC.js").getAddress()
@@ -85,12 +85,12 @@ function secondContract(msg){
 
     var toCurrency = message.bid.to.currency;
     switch(toCurrency){
-        case "Ethereum":
+        case "ETH":
             console.log("To Ethereum");
             var eth = require("./tradeETH.js");
             eth.secondContract(message, messenger.pushContractInfo,unlockWithSecret);
             break;
-        case "Ethereum classic":
+        case "ETC":
             console.log("To Ethereum classic");
             //jsonObj = require("./tradeEtc.js").secondReceiver(bid);
             break;
@@ -109,11 +109,11 @@ function unlockWithSecret(msg){
     message.secret = secret;
     var toCurrency = message.bid.to.currency;
     switch(toCurrency){
-        case "Ethereum":
+        case "ETH":
             console.log("To Ethereum");
             require("./tradeETH.js").claim(message);
             break;
-        case "Ethereum classic":
+        case "ETC":
             console.log("To Ethereum classic");
             //require("./tradeEtc.js").firstReceiver(bid, message);
             break;
