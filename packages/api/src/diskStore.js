@@ -3,9 +3,12 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-const STORE_PATH = path.join(
+const STORE_PATH_DIR = path.join(
     os.homedir(),
-    ".DATX02-18-07",
+    ".DATX02-18-07"
+);
+const STORE_PATH = path.join(
+    STORE_PATH_DIR,
     "api_store.json"
 );
 
@@ -26,7 +29,7 @@ function loadStoreString() {
 }
 function saveStoreString(storeString) {
     return new Promise((resolve, reject) => {
-        fs.writeFile(STORE_PATH, storeString, "utf8", (error) => {
+        fs.writeFile(STORE_PATH, storeString, "utf8", error => {
             if(error) {
                 reject(error);
             }
@@ -34,6 +37,18 @@ function saveStoreString(storeString) {
                 resolve();
             }
         })
+    });
+}
+function ensureFolder() {
+    return new Promise((resolve, reject) => {
+        fs.mkdir(STORE_PATH_DIR, error => {
+            if(error && error.code !== "EEXIST") {
+                reject(error);
+            }
+            else {
+                resolve();
+            }
+        });
     });
 }
 async function loadStore() {
@@ -49,6 +64,7 @@ async function getStoreRaw() {
     }
     catch(error) {
         if(error.code === "ENOENT") {
+            await ensureFolder();
             saveStore({});
             return getStore();
         }
@@ -93,15 +109,8 @@ async function set(key, value) {
     await saveStore(store);
 }
 
-async function test() {
-    await set("foo", "bar");
-    await set("bar", 5);
-    console.log(await get("foo"));
-    console.log(await get("bar"));
-}
-test();
-
 module.exports = {
     get,
     set,
+    clearCache,
 };
