@@ -3,6 +3,14 @@ const db = require("./DBHandler.js");
 const messenger = require("./OrbitDBHandler")
 const runOnce = require("./runOnce.js");
 const trader = require("./tradeHandler.js");
+const diskStore = require("./diskStore.js");
+
+// Describes every currency that is available to the user
+const availableCurrencies = [
+    "BTC",
+    "ETH",
+    "ETC",
+];
 
 async function init() {
     // messageHandler kommer att vara tillgänglig här
@@ -111,40 +119,38 @@ async function getAcceptedBids() {
 async function getCurrencies() {
     await ensureInitialized();
     // TODO: Implementera på riktigt
-    return [
-        "BTC",
-        "ETH",
-        "ETC",
-    ];
+    return availableCurrencies;
 }
-
-var settings = {
-    blockchainPathList: [
-        {
-            currency: "BTC",
-            value: "/home/harambe/bitcoin",
-        },
-        {
-            currency: "ETH",
-            value: "/home/harambe/ethereum",
-        },
-        {
-            currency: "ETC",
-            value: "/home/harambe/ethereumClassic",
-        },
-    ],
-};
-
 async function getSettings() {
     await ensureInitialized();
-    // TODO: Implementera på riktigt
-    return settings
+
+    var blockchainPathList = [];
+    for(var i in availableCurrencies) {
+        const currency = availableCurrencies[i];
+        const value = (await diskStore.get("blockchainPath" + currency)) || "";
+
+        blockchainPathList.push({
+            currency,
+            value,
+        });
+    }
+    return {
+        blockchainPathList,
+    }
 }
 async function setSettings(newSettings) {
     await ensureInitialized();
-    // TODO: Implementera på riktigt
-    settings = newSettings;
-    console.log("Saved these settings: %s", JSON.stringify(settings, null, 4));
+
+    for(var i in newSettings.blockchainPathList) {
+        const element = newSettings.blockchainPathList[i];
+        const currency = element.currency;
+        const value = element.value;
+
+        // Only available currencies will be stored
+        if(availableCurrencies.indexOf(currency) != -1) {
+            await diskStore.set("blockchainPath" + currency, value);
+        }
+    }
 }
 async function setPasswords(passwords) {
     await ensureInitialized();
