@@ -68,7 +68,7 @@ async function getBid2(bidID){
 
 async function addBid(bid){
 
-  var channelName = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) //randomly generated String https://gist.github.com/6174/6062387
+  //var channelName = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) //randomly generated String https://gist.github.com/6174/6062387
 
   //var bidStringify = JSON.stringify(bid);
   //var bidParsed = JSON.parse(bidStringify)

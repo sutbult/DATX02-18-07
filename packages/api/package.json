@@ -1,12 +1,11 @@
 {
     "name": "api",
-    "scripts": {
-        "start": "node src/server.js"
-    },
+    "scripts": {},
     "dependencies": {
         "child_process": "^1.0.2",
         "express": "^4.16.2",
         "ipfs": "0.28.2",
+        "node": "^9.11.0",
         "npm": "^5.8.0",
         "orbit-db": "0.19.7",
         "simple-headless-chrome": "4.3.10",
