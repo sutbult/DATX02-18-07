@@ -112,8 +112,6 @@ describe("disk store", () => {
         return run('{"testSet":"valueSet"}', async () => {
             await diskStore.set("testSet", "valueSet");
             return await loadTestStore();
-            //await saveTestStore('{"test": "value"}');
-            //return await diskStore.get("test");
         });
     });
     it("can get a value that has been set without cache", () => {
