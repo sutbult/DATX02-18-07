@@ -15,10 +15,11 @@ root : Model -> Html Msg
 root model =
     let
         elements = filterElements model
+        noCurrencies = Dict.isEmpty model.elements
     in
         div [class "column"]
             [ title <| .title model
-            , queryField model.query elements
+            , queryField model.query elements noCurrencies
             , elementTable elements
             ]
 
@@ -27,8 +28,12 @@ title : String -> Html Msg
 title label = h6 [class "title is-5"] (List.singleton (text label))
 
 
-queryField : String -> List (String, Bool) -> Html Msg
-queryField query elements =
+queryField
+    :  String
+    -> List (String, Bool)
+    -> Bool
+    -> Html Msg
+queryField query elements noCurrencies =
     let
         empty = List.isEmpty elements
     in
@@ -52,13 +57,20 @@ queryField query elements =
                     ]
                 ]
             ,
-                if empty then
-                    p [class "help is-danger"]
-                        [ text "The query doesn't match any currency"
-                        ]
+                if noCurrencies then
+                    queryFieldError "There is no currencies to filter"
+                else if empty then
+                    queryFieldError "The query doesn't match any currency"
                 else
                     text ""
             ]
+
+
+queryFieldError : String -> Html Msg
+queryFieldError message =
+    p [class "help is-danger"]
+        [ text message
+        ]
 
 
 elementTable : List (String, Bool) -> Html Msg

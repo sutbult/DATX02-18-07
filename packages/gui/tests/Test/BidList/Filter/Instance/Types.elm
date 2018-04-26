@@ -1,19 +1,20 @@
-module Test.BidList.Filter.Types exposing (suite)
+module Test.BidList.Filter.Instance.Types exposing (suite)
 
 import Test exposing (..)
 import Expect
 import Dict
 
-import BidList.Filter.Types exposing (..)
+import BidList.Filter.Instance.Types exposing (..)
 
 suite =
-    describe "BidList.Filter.Types" <|
+    describe "BidList.Filter.Instance.Types" <|
         [ describe "getFilter"
             [ test "Correctly filters currencies" <|
                 \() ->
                     let
                         model =
-                            { from =
+                            { name = "Test name"
+                            , from =
                                 { title = "From"
                                 , query = ""
                                 , elements =
