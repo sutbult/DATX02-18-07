@@ -13,7 +13,8 @@ suite =
                 \() ->
                     let
                         model =
-                            { from =
+                            { name = "Test name"
+                            , from =
                                 { title = "From"
                                 , query = ""
                                 , elements =
