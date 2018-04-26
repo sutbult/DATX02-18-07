@@ -22,12 +22,10 @@ async function whenBidAccepted(msg){
                 console.log("From Ethereum");
                 //Make sure only one contract is deployed, this does that by changing status to pending
                 db.acceptBid(message.bid.id);
-                require("./tradeETH.js").firstContract(message, function(promise){
-                    promise.then(result => {
-                        result.bid = message.bid;
-                        messenger.pushDigestInfo(result, unlockWithSecret);
-                    });
-                }); 
+                result = await require("./tradeETH.js").firstContract(message);
+                console.log("¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤result¤¤¤ " + result);
+                result.bid = message.bid;
+                messenger.pushDigestInfo(result, unlockWithSecret);
                 break;
             case "ETC":
                 console.log("From Ethereum classic");
