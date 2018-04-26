@@ -2,17 +2,13 @@ module UserBids.View exposing (root)
 
 import Html exposing (..)
 
-import Bid.View exposing (bidList)
 import UserBids.Types exposing (..)
-import Error.View
+import BidList.View as BidListView
+
 
 root : Model -> Html Msg
 root model =
     div []
-        [ Html.map ToError (Error.View.root model.error)
-        , bidList True (const Noop) model.bids
+        [ Html.map mapBidList
+            <| BidListView.root model.bidList
         ]
-
-
-const : v -> a -> v
-const v _ = v
