@@ -6,11 +6,13 @@ import Json.Decode
 import Bid.Rest exposing
     ( decodeValue
     )
-import Rest
+import Utils.Rest exposing
+    ( get
+    )
 
 getWallet : Cmd Msg
 getWallet =
-    Rest.get
+    get
         "getWallet"
         decodeAccounts
         SetAccounts

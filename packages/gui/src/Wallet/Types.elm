@@ -8,6 +8,7 @@ type alias Account = Value
 type alias Model =
     { accounts : List Account
     , error : Error.Types.Model
+    , initialized : Bool
     }
 
 type Msg

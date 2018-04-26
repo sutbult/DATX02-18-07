@@ -58,7 +58,7 @@ async function getBids() {
 }
 
 // Accepts a bid and starts the swapping process
-async function acceptBid(bidID, callback) {
+async function acceptBid(bidID, seed) {
     await ensureInitialized();
     // db.acceptBid(bidID);
     trader.acceptBid(bidID);
@@ -110,14 +110,62 @@ async function getAcceptedBids() {
 // Fetches the currencies which is available for the user to create bids with
 async function getCurrencies() {
     await ensureInitialized();
+    // TODO: Implementera på riktigt
     return [
-        "Bitcoin",
-        "Ethereum",
-        "Bitcoin cash",
-        "Ethereum classic",
-        "Monero",
-        "Dogecoin"
+        "BTC",
+        "ETH",
+        "ETC",
     ];
+}
+
+var settings = {
+    blockchainPathList: [
+        {
+            currency: "BTC",
+            value: "/home/harambe/bitcoin",
+        },
+        {
+            currency: "ETH",
+            value: "/home/harambe/ethereum",
+        },
+        {
+            currency: "ETC",
+            value: "/home/harambe/ethereumClassic",
+        },
+    ],
+};
+
+async function getSettings() {
+    await ensureInitialized();
+    // TODO: Implementera på riktigt
+    return settings
+}
+async function setSettings(newSettings) {
+    await ensureInitialized();
+    // TODO: Implementera på riktigt
+    settings = newSettings;
+    console.log("Saved these settings: %s", JSON.stringify(settings, null, 4));
+}
+async function setPasswords(passwords) {
+    await ensureInitialized();
+    // TODO: Implementera på riktigt
+    console.log("User posted these passwords: %s", JSON.stringify(passwords, null, 4));
+
+    var result = [];
+    for(var i in passwords) {
+        result.push({
+            currency: passwords[i].currency,
+            success: passwords[i].password === "",
+        });
+    }
+    return result;
+}
+
+// Temporär. Finns av testningsskäl.
+function delay(seconds) {
+    return new Promise(resolve => {
+        setTimeout(resolve, seconds * 1000);
+    });
 }
 
 module.exports = {
@@ -126,6 +174,10 @@ module.exports = {
     acceptBid,
     getWallet,
     getUserBids,
+    getAcceptedBids,
     getCurrencies,
+    getSettings,
+    setSettings,
+    setPasswords,
     setMessageHandler,
 };

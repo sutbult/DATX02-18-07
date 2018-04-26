@@ -7,3 +7,4 @@
 **/orbitdb
 **/lerna-debug.log
 **/.coverage
+**/dist
