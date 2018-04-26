@@ -14,6 +14,7 @@ type alias Model =
     , error : Error.Types.Model
     , bidPath : String
     , initialized : Bool
+    , loading : Bool
     }
 
 

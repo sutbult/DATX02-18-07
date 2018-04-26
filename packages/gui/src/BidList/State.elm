@@ -16,7 +16,6 @@ import BidList.Types exposing (..)
 import BidList.Rest exposing (getBids)
 import BidList.Table.Types as TableTypes
 import BidList.Filter.Types as FilterTypes
-import BidList.Filter.Part.Types as FilterPartTypes
 
 import BidList.Table.State as TableState
 import BidList.Filter.State as FilterState
@@ -38,6 +37,7 @@ init showStatus bidPath =
             , error = errorModel
             , bidPath = bidPath
             , initialized = False
+            , loading = True
             }
         , Cmd.batch
             [ Platform.Cmd.map mapTableCmd tableCmd
@@ -76,25 +76,35 @@ update msg model =
                 newModel = {model
                     | error = subModel
                     , initialized = True
+                    , loading = False
                     }
             in
                 (newModel, Platform.Cmd.map ToError subCmd)
 
         SetBids bids ->
-            foldMsg update {model | initialized = True}
-                [ ToTable <| TableTypes.SetBids bids
-                , ToFilter
-                    <| FilterTypes.From
-                    <| FilterPartTypes.SetCurrencies
-                    <| filterElementsPart .from bids
-                , ToFilter
-                    <| FilterTypes.To
-                    <| FilterPartTypes.SetCurrencies
-                    <| filterElementsPart .to bids
-                ]
+            let
+                newModel = {model
+                    | initialized = True
+                    , loading = False
+                    }
+            in
+                foldMsg update newModel
+                    [ ToTable
+                        <| TableTypes.SetBids bids
+
+                    , ToFilter
+                        <| FilterTypes.SetCurrencies
+                            (filterElementsPart .from bids)
+                            (filterElementsPart .to bids)
+                    ]
 
         UpdateBids ->
-            (model, getBids model.bidPath)
+            let
+                newModel = {model
+                    | loading = True
+                    }
+            in
+                (newModel, getBids model.bidPath)
 
         BidClick _ ->
             (model, Cmd.none)
