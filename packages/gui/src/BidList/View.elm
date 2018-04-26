@@ -5,9 +5,6 @@ module BidList.View exposing
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
-import BidList.Filter.Types exposing
-    ( getFilter
-    )
 import BidList.Types exposing (..)
 
 import BidList.Table.View as TableView
@@ -25,7 +22,6 @@ root model =
             , Html.map ToFilter (FilterView.root (.filter model))
             , Html.map mapTableCmd
                 <| TableView.root model.table
-                <| getFilter model.filter
             ]
 
 

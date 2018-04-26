@@ -53,8 +53,16 @@ update msg model =
         ToFilter subMsg ->
             let
                 (subModel, subCmd) = FilterState.update subMsg (.filter model)
+                newModel = {model
+                    | filter = subModel
+                    , table = Tuple.first <| TableState.update
+                        (TableTypes.SetFilter <| FilterTypes.getFilter subModel)
+                        model.table
+                    }
             in
-                ({model | filter = subModel}, Platform.Cmd.map ToFilter subCmd)
+                ( newModel
+                , Platform.Cmd.map ToFilter subCmd
+                )
 
         ToTable subMsg ->
             let
