@@ -31,10 +31,16 @@ function whenBidAccepted(msg){
                 break;
             case "Ethereum classic":
                 console.log("From Ethereum classic");
-                //jsonObj = require("./tradeEtc.js").firstContract(bid);
+                jsonObj = require("./tradeETC.js").firstContract(message, function(promise){
+                    promise.then(result => {
+                        result.bid = message.bid;
+                        messenger.pushDigestInfo(result, unlockWithSecret);
+                    });
+                });
                 break;
             default:
                 console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
+                return;
                 //Throw error
         }
     }else{
@@ -50,15 +56,19 @@ async function acceptBid(bidID){
     switch(fromCurrency){
         case "Ethereum":
             console.log("From Ethereum");
-            var eth = require("./tradeETH.js");
-            eth.getAddress()
+            
+            require("./tradeETH.js").getAddress()
             .then(accs => {
                 messenger.acceptBid(bid, accs[2], secondContract);
             });
             break;
         case "Ethereum classic":
             console.log("From Ethereum classic");
-            //jsonObj = require("./tradeEtc.js").secondReceiver(bid);
+            
+            require("./tradeETC.js").getAddress()
+            .then(accs => {
+                messenger.acceptBid(bid, accs[2], secondContract);
+            });
             break;
         default:
             console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
