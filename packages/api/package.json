@@ -1,7 +1,6 @@
 {
     "name": "api",
     "scripts": {
-        "start": "node src/server.js"
     },
     "dependencies": {
         "child_process": "^1.0.2",

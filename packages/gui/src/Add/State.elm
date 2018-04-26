@@ -22,6 +22,7 @@ init =
             , submitting = False
             , currencies = []
             , error = errorModel
+            , initialized = False
             }
         , Cmd.batch
             [ getCurrencies
@@ -71,13 +72,18 @@ update msg model =
                 | currencies = currencies
                 , fromCurrency = firstOption currencies
                 , toCurrency = secondOption currencies
+                , initialized = True
             }, Cmd.none)
 
         ToError subMsg ->
             let
                 (subModel, subCmd) = Error.State.update subMsg model.error
+                newModel = {model
+                    | error = subModel
+                    , initialized = True
+                    }
             in
-                ({model | error = subModel}, Cmd.map ToError subCmd)
+                (newModel, Cmd.map ToError subCmd)
 
         TriggerPassword _ _ _ _ ->
             (model, Cmd.none)

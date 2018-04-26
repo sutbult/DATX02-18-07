@@ -1,12 +1,42 @@
 "use strict"
 const Elm = require("./elm.js");
+const child_process = require("child_process");
+
+function startAPI() {
+    return new Promise((resolve, reject) => {
+        const api = child_process.spawn("node", ["src/server.js"], {
+            cwd: "../api",
+        });
+        function kill() {
+            api.kill();
+        }
+        api.stdout.on("data", data => {
+            const msg = data.toString("utf-8");
+            if(msg.startsWith("Daemon is now running")) {
+                resolve();
+            }
+            else {
+                console.log("API: %s", msg);
+            }
+        });
+        api.stderr.on("data", data => {
+            const msg = data.toString("utf-8");
+            console.error("API: %s", msg);
+            reject(msg);
+        });
+        api.on("close", code => {
+            console.log("API exited with code %s", code);
+        });
+        process.on("exit", kill);
+        window.addEventListener("beforeunload", kill);
+    });
+}
 
 let container = document.getElementById("container");
 let app = Elm.Main.embed(container);
 
 // SSE
-var es = new EventSource("http://localhost:51337/sse");
-es.onmessage = event => {
+function onSSEmessage(event) {
     var msg = JSON.parse(event.data);
     switch(msg.cmd) {
         case "ack":
@@ -22,6 +52,10 @@ es.onmessage = event => {
             break;
     }
 }
+function setupSSE() {
+    var es = new EventSource("http://localhost:51337/sse");
+    es.onmessage = onSSEmessage;
+}
 
 // Mouse movements
 document.onmousemove = e => {
@@ -36,4 +70,13 @@ app.ports.notify.subscribe((content) => {
     new Notification(title, {
         body,
     });
-})
+});
+
+startAPI()
+    .then(() => {
+        setupSSE();
+        app.ports.apiStarted.send(null);
+    })
+    .catch(error => {
+        console.error("The API server could not be started");
+    });

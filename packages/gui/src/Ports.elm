@@ -1,5 +1,8 @@
 port module Ports exposing (..)
 
+-- Called when the client has started the API
+port apiStarted : (() -> msg) -> Sub msg
+
 -- port for accepting a client id
 port getSSEId : (Int -> msg) -> Sub msg
 

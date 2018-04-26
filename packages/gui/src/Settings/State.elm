@@ -41,8 +41,12 @@ update msg model =
         ToError subMsg ->
             let
                 (subModel, subCmd) = Error.State.update subMsg model.error
+                newModel = {model
+                    | error = subModel
+                    , loading = False
+                    }
             in
-                ({model | error = subModel}, Platform.Cmd.map ToError subCmd)
+                (newModel, Platform.Cmd.map ToError subCmd)
 
         SetBlockchainPath currency value ->
             let

@@ -21,6 +21,7 @@ type alias Model =
     , submitting : Bool
     , currencies : List String
     , error : Error.Types.Model
+    , initialized : Bool
     }
 
 

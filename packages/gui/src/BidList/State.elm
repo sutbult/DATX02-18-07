@@ -37,6 +37,7 @@ init showStatus bidPath =
             , filter = filterModel
             , error = errorModel
             , bidPath = bidPath
+            , initialized = False
             }
         , Cmd.batch
             [ Platform.Cmd.map mapTableCmd tableCmd
@@ -64,11 +65,15 @@ update msg model =
         ToError subMsg ->
             let
                 (subModel, subCmd) = ErrorState.update subMsg (.error model)
+                newModel = {model
+                    | error = subModel
+                    , initialized = True
+                    }
             in
-                ({model | error = subModel}, Platform.Cmd.map ToError subCmd)
+                (newModel, Platform.Cmd.map ToError subCmd)
 
         SetBids bids ->
-            foldMsg update model
+            foldMsg update {model | initialized = True}
                 [ ToTable <| TableTypes.SetBids bids
                 , ToFilter
                     <| FilterTypes.From
