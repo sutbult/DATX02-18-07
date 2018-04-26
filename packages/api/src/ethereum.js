@@ -16,7 +16,7 @@ function getIpcPath(){
     if(process.platform === 'freebsd' ||
        process.platform === 'linux' ||
        process.platform === 'sunos')
-        path += '/.ethereum/geth.ipc';
+        path += '/Desktop/magnusnet/geth.ipc';
 
     if(process.platform === 'win32')
         path = '\\\\.\\pipe\\geth.ipc';
@@ -194,7 +194,8 @@ async function sendEtherContract(ethchain, from_address, secret, digest, destina
 
     gen_digest = generateDigest(ethchain, secret, digest);
     args = [gen_digest, destination];
-    return sendContract(ethchain, htlc_ether, args, from_address, gen_digest, value_in_wei);
+    returnObj = await sendContract(ethchain, htlc_ether, args, from_address, gen_digest, value_in_wei);
+    return returnObj;
 }
 
 async function sendContract(ethchain, jsoncontract, args, from_address, digest, value_in_wei){

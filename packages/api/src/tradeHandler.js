@@ -5,7 +5,7 @@ var secret = null;
 
 //Called from an interval set in index.js if bid has been accepted
 //bid is accepted if the bid.channel contains a step 2
-function whenBidAccepted(msg){
+async function whenBidAccepted(msg){
     //remove bid from db to prevent multiple contracts
 
     //use random function to get a good secret
@@ -31,12 +31,13 @@ function whenBidAccepted(msg){
                 break;
             case "ETC":
                 console.log("From Ethereum classic");
-                jsonObj = require("./tradeETC.js").firstContract(message, function(promise){
-                    promise.then(result => {
-                        result.bid = message.bid;
-                        messenger.pushDigestInfo(result, unlockWithSecret);
-                    });
-                });
+                
+                //Make sure only one contract is deployed, this does that by changing status to pending
+                db.acceptBid(message.bid.id);
+                result = await require("./tradeETC.js").firstContract(message);
+                console.log("¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤result¤¤¤ " + result);
+                result.bid = message.bid;
+                messenger.pushDigestInfo(result, unlockWithSecret);
                 break;
             default:
                 console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
@@ -57,18 +58,16 @@ async function acceptBid(bidID){
         case "ETH":
             console.log("From Ethereum");
             
-            require("./tradeETH.js").getAddress()
-            .then(accs => {
-                messenger.acceptBid(bid, accs[2], secondContract);
-            });
+            accounts = await require("./tradeETH.js").getAccounts()
+            messenger.acceptBid(bid, accounts[2], secondContract);
+            
             break;
         case "ETC":
             console.log("From Ethereum classic");
             
-            require("./tradeETC.js").getAddress()
-            .then(accs => {
-                messenger.acceptBid(bid, accs[2], secondContract);
-            });
+            accounts = await require("./tradeETC.js").getAccounts()
+            messenger.acceptBid(bid, accounts[2], secondContract);
+
             break;
         default:
             console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
@@ -77,7 +76,7 @@ async function acceptBid(bidID){
     }
 }
 
-function secondContract(msg){
+async function secondContract(msg){
     //In pushContractInfo we send a json object, otherwise we send a string
     var message;
     if(msg.constructor === {}.constructor) message = msg;
@@ -88,11 +87,14 @@ function secondContract(msg){
         case "ETH":
             console.log("To Ethereum");
             var eth = require("./tradeETH.js");
-            eth.secondContract(message, messenger.pushContractInfo,unlockWithSecret);
+            contract = await eth.secondContract(message);
+            messenger.pushContractInfo(contract, message, unlockWithSecret);
             break;
         case "ETC":
             console.log("To Ethereum classic");
-            //jsonObj = require("./tradeEtc.js").secondReceiver(bid);
+            var etc = require("./tradeETC.js");
+            contract = await etc.secondContract(message)
+            messenger.pushContractInfo(contract, message, unlockWithSecret);
             break;
         default:
             console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
@@ -115,7 +117,7 @@ function unlockWithSecret(msg){
             break;
         case "ETC":
             console.log("To Ethereum classic");
-            //require("./tradeEtc.js").firstReceiver(bid, message);
+            require("./tradeETC.js").claim(message);
             break;
         default:
             console.log("Ooh, what an exotic currency, perhaps we will support it someday!");

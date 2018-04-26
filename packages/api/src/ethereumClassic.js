@@ -25,7 +25,8 @@ function getIpcPath(){
     return path;
 }
 
-const web3 = new Web3(Web3.givenProvider  || getIpcPath(), require("net"));
+//const web3 = new Web3(Web3.givenProvider  || getIpcPath(), require("net"));
+const web3 = new Web3("http://localhost:8545");
 
 /**Query for the compiled abi and bytecode */
 var erc20 = JSON.parse(fs.readFileSync('../../contracts/ERC20Partial.json', 'utf8'));
@@ -191,14 +192,16 @@ async function sendERC20Contract(ethchain, from_address, secret = null, digest =
 }
 
 async function sendEtherContract(ethchain, from_address, secret, digest, destination, value_in_wei){
-    var args, gen_digest;
+    var args, gen_digest, returnObj;
 
     gen_digest = generateDigest(ethchain, secret, digest);
     args = [gen_digest, destination];
-    return sendContract(ethchain, htlc_ether, args, from_address, gen_digest, value_in_wei);
+    returnObj = await sendContract(ethchain, htlc_ether, args, from_address, gen_digest, value_in_wei);
+    return returnObj;
 }
 
 async function sendContract(ethchain, jsoncontract, args, from_address, digest, value_in_wei){
+    console.log("GOT HERE");
     var ether, gas_estimate, contract, contract_instance, contract_address;
     gas_estimate =  572810;
 
@@ -206,19 +209,22 @@ async function sendContract(ethchain, jsoncontract, args, from_address, digest, 
     contract = new ethchain.eth.Contract(jsoncontract.abi);
 
     contract_instance = contract.deploy({data: '0x' + jsoncontract.code, arguments: args});
-    var receipt = await contract_instance.send({from: from_address, gasPrice: gas_estimate.toString(), gas: gas_estimate, value: value_in_wei});
-
+    console.log("B4");
+    receipt = await contract_instance.send({from: from_address, gasPrice: gas_estimate.toString(), gas: gas_estimate, value: value_in_wei});
+    console.log("4FT3R");
     contract_address = receipt._address;
     console.log("Contract deployed at address " + contract_address);
 
     contract.options.address = contract_address;
-    var subPromise = subscribeToClaim(contract, receipt.blockNumber);
+    //var subPromise = subscribeToClaim(contract, receipt.blockNumber);
     var returnObj = new Object();
     returnObj.contractAddress = contract_address;
     returnObj.digest = args[0];
     returnObj.address = from_address; //this is incorrect, remove
-    returnObj.promise = subPromise;
+    //returnObj.promise = subPromise;
+    console.log("Will return");
     return returnObj;
+
 }
 
 function generateDigest(ethchain, secret, digest){
@@ -246,15 +252,6 @@ async function sendTokensToContract(ethchain, contract_address, token_address, v
 
 function tokensNoDecimals(tokens, decimals) {
     return tokens * Math.pow(10, decimals);
-}
-
-function subscribeToClaim(contract, block){
-    /** return a promise
-    *
-    */
-    // contract.events.Claim({fromBlock: "latest"}, function(error,event){console.log("*******************CLAIMEVENT*************** " + event.returnValues._hash);});
-    
-    return contract.events.Claim({fromBlock: "latest"});
 }
 
 /** Will return the value of the first Claim event it founds.
@@ -288,7 +285,6 @@ module.exports = {
     web3,
     genesisCheck,
     getBalance,
-    subscribeToClaim,
     unlockAccount,
     getPastClaim,
     htlc_ether,
