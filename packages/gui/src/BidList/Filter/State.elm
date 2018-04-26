@@ -68,14 +68,15 @@ update msg model =
 
         NewFilter ->
             let
+                newIndex = Dict.size model.filters + 1
                 (subModelA, subCmdA) = InstanceState.init
+                    <| "Filter #" ++ toString newIndex
                 (subModelB, subCmdB) = InstanceState.update
                     (InstanceTypes.SetCurrencies
                         model.currencies.from
                         model.currencies.to
                     )
                     subModelA
-                newIndex = Dict.size model.filters + 1
                 newModel = { model
                     | filters = Dict.insert newIndex subModelB model.filters
                     , filterOrder = model.filterOrder ++ [newIndex]

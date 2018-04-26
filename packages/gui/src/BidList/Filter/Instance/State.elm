@@ -13,13 +13,18 @@ import Utils.State exposing
     ( foldMsg
     )
 
-init : (Model, Cmd Msg)
-init =
+init : String -> (Model, Cmd Msg)
+init name =
     let
         (fromModel, fromCmd) = PartState.init "From"
         (toModel, toCmd) = PartState.init "To"
+        model =
+            { name = name
+            , from = fromModel
+            , to = toModel
+            }
     in
-        ( { from = fromModel, to = toModel}
+        ( model
         , Cmd.batch
             [ Platform.Cmd.map From fromCmd
             , Platform.Cmd.map To toCmd
@@ -47,6 +52,9 @@ update msg model =
                 [ From <| PartTypes.SetCurrencies from
                 , To <| PartTypes.SetCurrencies to
                 ]
+
+        SetName name ->
+            ({model | name = name}, Cmd.none)
 
 
 subscriptions : Model -> Sub Msg

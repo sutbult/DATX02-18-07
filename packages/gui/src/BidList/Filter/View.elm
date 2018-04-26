@@ -76,7 +76,7 @@ filterTabFromID selected filters filterID =
     in
         case Dict.get filterID filters of
             Just filter ->
-                [ filterTab ("Filter #" ++ toString filterID) active
+                [ filterTab (formatName filter.name) active
                     <| SelectFilter <| FilterWithID filterID
                 ]
 
@@ -93,3 +93,11 @@ filterTab title active click =
             [ text title
             ]
         ]
+
+
+formatName : String -> String
+formatName name =
+    if String.isEmpty name then
+        "Filter without name"
+    else
+        name
