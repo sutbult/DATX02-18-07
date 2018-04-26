@@ -183,19 +183,17 @@ async function pushDigestInfo(contractInfo, func) {
   checkForStep(3,func);
 }
 
-async function pushContractInfo(contractInfo, message, callback) {
+async function pushContractInfo(contract, message, callback) {
   //Will wait until the contract is deployed on the blockchain
-  contractInfo.then(result => {
+  
+  var jsonMessage = message;
+  jsonMessage.step = 3; //recycling step 3 data, need to update some values
+  jsonMessage.contractAddress = contract.contractAddress;
+  var contractMessage = JSON.stringify(jsonMessage)
 
-    var jsonMessage = message;
-    jsonMessage.step = 3; //recycling step 3 data, need to update some values
-    jsonMessage.contractAddress = result.contractAddress;
-    var contractMessage = JSON.stringify(jsonMessage)
-
-    message.promise = result.promise;
-    channel.add(contractMessage);
-    callback(message);
-  });
+  message.promise = contract.promise;
+  channel.add(contractMessage);
+  callback(message);
 }
 
 
