@@ -12,6 +12,10 @@ const STORE_PATH = path.join(
     STORE_PATH_DIR,
     "api_store.json"
 );
+const STORE_PATH_TEMP = path.join(
+    STORE_PATH_DIR,
+    "api_store.json.temp"
+);
 const diskStore = require("../src/diskStore.js");
 
 function loadTestStore() {
@@ -62,6 +66,19 @@ function removeDiskStore() {
         });
     });
 }
+function rename(oldPath, newPath) {
+    return new Promise((resolve, reject) => {
+        fs.rename(oldPath, newPath, error => {
+            if(error && error.code !== "ENOENT") {
+                reject(error);
+            }
+            else {
+                resolve();
+            }
+        })
+    });
+}
+
 function run(expected, fn) {
     async function runTest() {
         return await fn();
@@ -71,11 +88,18 @@ function run(expected, fn) {
 }
 
 beforeAll(() => {
-    return ensureFolder();
+    async function tasks() {
+        await ensureFolder();
+        await rename(STORE_PATH, STORE_PATH_TEMP);
+    }
+    return tasks();
 });
 afterEach(() => {
     diskStore.clearCache();
     return removeDiskStore();
+});
+afterAll(() => {
+    return rename(STORE_PATH_TEMP, STORE_PATH);
 });
 describe("disk store", () => {
     it("can read a value from the disk storage", () => {
