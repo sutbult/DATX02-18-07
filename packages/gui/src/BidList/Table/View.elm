@@ -83,16 +83,19 @@ bidsPerPageSelector currentValue bidCount =
 
                 Err _ ->
                     Noop
+        options = filteredBidsPerPageOptions bidCount
     in
-        div [class "field is-grouped is-grouped-right"]
-            [ div [class "select"]
-                [ select
-                    [ onInput inputToMsg
+        if List.length options >= 2 then
+            div [class "field is-grouped is-grouped-right"]
+                [ div [class "select"]
+                    [ select
+                        [ onInput inputToMsg
+                        ]
+                        <| List.map optionView options
                     ]
-                    <| List.map optionView
-                    <| filteredBidsPerPageOptions bidCount
                 ]
-            ]
+        else
+            div [] []
 
 
 filteredBidsPerPageOptions : Int -> List Int
