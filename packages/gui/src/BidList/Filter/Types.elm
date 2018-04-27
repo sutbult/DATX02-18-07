@@ -12,6 +12,7 @@ type alias Model =
     , filterOrder : List FilterID
     , selected : SelectedFilter
     , currencies : Filter
+    , id : String
     }
 
 type Msg
@@ -19,6 +20,8 @@ type Msg
     | SetCurrencies (List String) (List String)
     | SelectFilter SelectedFilter
     | NewFilter
+    | SetStoredFilters FilterDict (List FilterID)
+    | Noop
 
 type SelectedFilter
     = NoFilter
@@ -26,6 +29,20 @@ type SelectedFilter
 
 type alias Filter = InstanceTypes.Filter
 
+type alias StoreFilterPart =
+    { title : String
+    , query : String
+    , elements : List (String, Bool)
+    }
+
+type alias StoreFilter =
+    { name : String
+    , from : StoreFilterPart
+    , to : StoreFilterPart
+    }
+
+
+-- Get filter
 
 getFilter : Model -> Filter
 getFilter model =

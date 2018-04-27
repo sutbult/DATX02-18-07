@@ -4,6 +4,7 @@ const child_process = require("child_process");
 const electron = require("electron");
 const startAPI = require("../js/api.js");
 const setupSSE = require("../js/sse.js");
+const store = require("../js/store.js");
 
 let container = document.getElementById("container");
 let app = Elm.Main.embed(container);
@@ -21,6 +22,13 @@ app.ports.notify.subscribe((content) => {
     new Notification(title, {
         body,
     });
+});
+
+// Filters
+app.ports.saveFilters.subscribe(filterData => {
+    //console.log(JSON.stringify(filterData, null, 4));
+    app.ports.subFilters.send(filterData);
+    // TODO: Spara filterData på disk
 });
 
 // Api
