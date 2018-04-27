@@ -127,4 +127,9 @@ describe("disk store", () => {
             return await diskStore.get("testGetSet");
         });
     });
+    it("returns null as default value", () => {
+        return run(null, async () => {
+            return await diskStore.get("testNull");
+        });
+    });
 })
