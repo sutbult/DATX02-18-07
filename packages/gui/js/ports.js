@@ -2,46 +2,7 @@
 const Elm = require("../build/elm.js");
 const child_process = require("child_process");
 const electron = require("electron");
-const path = require("path");
-
-const development = electron.remote.getCurrentWindow().custom.development;
-
-const apiNode = "./node_modules/node/bin/node";
-const apiMain = "./src/server.js";
-const apiCwd = development
-    ? "../api"
-    : path.join(__dirname, "../../../packages/api/")
-    ;
-
-function startAPI() {
-    return new Promise((resolve, reject) => {
-        const api = child_process.spawn(apiNode, [apiMain], {
-            cwd: apiCwd
-        });
-        function kill() {
-            api.kill();
-        }
-        api.stdout.on("data", data => {
-            const msg = data.toString("utf-8");
-            if(msg.startsWith("Daemon is now running")) {
-                resolve();
-            }
-            else {
-                console.log("API: %s", msg);
-            }
-        });
-        api.stderr.on("data", data => {
-            const msg = data.toString("utf-8");
-            console.error("API: %s", msg);
-            reject(msg);
-        });
-        api.on("close", code => {
-            console.log("API exited with code %s", code);
-        });
-        process.on("exit", kill);
-        window.addEventListener("beforeunload", kill);
-    });
-}
+const startAPI = require("../js/api.js");
 
 let container = document.getElementById("container");
 let app = Elm.Main.embed(container);
@@ -83,6 +44,7 @@ app.ports.notify.subscribe((content) => {
     });
 });
 
+// Api
 startAPI()
     .then(() => {
         setupSSE();

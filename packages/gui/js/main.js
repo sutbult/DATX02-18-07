@@ -10,17 +10,13 @@ function isDev() {
     return process.mainModule.filename.indexOf('app.asar') === -1;
 }
 
-// Temporär fix
-//app.on('ready', createWindow);
-app.on('ready', () => {
-    setTimeout(createWindow, 1000);
-});
+app.on('ready', createWindow);
 
 function setupChokidar() {
     const chokidar = require('chokidar');
 
     const WATCH = [
-        'ports.js',
+        'js/**.js',
         'index.html',
         'elm.js',
     ];
