@@ -36,7 +36,7 @@ function createWindow () {
         height: 768
     });
     electron.Menu.setApplicationMenu(null);
-    mainWindow.loadURL(`file://${ __dirname }/index.html`);
+    mainWindow.loadURL(`file://${ __dirname }/../html/index.html`);
     if(isDev()) {
         mainWindow.webContents.openDevTools();
     }

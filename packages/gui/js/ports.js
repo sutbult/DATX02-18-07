@@ -1,5 +1,5 @@
 "use strict"
-const Elm = require("./elm.js");
+const Elm = require("../build/elm.js");
 const child_process = require("child_process");
 const electron = require("electron");
 const path = require("path");

@@ -9,10 +9,10 @@
         "test": "npm run elm:build && npm run elm:test",
         "elm:installBuild": "npm run elm:install && npm run elm:build",
         "elm:install": "node_modules/.bin/elm-package install --yes",
-        "elm:build": "node_modules/.bin/elm-make src/Main.elm --yes --output elm.js",
+        "elm:build": "node_modules/.bin/elm-make src/Main.elm --yes --output build/elm.js",
         "elm:test": "node_modules/.bin/elm-test",
         "elm:watch": "node_modules/.bin/chokidar '**/*.elm' -c 'npm run elm:build' & wait",
-        "electron:start": "node_modules/.bin/electron main.js"
+        "electron:start": "node_modules/.bin/electron js/main.js"
     },
     "dependencies": {
         "bulma": "^0.6.2",

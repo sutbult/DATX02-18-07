@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "license": "UNLICENSED",
     "private": true,
-    "main": "packages/gui/main.js",
+    "main": "packages/gui/js/main.js",
     "build": {
         "extraResources": [
             "packages/api/src",
