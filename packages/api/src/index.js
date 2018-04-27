@@ -4,6 +4,7 @@ const messenger = require("./OrbitDBHandler")
 const runOnce = require("./runOnce.js");
 const trader = require("./tradeHandler.js");
 const diskStore = require("./diskStore.js");
+const localStore = require("./localStore.js");
 
 // Describes every currency that is available to the user
 const availableCurrencies = [
@@ -152,16 +153,32 @@ async function setSettings(newSettings) {
         }
     }
 }
+async function isValidPassword(currency, password) {
+    // TODO: Implementera på riktigt
+    return password === "";
+}
 async function setPasswords(passwords) {
     await ensureInitialized();
-    // TODO: Implementera på riktigt
-    console.log("User posted these passwords: %s", JSON.stringify(passwords, null, 4));
 
+    var passwordPromises = {};
     var result = [];
     for(var i in passwords) {
+        passwordPromises[i] = isValidPassword(
+            passwords[i].currency,
+            passwords[i].password
+        );
+    }
+    for(var i in passwords) {
+        const currency = passwords[i].currency;
+        const password = passwords[i].password;
+        const success = await passwordPromises[i];
+
+        if(success) {
+            localStore.set("password" + currency, password);
+        }
         result.push({
-            currency: passwords[i].currency,
-            success: passwords[i].password === "",
+            currency,
+            success,
         });
     }
     return result;
