@@ -23,7 +23,7 @@ async function init() {
     /**check in a set interval if anyone accepted your bid
      * @todo clearInterval once all bids are accepted: https://nodejs.org/en/docs/guides/timers-in-node/
      */
-    const interval = setInterval(checkAccBid, 10000);
+    const interval = setInterval(checkAccBid, 20000);
 }
 const ensureInitialized = runOnce(init);
 
@@ -51,12 +51,14 @@ async function checkAccBid(){
     // console.log("*********Lets see ******");
     // console.log(db.getAcceptedBids(50));
     // console.log(bids);
-    bids.forEach(bid => {
-        // console.log(bid);
-        console.log(db.getBidStatus(bid.id)); //bidStatus in statusDB is changed in tradeHandler if accepted
-        //This is to stop multiple deploys
-        if(bid.status == "ACTIVE" && db.getBidStatus(bid.id) == "ACTIVE") messenger.bidAccepted(bid,trader.whenBidAccepted);
-    });
+    for (var i = 0; i < bids.length ; i++){
+      // console.log(bid);
+      console.log(db.getBidStatus(bids[i].id)); //bidStatus in statusDB is changed in tradeHandler if accepted
+      //This is to stop multiple deploys
+      if(bids[i].status == "ACTIVE" && db.getBidStatus(bids[i].id) == "ACTIVE") {
+        await messenger.bidAccepted(bids[i],trader.whenBidAccepted);
+      }
+    }
 }
 
 // Fetches all available bids from the decentralized database
