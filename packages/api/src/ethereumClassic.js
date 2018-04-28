@@ -106,11 +106,13 @@ async function validateContract(ethchain, jsoncontract, contract_address, self_a
 
     res_code = await validateCode(ethchain, jsoncontract.runtime_bytecode, contract_address);
     res_dest = await validateDestination(ethchain, self_address, contract_address);
+    res_refund = await validateRefund(ethchain, contractAddress);
     res_digest = true;
     if(digest != null){
         res_digest = await validateDigest(ethchain, digest, contract_address);
     }
-    return res_code && res_dest && res_digest;
+    
+    return res_code && res_dest && res_digest && res_refund;
 }
 
 /** This function will validate the stored byte code against the byte code on a certain address.
@@ -121,6 +123,17 @@ async function validateCode(ethchain, runtime_bytecode, contract_address){
 
     chain_code = await ethchain.eth.getCode(contract_address);
     return runtime_bytecode == chain_code;
+}
+
+/** This function will validate that the there is at least 500 blocks until the contract can be unlocked and that it will be locked for 1000 blocks
+*/
+
+async function validateRefund(ethchain, contract_address){
+    var unlockBlock;
+
+    unlockBlock = await contract.methods.unlockAtBlock().call();
+    lockedBlocks = await contract.methods.numBlocksLocked.call();
+    return (unlockBlock - ethchain.eth.blockNumber) > 500 && lockedBlocks == 1000;
 }
 
 /** This function will validate that the destination on a contract is correct.
@@ -173,7 +186,7 @@ async function validateERC20Address(ethchain, contract_abi, token_address, contr
     var contract, contract_token;
 
     contract = new ethchain.eth.Contract(contract_abi, contract_address);
-    contract_token = await contract.methods.addressToken().call();
+    contract_token = await contract.methods.token().call();
     return token_address == contract_token;
 }
 
@@ -202,7 +215,7 @@ async function sendEtherContract(ethchain, from_address, secret, digest, destina
 
 async function sendContract(ethchain, jsoncontract, args, from_address, digest, value_in_wei){
     console.log("GOT HERE");
-    var ether, gas_estimate, contract, contract_instance, contract_address;
+    var ether, gas_estimate, contract, contract_instance, contract_address, returnObj;
     gas_estimate =  572810;
 
 
@@ -217,7 +230,7 @@ async function sendContract(ethchain, jsoncontract, args, from_address, digest, 
 
     contract.options.address = contract_address;
     //var subPromise = subscribeToClaim(contract, receipt.blockNumber);
-    var returnObj = new Object();
+    returnObj = new Object();
     returnObj.contractAddress = contract_address;
     returnObj.digest = args[0];
     returnObj.address = from_address; //this is incorrect, remove
