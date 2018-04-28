@@ -1,4 +1,4 @@
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.21;
 
 contract ERC20Partial {
     mapping (address => uint256) public balanceOf;
@@ -21,7 +21,7 @@ contract HTLC_ERC20 {
 
     event Claim(string _hash);
 
-    constructor(bytes32 _digest, address _dest, address _token) public payable {
+    function HTLC_ERC20(bytes32 _digest, address _dest, address _token) public payable {
         digest = _digest;
         dest = _dest;
         token = _token;

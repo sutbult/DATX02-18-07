@@ -1,4 +1,4 @@
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.21;
 
 contract HTLC {
     bytes32 public digest;
@@ -11,7 +11,7 @@ contract HTLC {
 
     event Claim(string _hash);
 
-    constructor (bytes32 _digest, address _dest) public payable {
+    function HTLC (bytes32 _digest, address _dest) public payable {
         digest = _digest;
         dest = _dest;
         unlockAtBlock = block.number + numBlocksLocked;
