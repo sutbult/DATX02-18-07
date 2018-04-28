@@ -10,43 +10,28 @@ contract ERC20Partial {
 }
 
 contract HTLC_ERC20 {
-
-////////////////
-//Global VARS//////////////////////////////////////////////////////////////////////////
-//////////////
-
-    string public version = "0.0.1";
     bytes32 public digest;
     address public dest;
-    address private token;
-    uint public timeOut = now + 1 hours;
+    address public token;
+    uint256 public unlockAtBlock;
+    uint256 public numBlocksLocked = 1000;
     address issuer = msg.sender;
-
-/////////////
-//MODIFIERS////////////////////////////////////////////////////////////////////
-////////////
-
 
     modifier onlyIssuer {require(msg.sender == issuer); _; }
 
     event Claim(string _hash);
 
-//////////////
-//Operations////////////////////////////////////////////////////////////////////////
-//////////////
-
-    function HTLC_ERC20(bytes32 _digest, address _dest, address _token) public payable {
+    constructor(bytes32 _digest, address _dest, address _token) public payable {
         digest = _digest;
         dest = _dest;
         token = _token;
+        unlockAtBlock = block.number + numBlocksLocked;
     }
 
-/* public */
-    //a string is subitted that is hash tested to the digest; If true the funds are sent to the dest address and destroys the contract
     function claim(string _hash) public returns(bool result) {
-       require(digest == keccak256(_hash));
+       require(digest == sha256(_hash));
        transfer(dest);
-       Claim(_hash);       
+       emit Claim(_hash);       
        selfdestruct(dest);
        return true; //This will not occur
        }
@@ -56,19 +41,8 @@ contract HTLC_ERC20 {
         e.transfer(_to, e.balanceOf(this));
     } 
     
-    function addressToken() constant public returns (address) {
-        return token;
-    }
-    
-    function balanceOf() constant public returns (uint256) {
-        ERC20Partial e = ERC20Partial(token);
-        return e.balanceOf(this);
-    }
-
-/* only issuer */
-    //if the time expires; the issuer can reclaim funds and destroy the contract
     function refund() onlyIssuer public returns(bool result) {
-        require(now >= timeOut);
+        require(block.number >= unlockAtBlock);
         transfer(issuer);
         selfdestruct(issuer);
         return true;

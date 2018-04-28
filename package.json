@@ -3,12 +3,26 @@
     "version": "0.0.1",
     "license": "UNLICENSED",
     "private": true,
+    "main": "packages/gui/js/main.js",
+    "build": {
+        "extraResources": [
+            "packages/api/src",
+            "packages/api/node_modules"
+        ]
+    },
     "scripts": {
-        "postinstall": "lerna bootstrap",
+        "build": "node_modules/.bin/electron-builder build --dir",
+        "distribute": "node_modules/.bin/electron-builder build",
+        "postinstall": "lerna bootstrap --npm-client=yarn",
         "test": "lerna run test --stream",
-        "debug": "lerna run elm:installBuild --stream && lerna run start --parallel"
+        "debug": "lerna run elm:build --stream && lerna run start --parallel"
     },
     "devDependencies": {
-        "lerna": "^2.9.0"
+        "electron-builder": "^20.10.0",
+        "lerna": "^2.9.0",
+        "yarn": "^1.5.1"
+    },
+    "dependencies": {
+        "npm": "^5.8.0"
     }
 }

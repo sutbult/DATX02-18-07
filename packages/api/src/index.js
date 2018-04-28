@@ -1,93 +1,196 @@
+
 const db = require("./DBHandler.js");
 const messenger = require("./OrbitDBHandler")
+const runOnce = require("./runOnce.js");
+const trader = require("./tradeHandler.js");
+const diskStore = require("./diskStore.js");
+const localStore = require("./localStore.js");
 
-// Exempel på funktioner som mycket väl kan finnas med i denna modul
+// Describes every currency that is available to the user
+const availableCurrencies = [
+    "BTC",
+    "ETH",
+    "ETC",
+];
 
-// Adds a new bid to the decentralized database
-async function addBid(bid) {
-  bid.status = "ACTIVE"
-  bid.channel = "/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message"
-  /*var jsonObject = {
-      "step" : "1",
-      "from" : "CURRENCY",
-      "fromAmount" : '5',
-      "to":"CURRENCY",
-      "toAmount" : '5',
-      "address" : 'test',
-      "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
-    };
-    console.log("User adds this bid:\n" + JSON.stringify(jsonObject, null, 4));*/
-    await db.addBid(bid)
+async function init() {
+    // messageHandler kommer att vara tillgänglig här
+    const messengerPromise = messenger.init();
+    await messengerPromise;
+    const dbPromise = db.init(messageHandler);
+    await dbPromise;
+
+    /**check in a set interval if anyone accepted your bid
+     * @todo clearInterval once all bids are accepted: https://nodejs.org/en/docs/guides/timers-in-node/
+     */
+    const interval = setInterval(checkAccBid, 20000);
+}
+const ensureInitialized = runOnce(init);
+
+var messageHandler = null;
+function setMessageHandler(messageHandlerArg) {
+    messageHandler = messageHandlerArg;
 }
 
 
-// Temporär
-function BidFactory() {
-    var idCounter = 1;
-    function Bid(fromCurrency, fromAmount, toCurrency, toAmount, status) {
-        if(!status) {
-            status = "ACTIVE";
-        }
-        return {
-            id: "VeryRandomID" + idCounter++,
-            status: status,
-            from: {
-                currency: fromCurrency,
-                amount: fromAmount,
-            },
-            to: {
-                currency: toCurrency,
-                amount: toAmount,
-            }
-        }
+// Adds a new bid to the decentralized database
+async function addBid(bid) {
+    await ensureInitialized();
+    console.log("Is this thing on");
+    bid.status = "ACTIVE"
+    bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    await db.addBid(bid);
+}
+
+async function checkAccBid(){
+    // console.log("CHECK IF ANY BID IS ACCEPTED");
+    /**Not sure how the limit in this function works, but need all userBids, soo
+    *@todo someone with knowledge fix this
+    */
+    var bids = await db.getUserBids(1000000000000000);
+    // console.log("*********Lets see ******");
+    // console.log(db.getAcceptedBids(50));
+    // console.log(bids);
+    for (var i = 0; i < bids.length ; i++){
+      // console.log(bid);
+      console.log(db.getBidStatus(bids[i].id)); //bidStatus in statusDB is changed in tradeHandler if accepted
+      //This is to stop multiple deploys
+      if(bids[i].status == "ACTIVE" && db.getBidStatus(bids[i].id) == "ACTIVE") {
+        await messenger.bidAccepted(bids[i],trader.whenBidAccepted);
+      }
     }
-    return Bid;
 }
 
 // Fetches all available bids from the decentralized database
 async function getBids() {
-    var bid = await db.getBid(50)
-    return bid
+    await ensureInitialized();
+    return db.getBids(50);
+
 }
 
 // Accepts a bid and starts the swapping process
-async function acceptBid(bidID, callback) {
-    // TODO: Implementera på riktigt
-    console.log("User accepts the bid with this ID: %s", bidID);
+async function acceptBid(bidID, seed) {
+    await ensureInitialized();
+    // db.acceptBid(bidID);
+    trader.acceptBid(bidID);
+    // console.log("User accepts the bid with this ID: %s", bidID);
 }
 
 // Fetches all accounts associated with the user
 async function getWallet() {
+    await ensureInitialized();
     function Account(currency, amount) {
         return {
             currency: currency,
             amount: amount,
         };
     }
-    return [
-        Account("Bitcoin",  "100000000000"              ),
-        Account("Ethereum", "10000000000000000000010"   ),
-        Account("Dogecoin", "1000000000"                ), // Wow, such wealth, many monies
-    ];
+
+    var returnArr = [];
+    try{
+        var eth = require("./ethereum.js");
+        if(eth.web3 != undefined){
+            var address = eth.web3.eth.getAccounts()
+            .then(accs => {
+                eth.web3.eth.getBalance(accs[2])
+                .then(amount => {
+                    returnArr.push(Account("Ethereum", amount));
+                });
+            });
+        }
+
+    } catch(e){
+        console.log("Error in index.getWallet(): " + e);
+    }
+
+    console.log(returnArr);
+
+    return returnArr;
 }
 
 // Fetches all bids associated with the user
 async function getUserBids() {
-  var bid = await db.getUserBids(50)
-  return bid
-
+    await ensureInitialized();
+    return db.getUserBids(50)
+}
+async function getAcceptedBids() {
+    await ensureInitialized();
+    return db.getAcceptedBids(50)
 }
 
 // Fetches the currencies which is available for the user to create bids with
 async function getCurrencies() {
-    return [
-        "Bitcoin",
-        "Ethereum",
-        "Bitcoin cash",
-        "Ethereum classic",
-        "Monero",
-        "Dogecoin"
-    ];
+    await ensureInitialized();
+    // TODO: Implementera på riktigt
+    return availableCurrencies;
+}
+async function getSettings() {
+    await ensureInitialized();
+
+    var blockchainPathList = [];
+    for(var i in availableCurrencies) {
+        const currency = availableCurrencies[i];
+        const value = (await diskStore.get("blockchainPath" + currency)) || "";
+
+        blockchainPathList.push({
+            currency,
+            value,
+        });
+    }
+    return {
+        blockchainPathList,
+    }
+}
+async function setSettings(newSettings) {
+    await ensureInitialized();
+
+    for(var i in newSettings.blockchainPathList) {
+        const element = newSettings.blockchainPathList[i];
+        const currency = element.currency;
+        const value = element.value;
+
+        // Only available currencies will be stored
+        if(availableCurrencies.indexOf(currency) != -1) {
+            await diskStore.set("blockchainPath" + currency, value);
+        }
+    }
+}
+async function isValidPassword(currency, password) {
+    // TODO: Implementera på riktigt
+    return password === "";
+}
+async function setPasswords(passwords) {
+    await ensureInitialized();
+
+    var passwordPromises = {};
+    var result = [];
+    for(var i in passwords) {
+        passwordPromises[i] = isValidPassword(
+            passwords[i].currency,
+            passwords[i].password
+        );
+    }
+    for(var i in passwords) {
+        const currency = passwords[i].currency;
+        const password = passwords[i].password;
+        const success = await passwordPromises[i];
+
+        if(success) {
+            localStore.set("password" + currency, password);
+        }
+        result.push({
+            currency,
+            success,
+        });
+    }
+    return result;
+}
+
+// Temporär. Finns av testningsskäl.
+function delay(seconds) {
+    return new Promise(resolve => {
+        setTimeout(resolve, seconds * 1000);
+    });
 }
 
 module.exports = {
@@ -96,5 +199,10 @@ module.exports = {
     acceptBid,
     getWallet,
     getUserBids,
+    getAcceptedBids,
     getCurrencies,
+    getSettings,
+    setSettings,
+    setPasswords,
+    setMessageHandler,
 };

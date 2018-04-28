@@ -10,49 +10,17 @@ import Bid.Types exposing
     ( Value
     , AmountStatus(..)
     , amountStatus
+    , currencyName
     )
+
 
 root : Model -> Html Msg
 root model =
     div []
         [ Html.map ToError (Error.View.root (.error model))
         , form model
-        , submit model
+        , submitButton model
         ]
-
-
--- TODO: Implementera som enhetstester
-test : Html Msg
-test =
-    let
-        cases =
-            [ ("Bitcoin", "")
-            , ("Bitcoin", "1")
-            , ("Bitcoin", "12")
-            , ("Ethereum", "1")
-            , ("Ethereum", "21")
-            , ("Bitcoin", "1.1")
-            , ("Ethereum", "1.1")
-            , ("Ethereum", "1.1.1")
-            , ("Ethereum", "1.1e1")
-            , ("Ethereum", "1e1.1")
-            , ("Ethereum", "-1")
-            , ("Ethereum", "e1")
-            , ("Dogecoin", "2")
-            , ("Bitcoin", "0")
-            , ("Bitcoin", "0.0")
-            , ("Bitcoin", ".0")
-            , ("Bitcoin", "000000000001.00001")
-            ]
-        caseView (currency, amount) =
-            p []
-                [ text
-                    <| toString
-                    <| amountStatus True currency amount
-                ]
-    in
-        div []
-            <| List.map caseView cases
 
 
 form : Model -> Html Msg
@@ -73,6 +41,7 @@ form model =
                 ]
             ]
 
+
 formBox : List (Html Msg) -> Html Msg
 formBox content =
     div [class "column is-two-fifths"]
@@ -80,12 +49,14 @@ formBox content =
             content
         ]
 
+
 arrowColumn : Html Msg
 arrowColumn =
     div [class "column is-one-fifths"]
         [ arrow "mobile" "right"
         , arrow "tablet" "down"
         ]
+
 
 arrow : String -> String -> Html Msg
 arrow hiddenOn arrowType =
@@ -115,13 +86,17 @@ currencySelector submitting options setter currentValue =
                 , fullWidth
                 , selected (currency == currentValue)
                 ]
-                [ text currency
+                [ text <| currencyName currency
                 ]
     in
         div [class "field"]
             [ div [class "control"]
                 [ div [class "select", fullWidth]
-                    [ select [fullWidth, onInput setter]
+                    [ select
+                        [ fullWidth
+                        , onInput setter
+                        , disabled submitting
+                        ]
                         <| List.map optionView options
                     ]
                 ]
@@ -133,6 +108,7 @@ amountField
     -> String
     -> String
     -> Html Msg
+
 amountField submitting setter currency currentValue =
     let
         (extraClass, info) =
@@ -166,33 +142,28 @@ amountField submitting setter currency currentValue =
             ]
 
 
-submit : Model -> Html Msg
-submit model =
+submitButton : Model -> Html Msg
+submitButton model =
     let
         classNameExtra =
             if model.submitting then
                 " is-loading"
             else
                 ""
+        (clickMsg, isDisabled) =
+            case getBid model of
+                Just bid ->
+                    (submit bid.from.currency bid.to.currency, model.submitting)
+
+                Nothing ->
+                    (Noop, True)
     in
         div [style [("text-align", "right")]]
             [ button
                 [ class <| "button is-link is-medium" ++ classNameExtra
-                , onClick Submit
-                , disabled
-                    <| not
-                    <| isJust
-                    <| getBid model
+                , onClick clickMsg
+                , disabled isDisabled
                 ]
                 [ text "Add bid"
                 ]
             ]
-
-isJust : Maybe a -> Bool
-isJust maybe =
-    case maybe of
-        Just _ ->
-            True
-
-        Nothing ->
-            False

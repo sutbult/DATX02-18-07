@@ -4,7 +4,42 @@ var SSE = require('sse');
 
 const api = require("./index.js");
 
+
+// Endpoint handlers
+
+function respond(res, code, response) {
+    if(typeof response === "object") {
+        response = JSON.stringify(response);
+    }
+    res.status(code);
+    res.type("application/json");
+    res.send(response);
+    res.end();
+}
 const apiRouter = express.Router();
+
+function createMethod(method) {
+    return (path, handler) => {
+        apiRouter[method](path, (req, res) => {
+            function onSuccess(data) {
+                respond(res, 200, data || {});
+            }
+            function onError(error) {
+                if(typeof error === "number") {
+                    respond(res, error, "");
+                }
+                else {
+                    respond(res, 500, error.toString());
+                }
+            }
+            handler(req.body)
+                .then(onSuccess)
+                .catch(onError);
+        });
+    }
+}
+const get = createMethod("get");
+const post = createMethod("post");
 
 
 // Body management setup
@@ -29,73 +64,55 @@ apiRouter.use((req, res, next) => {
 });
 
 
-// Endpoints
+// Get endpoints
 
-apiRouter.get("/getBids", (req, res, next) => {
-    api.getBids().then((bids) => {
-        next(bids);
-    });
-});
-apiRouter.post("/addBid", (req, res, next) => {
-    api.addBid(req.body).then(() => {
-        // Avkommentera för konstgjord fördröjning
-        //setTimeout(() => next({}), 1000);
-        next({});
-    });
-});
-apiRouter.post("/acceptBid", (req, res, next) => {
-    if(req.body.clientID < 0) {
-        next(400);
+get("/getBids", api.getBids);
+get("/getWallet", api.getWallet);
+get("/getUserBids", api.getUserBids);
+get("/getAcceptedBids", api.getAcceptedBids);
+get("/getCurrencies", api.getCurrencies);
+
+get("/settings", api.getSettings);
+post("/settings", api.setSettings);
+post("/passwords", api.setPasswords);
+
+
+// Post endpoints
+
+post("/addBid", api.addBid);
+post("/acceptBid", async body => {
+    if(body.clientID < 0) {
+        throw 400;
     }
     else {
-        api.acceptBid(req.body.id).then(() => {
-            sendSSE(req.body.clientID, {
-                cmd: "acceptBidResponse",
-                status: "ok",
+        api.acceptBid(body.id, body.seed)
+            .then(() => {
+                sendSSE(body.clientID, {
+                    cmd: "acceptBidResponse",
+                    status: "ok",
+                });
+            })
+            .catch(error => {
+                sendSSE(body.clientID, {
+                    cmd: "acceptBidResponse",
+                    status: "error",
+                    error,
+                });
             });
-        });
-        next({});
     }
 });
-apiRouter.get("/getWallet", (req, res, next) => {
-	api.getWallet().then((accounts) => {
-		next(accounts);
-	});
-});
-apiRouter.get("/getUserBids", (req, res, next) => {
-	api.getUserBids().then((bids) => {
-		next(bids);
-	});
-});
-apiRouter.get("/getCurrencies", (req, res, next) => {
-	api.getCurrencies().then((currencies) => {
-		next(currencies);
-	});
-});
 
 
-// Server stuff
+// 404
 
-apiRouter.get("/*", (req, res, next) => {
-	next(404);
-});
-apiRouter.use((prev, req, res, next) => {
-    var response;
-    var code;
+const promise404 = async () => {
+    throw 404
+};
+get("/*", promise404);
+post("/*", promise404);
 
-    if(typeof prev === "number") {
-        code = prev;
-        response = {};
-    }
-    else {
-        code = 200;
-        response = prev;
-    }
-    res.status(code);
-    res.type("application/json");
-    res.send(JSON.stringify(response));
-    res.end();
-});
+
+// SSE
 
 var sseClients = [];
 function setupSSE() {
@@ -115,12 +132,17 @@ function sendSSE(id, data) {
 		client.send(JSON.stringify(data));
 	}
 }
+api.setMessageHandler(message => {
+    for(var id in sseClients) {
+        sendSSE(id, message);
+    }
+});
 
 const app = express();
 app.use("/api", apiRouter);
 
 const server = http.createServer(app);
 server.listen(51337, "localhost", () => {
+    setupSSE();
     console.log("Daemon is now running");
-	setupSSE();
 });

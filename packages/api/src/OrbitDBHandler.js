@@ -1,7 +1,18 @@
 const Ipfs = require('ipfs')
 const OrbitDB = require('orbit-db')
 const headless = require("./Headless.js")
+var directory
 
+
+async function init() {
+  var string = __dirname.split("\\packages")
+  directory = string[0].replace(/\\/g, "/")
+
+  const orbitDBPromise = initOrbitDB();
+  const headlessPromise = headless.init();
+  await orbitDBPromise;
+  await headlessPromise;
+}
 
 //1st: Bud och egen address.
 //2nd: accept bid, skickar sin egen adress.
@@ -9,42 +20,51 @@ const headless = require("./Headless.js")
 //2nd: skickar konstraktsadress
 
 var orbitdb
-var db
 var channel
 var key
+var ipfs
 
 const access = {
-   // Give write access to ourselves
-   write: ['*'],
- }
+    // Give write access to ourselves
+    write: ['*'],
+};
 
-var ipfs = new Ipfs({
-  repo: "ipfs/shared",
-  config: {
-    Addresses: {
-      Swarm: [
-        '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
-      ]
-    }
-  },
-  EXPERIMENTAL: {
-      pubsub: true // OrbitDB requires pubsub
-  }
-});
-
-ipfs.once('error', (err) => console.error(err))
-
-ipfs.once('ready', async function() {
-
-  try {
-    orbitdb = new OrbitDB(ipfs)
-    key = orbitdb.key.getPublic('hex')
-
-} catch (e) {
-  console.error(e)
+function initOrbitDB() {
+    return new Promise((resolve, reject) => {
+        ipfs = new Ipfs({
+            repo: directory + "/storage/ipfs",
+            config: {
+                Addresses: {
+                    Swarm: [
+          '/dns4/ws-star-signal-2.servep2p.com/tcp/443/wss/p2p-websocket-star',
+          //  '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
+          // '/dnsaddr/ws-star-signal-1.servep2p.com/tcp/443/wss/p2p-websocket-star',
+          // '/dnsaddr/ws-star-signal-2.servep2p.com/tcp/443/wss/p2p-websocket-star',
+          // '/dnsaddr/ws-star-signal-3.servep2p.com/tcp/443/wss/p2p-websocket-star',
+                    ],
+                },
+            },
+            EXPERIMENTAL: {
+                // OrbitDB requires pubsub
+                pubsub: true,
+            },
+        });
+        ipfs.once('error', error => {
+            reject(error);
+        });
+        ipfs.once('ready', () => {
+            try {
+                orbitdb = new OrbitDB(ipfs, directory + "/storage/orbitdb");
+                key = orbitdb.key.getPublic('hex');
+                resolve();
+            }
+            catch(error) {
+                reject(error);
+            }
+        });
+    });
 }
 
-});
 
 
 /**
@@ -60,39 +80,24 @@ async function createDB(name, type, permission){
   return headless.createDB(name, type, permission)
 }
 
-
 /*
-Bid should be JSON in form of jsonObject = {
-    "step" : "1",
-    "from" : {
-        "currency": "CURRENCY",
-        "amount" : "AMOUNT"
-    },
-    "to": {
-        "currency": "CURRENCY",
-        "amount" : "AMOUNT"
-    },
-    "address" : adressString,
-    "channel" : channelString
-  };
-
-  Can only push one bid at a time at the moment
+Remove
 */
-async function addData(data, address){
-  data["step"] = "1"
-  data["channel"] = await createDB(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), "feed", "public"); //randomly generated String https://gist.github.com/6174/6062387
-  var db = await orbitdb.log(address);
-  await db.load();
-  var hash = await db.add(data);
+async function addData(data, channelName, address){
+  //var messaging = await createDB(channelName, "log", "public")
+  //channel = await getLogDB(messaging)
+  //await channel.load()
 
-  console.log(data.channel);
+  //var initialMessage = new Object();
+  //initialMessage.step = 1;
+  //initialMessage.address = address;
 
-  channel = await orbitdb.feed(data.channel);
-  await channel.add(data.address);
-  return hash;
+  //var initialJSON = JSON.stringify(initialMessage);
 
-  //gives error
-//  processInfo(checkForStep(2));
+  //var key = await channel.add(initialJSON)
+
+  //For testing
+  //const date = channel.iterator({ limit: -1 }).collect().map((e) => e.payload.value)
 }
 
 // Used for keyvalue database
@@ -109,115 +114,138 @@ async function getKVData(key, address){
   return data
 }
 
-/*
-  Just send address
-  jsonObject = {
-      "step" : "2",
-      "adress" : adressString
-    };
-*/
-async function acceptBid(bid){
-  channel = await orbitdb.feed(bid.channel);
-  await channel.load();
+async function acceptBid(bid, address, callback){
+  var messagingChannel = await createDB(bid.channel, "log", "public")
+  channel = await getLogDB(messagingChannel)
+  await channel.load()
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-  var jsonObject = { "step" : "2", "address" : bid.address};
-  await channel.add(jsonObject);
-  processInfo(message);
-  //Let everybody know that the bid is taken.
-  //checkForStep(3);
+
+  var acceptMessage = new Object();
+  acceptMessage.step = 1;
+  acceptMessage.address = address;
+  acceptMessage.bid = bid;
+
+  var JSONObject = JSON.stringify(acceptMessage)
+  var returnvalue = await channel.add(JSONObject);
+
+  checkForStep(2,callback);
 }
 
-function checkForStep(step) {
-  var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
-  while(message.step != step) {
-    var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
+async function bidAccepted(bid, callback){
+  var messagingChannel = await createDB(bid.channel, "log", "public")
+  channel = await getLogDB(messagingChannel)
+  await channel.load()
+  var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
+
+  checkForStep(1,callback);
+}
+
+//If correct step is found the information in the channel will be returned to the callback function
+function checkForStep(step, callback) {
+  var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
+  try{
+    console.log(message);
+    jsonObj = JSON.parse(message);
+  } catch(e) {
+    console.log("No one has accepted this bid yet: " + e);
+    return
   }
+  var timer = setInterval(function(){
+    //after claim it sometimes turns up empty, TODO, fix that bug
+    if(message != null && message != []){
+      console.log(message);
+      try{
+        if(JSON.parse(message).step != step) {
+          message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
+        } else {
+          clearInterval(timer)
+          callback(message);
+        }
 
-  return message;
+      }catch(e){
+        console.log("For some reason an incorrect message: " + e);
+      }
+    }
+  }, 5000);
 }
 
-/*
-  Just send address and channel
-  jsonObject = {
-      "step" : "3",
-      "channel" : channelString,
-      "digest" : digestString,
-      "contractAddress" : contractAddressString
-    };
-*/
-async function pushDigestInfo(contractInfo) {
-  jsonObject = {
-      "step" : "3",
-      "digest" : contractInfo.digest,
-      "contractAddress" : contractInfo.contractAddress
-    };
-  await channel.add(jsonObject);
+async function pushDigestInfo(contractInfo, func) {
 
-  processInfo(checkForStep(4));
+  // var messaging = await createDB(contractInfo.channel, "log", "public"); //Additions
+  // channel = await getLogDB(messaging);
+  // await channel.load();
+  // close();
 
+  var jsonObj = new Object();
+  jsonObj.step = 2;
+  jsonObj.digest = contractInfo.digest;
+  jsonObj.contractAddress = contractInfo.contractAddress;
+  jsonObj.address = contractInfo.address;
+  jsonObj.bid = contractInfo.bid;
+
+  var digestMessage = JSON.stringify(jsonObj)
+  await channel.add(digestMessage);
+  checkForStep(3,func);
 }
 
-/*
-  Just send address and channel
-  jsonObject = {
-      "step" : "4",
-      "channel" : channelString,
-      "contractAddress" : contractAddressString
-    };
-*/
-async function pushContractInfo(contractInfo) {
-  jsonObject = {
-      "step" : "4",
-      "contractAddress" : contractInfo.contractAddress
-    };
-  await channel.add(jsonObject);
+async function pushContractInfo(contract, message, callback) {
+  //Will wait until the contract is deployed on the blockchain
+
+  var jsonMessage = message;
+  jsonMessage.step = 3; //recycling step 3 data, need to update some values
+  jsonMessage.contractAddress = contract.contractAddress;
+  var contractMessage = JSON.stringify(jsonMessage)
+
+  message.promise = contract.promise;
+  channel.add(contractMessage);
+  callback(message);
 }
 
 
-function processInfo(message) {
-  if(contractInfo.step == 1) {
-    return message;
-    //call checkForStep(3)
-  } else if(contractInfo.step == 2) {
-    return message;
-    //prompt user to complete step 3
-  } else if(contractInfo.step == 3) {
-    //prompt user to complete step 4
-    return message;
-  } else if(contractInfo.step == 4) {
-    return message;
-  } else {
 
+async function getLogDB(address){
+  var db = await orbitdb.log(address)
+  headless.close()
+    return db
+
+}
+
+async function getKVDB(address){
+  var db = await orbitdb.keyvalue(address)
+  headless.close()
+  return db
+}
+
+async function getData(amount, db){
+  var data = db.iterator({ limit : amount }).collect()
+  var bids = []
+  for (var i = 0; i < data.length; i++) {
+    var bid = data[i].payload.value
+    bids.push(bid)
   }
-
+  return bids
 }
 
+async function changeStatus(message, newStatus){
+  message.bid.status = newStatus;
 
+  channel.add(message);
 
-/*
-var jsonObject = {
-    "step" : "1",
-    "from" : "CURRENCY",
-    "fromAmount" : '5',
-    "to":"CURRENCY",
-    "toAmount" : '5',
-    "address" : 'test',
-    "channel" : '/orbitdb/QmYSrtiCHNTGxoBikQBt5ynoMfGHhEuLmWkPx7yaPdCPgs/message'
-  };
-*/
-async function getData(amount, address){
-    var db = await orbitdb.log(address)
-    await db.load()
-    var data = db.iterator({ limit : amount }).collect()
-    return data
 }
 
 module.exports = {
+  init,
   addData,
   getData,
+  bidAccepted,
   acceptBid,
+  pushDigestInfo,
+  pushContractInfo,
   checkForStep,
   createDB,
   addKVData,
-  getKVData
+  getKVData,
+  getLogDB,
+  getKVDB,
+  changeStatus
 }

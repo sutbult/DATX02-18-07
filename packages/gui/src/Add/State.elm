@@ -22,6 +22,7 @@ init =
             , submitting = False
             , currencies = []
             , error = errorModel
+            , initialized = False
             }
         , Cmd.batch
             [ getCurrencies
@@ -45,11 +46,9 @@ update msg model =
         SetToAmount value ->
             ({model | toAmount = value}, Cmd.none)
 
-        Submit ->
+        SubmitContinue ->
             if not model.submitting then
-                -- TODO: Skriv ut fel tydligt vad som är fel
-                -- Gör #36 först
-                case Debug.log "Bid" <| getBid model of
+                case getBid model of
                     Just bid ->
                         ({model | submitting = True}, addBid bid)
 
@@ -73,13 +72,25 @@ update msg model =
                 | currencies = currencies
                 , fromCurrency = firstOption currencies
                 , toCurrency = secondOption currencies
+                , initialized = True
             }, Cmd.none)
 
         ToError subMsg ->
             let
                 (subModel, subCmd) = Error.State.update subMsg model.error
+                newModel = {model
+                    | error = subModel
+                    , initialized = True
+                    }
             in
-                ({model | error = subModel}, Cmd.map ToError subCmd)
+                (newModel, Cmd.map ToError subCmd)
+
+        TriggerPassword _ _ _ _ ->
+            (model, Cmd.none)
+
+        Noop ->
+            (model, Cmd.none)
+
 
 
 firstOption : List String -> String

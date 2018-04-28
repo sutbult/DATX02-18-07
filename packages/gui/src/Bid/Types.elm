@@ -4,13 +4,16 @@ module Bid.Types exposing
     , Bid
     , AmountStatus(..)
     , createBid
-    , baseUnit
+    , currencyMeta
+    , currencyName
     , amountStatus
     , amountString
+    , statusChanged
     )
 
 import Regex exposing (..)
 import Maybe exposing (..)
+import Dict
 
 type Status
     = Active
@@ -24,8 +27,11 @@ type alias Value =
     }
 
 
+type alias BidID = String
+
+
 type alias Bid =
-    { id : String
+    { id : BidID
     , status : Status
     , from : Value
     , to : Value
@@ -38,9 +44,16 @@ type AmountStatus
     | Success String String
 
 
+type alias CurrencyMeta =
+    { name : String
+    , offset : Int
+    , unit : String
+    }
+
+
 -- Easy constructor for Bid
 createBid
-    :  String
+    :  BidID
     -> Status
     -> String
     -> String
@@ -53,20 +66,42 @@ createBid id status fromCurrency fromAmount toCurrency toAmount =
         (Value toCurrency toAmount)
 
 
-baseUnit : String -> (Int, String)
-baseUnit currency =
+currencyMeta : String -> CurrencyMeta
+currencyMeta currency =
     case currency of
-        "Bitcoin" ->
-            (8, "satoshi")
+        "BTC" ->
+            { name = "Bitcoin"
+            , offset = 8
+            , unit = "satoshi"
+            }
 
-        "Bitcoin cash" ->
-            (8, "satoshi")
+        "BCH" ->
+            { name = "Bitcoin Cash"
+            , offset = 8
+            , unit = "satoshi"
+            }
 
-        "Ethereum" ->
-            (18, "wei")
+        "ETH" ->
+            { name = "Ethereum"
+            , offset = 18
+            , unit = "wei"
+            }
+
+        "ETC" ->
+            { name = "Ethereum Classic"
+            , offset = 18
+            , unit = "wei"
+            }
 
         _ ->
-            (0, String.toLower currency)
+            { name = String.toUpper currency
+            , offset = 0
+            , unit = String.toUpper currency
+            }
+
+
+currencyName : String -> String
+currencyName = .name << currencyMeta
 
 
 amountStatus : Bool -> String -> String -> AmountStatus
@@ -76,14 +111,14 @@ amountStatus withFormatting currency amount =
     else if String.isEmpty currency then
         Error
     else
-        case amountRegexMatch amount of
+        case amountRegexMatch <| removeApostrophes amount of
             Just (base, dec) ->
                 let
-                    (padding, unit) = baseUnit currency
+                    meta = currencyMeta currency
                     amountValue =
                         removeInitialZeroes <| String.concat
                             [ padZeroes False 1 <| base
-                            , padZeroes True padding <| dec
+                            , padZeroes True meta.offset <| dec
                             ]
                     formattedValue =
                         if withFormatting then
@@ -91,23 +126,29 @@ amountStatus withFormatting currency amount =
                         else
                             amountValue
                 in
-                    Success formattedValue unit
+                    Success formattedValue meta.unit
             Nothing ->
                 Error
+
+
+removeApostrophes : String -> String
+removeApostrophes =
+    replace All (regex "'") (\_ -> "")
 
 
 amountString : Value -> String
 amountString account =
     let
-        (basePow, _) = baseUnit account.currency
+        offset = .offset <| currencyMeta account.currency
         amount = account.amount
         base =
             formatNumber
             <| padZeroes False 1
-            <| String.dropRight basePow amount
+            <| String.dropRight offset amount
         dec =
             removeLastZeroes
-            <| String.right basePow amount
+            <| padZeroesLeft offset
+            <| String.right offset amount
         separator =
             if String.isEmpty dec then
                 ""
@@ -178,6 +219,11 @@ padZeroes limit n str =
         str ++ String.repeat (n - String.length str) "0"
 
 
+padZeroesLeft : Int -> String -> String
+padZeroesLeft n str =
+    String.repeat (n - String.length str) "0" ++ str
+
+
 -- TODO: Implementera med reguljära uttryck istället
 removeLastZeroes : String -> String
 removeLastZeroes str =
@@ -185,3 +231,77 @@ removeLastZeroes str =
         removeLastZeroes (String.dropRight 1 str)
     else
         str
+
+
+-- Status changed
+
+statusChanged
+    :  List Bid
+    -> List Bid
+    -> List Bid
+statusChanged old new =
+    let
+        resultDict =
+            statusChangedDict
+                (bidListToDict old)
+                (bidListToDict new)
+    in
+        List.map Tuple.second
+            <| Dict.toList resultDict
+
+
+bidListToDict
+    :  List Bid
+    -> Dict.Dict BidID Bid
+bidListToDict =
+    let
+        mapper bid = (bid.id, bid)
+    in
+        Dict.fromList << List.map mapper
+
+
+statusChangedDict
+    :  Dict.Dict BidID Bid
+    -> Dict.Dict BidID Bid
+    -> Dict.Dict BidID Bid
+statusChangedDict =
+    let
+        combiner _ old new =
+            if old.status /= new.status then
+                Just new
+            else
+                Nothing
+    in
+        intersectMapFilter combiner
+
+
+-- Dict utils
+
+intersectMapFilter
+    :  (comparable -> a -> b -> Maybe c)
+    -> Dict.Dict comparable a
+    -> Dict.Dict comparable b
+    -> Dict.Dict comparable c
+intersectMapFilter fn a b =
+    let
+        merger k a b coll =
+            case fn k a b of
+                Just c ->
+                    Dict.insert k c coll
+                Nothing ->
+                    coll
+    in
+        intersectMerge merger a b Dict.empty
+
+
+intersectMerge
+    :  (comparable -> a -> b -> result -> result)
+    -> Dict.Dict comparable a
+    -> Dict.Dict comparable b
+    -> result
+    -> result
+intersectMerge merger =
+    let
+        skip _ _ = identity
+    in
+        Dict.merge skip merger skip

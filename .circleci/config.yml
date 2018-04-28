@@ -1,37 +1,98 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
+
 version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
       - image: circleci/node:9.4
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
 
     working_directory: ~/repo
 
     steps:
       - checkout
 
-      # Download and cache dependencies
+      # Root node modules
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
+      # Api node modules
+      - restore_cache:
+          keys:
+          - api-dependencies-{{ checksum "packages/api/package.json" }}
+          - api-dependencies-
+
+      # Gui node modules
+      - restore_cache:
+          keys:
+          - gui-dependencies-{{ checksum "packages/gui/package.json" }}
+          - gui-dependencies-
+
+      # Elm packages
+      - restore_cache:
+          keys:
+          - elm-dependencies-{{ checksum "packages/gui/elm-package.json" }}
+          - elm-dependencies-
+
+      # Install packages
       - run: yarn install
 
+      # Root node modules
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      # run tests!
+      # Api node modules
+      - save_cache:
+          paths:
+            - packages/api/node_modules
+          key: api-dependencies-{{ checksum "packages/api/package.json" }}
+
+      # Gui node modules
+      - save_cache:
+          paths:
+            - packages/gui/node_modules
+          key: gui-dependencies-{{ checksum "packages/gui/package.json" }}
+
+      # Elm packages
+      - save_cache:
+          paths:
+            - packages/gui/elm-stuff
+          key: elm-dependencies-{{ checksum "packages/gui/elm-package.json" }}
+
+      # Sysconfcpus build
+      - restore_cache:
+          keys:
+          - sysconfcpus-build
+
+      # Configure elm-make to use sysconfcpus
+      - run:
+          name: "Configure elm-make to use sysconfcpus"
+          command: |
+            ROOT_DIR=$HOME/repo
+            GUI_BIN_DIR=$ROOT_DIR/packages/gui/node_modules/.bin
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+            if [ ! -d sysconfcpus/bin ];
+            then
+              git clone https://github.com/obmarg/libsysconfcpus.git;
+              cd libsysconfcpus;
+              ./configure --prefix=$ROOT_DIR/sysconfcpus;
+              make && make install;
+              cd ..;
+            fi
+            mv $GUI_BIN_DIR/elm-make $GUI_BIN_DIR/elm-make-old
+            printf '%s\n\n'\
+              '#!/bin/bash'\
+              'echo "Running elm-make with sysconfcpus -n 1"'\
+              '$HOME/repo/sysconfcpus/bin/sysconfcpus -n 1 elm-make-old "$@"' > $GUI_BIN_DIR/elm-make
+            chmod +x $GUI_BIN_DIR/elm-make
+
+      # Sysconfcpus build
+      - save_cache:
+          paths:
+            - sysconfcpus
+          key: sysconfcpus-build
+
+      # Run tests
       - run: yarn test
