@@ -40,7 +40,7 @@ async function main() {
     setTimeout(async function() {
       var redeem = await redeemAsSeller(htlc.sellerECPair, "1", txid, bitcoinjs.networks.testnet, result.timeout, address, 10000000, htlc.htlc.redeemScript);
       console.log(redeem);
-    }, 5000);
+    }, 10000);
 
   }
 }
@@ -336,7 +336,7 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, timeout, destina
   ], redeemScript);
   tx.setInputScript(0, redeemScriptSig);
   return new Promise(function(resolve, reject) {
-    rpc.sendRawTransaction(tx, (err, ret) => {
+    rpc.sendRawTransaction(tx, true, (err, ret) => {
       if (err) {
         reject(err);
       }
@@ -347,10 +347,10 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, timeout, destina
 
 //
 async function redeemAsSeller(sellerECPair, secret, htlcTransId, network, timeout, destination, btc, redeemScript) {
-  console.log("Inside redeemAsSeller");
+  // console.log("Inside redeemAsSeller");
   var tx = await buildReedemTransaction(htlcTransId, network, timeout,
     destination, btc);
-  console.log(tx);
+  // console.log(tx);
   var signatureHash = tx.hashForSignature(0, redeemScript, bitcoinjs.Transaction.SIGHASH_ALL);
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
     sellerECPair.sign(signatureHash).toScriptSignature(bitcoinjs.Transaction.SIGHASH_ALL),
@@ -363,7 +363,7 @@ async function redeemAsSeller(sellerECPair, secret, htlcTransId, network, timeou
   console.log("tx");
   console.log(tx.toHex());
   return new Promise(function(resolve, reject) {
-    rpc.sendRawTransaction(tx.toHex(), (err, ret) => {
+    rpc.sendRawTransaction(tx.toHex(), true, (err, ret) => {
       if (err) {
         console.log(err);
         reject(err);
@@ -375,13 +375,13 @@ async function redeemAsSeller(sellerECPair, secret, htlcTransId, network, timeou
 }
 
 async function buildReedemTransaction(htlcTransId, network, timeout, destination, btc) {
-  console.log(htlcTransId);
+  // console.log(htlcTransId);
   return new Promise(async function(resolve, reject) {
     var vout = await voutFromTransaction(htlcTransId);
     var txb = new bitcoinjs.TransactionBuilder(network);
-    txb.setLockTime(0);
+    // txb.setLockTime(0);
     txb.addInput(htlcTransId, vout, 0xfffffffe);
-    txb.addOutput(destination, btc - 177);
+    txb.addOutput(destination, btc - 400);
     var tx = txb.buildIncomplete();
     console.log(tx);
     resolve(tx);
