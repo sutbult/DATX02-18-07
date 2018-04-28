@@ -41,6 +41,11 @@ contract HTLC_ERC20 {
         e.transfer(_to, e.balanceOf(this));
     } 
     
+    function balanceOf() constant public returns (uint256) {
+        ERC20Partial e = ERC20Partial(token);
+        return e.balanceOf(this);
+    }
+    
     function refund() onlyIssuer public returns(bool result) {
         require(block.number >= unlockAtBlock);
         transfer(issuer);
