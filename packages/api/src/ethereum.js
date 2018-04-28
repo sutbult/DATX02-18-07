@@ -171,7 +171,7 @@ async function validateERC20Address(ethchain, contract_abi, token_address, contr
     var contract, contract_token;
 
     contract = new ethchain.eth.Contract(contract_abi, contract_address);
-    contract_token = await contract.methods.addressToken().call();
+    contract_token = await contract.methods.token().call();
     return token_address == contract_token;
 }
 
