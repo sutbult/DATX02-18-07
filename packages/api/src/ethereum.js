@@ -33,8 +33,9 @@ var htlc_ether = JSON.parse(fs.readFileSync('../../contracts/HTLC.json', 'utf8')
 var htlc_erc20 = JSON.parse(fs.readFileSync('../../contracts/HTLC_ERC20.json', 'utf8'));
 
 
+
 //Use to check which chain you are on.
-function genesisCheck(ethchain){
+function genesisCheckEthereum(ethchain){
     ethchain.eth.getBlock(0)
     .then(genblock => {
         if(genblock.hash == "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3"){//Mainnet genesis block
@@ -285,24 +286,14 @@ function claimContract(ethchain, pre_image_hash, from_address, claim_address){
 }
 
 module.exports = {
-    web3,
-    genesisCheck,
+    genesisCheckEthereum,
+    genesisCheckClassic,
     getBalance,
-    subscribeToClaim,
     unlockAccount,
     getPastClaim,
-    htlc_ether,
-    htlc_erc20,
-    validateCode,
     validateEtherContract,
     validateERC20Contract,
-    validateContract,
-    validateDestination,
-    validateValue,
-    validateERC20Value,
     claimContract,
-    sendTokensToContract,
     sendERC20Contract,
     sendEtherContract,
-    validateContract
 };

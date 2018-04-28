@@ -34,7 +34,7 @@ contract HTLC_ERC20 {
        emit Claim(_hash);       
        selfdestruct(dest);
        return true; //This will not occur
-       }
+    }
 
     function transfer(address _to) internal {
         ERC20Partial e = ERC20Partial(token);
