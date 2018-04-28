@@ -7,18 +7,22 @@ var RpcClient = require('bitcoind-rpc');
 
 
 async function main() {
+  //buyer sends it public key
+  BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16593');
+  var buyerPrivkey = await getPrivateKey();
+  var buyerECPair = bitcoinjs.ECPair.fromWIF(buyerPrivkey, bitcoinjs.networks.testnet);
+  var buyerPublicKeyBuffer = buyerECPair.getPublicKeyBuffer();
   //seller creates contract
   BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16592');
   var balance = await getBalance();
   console.log(balance);
-  var buyerECPair = bitcoinjs.ECPair.fromWIF('cURBHxPBAKuUUE6hp5DBPASNid4cKAD2RwAuCZnTmDEDMGe2nazx', bitcoinjs.networks.testnet);
-  var htlc = await createHTLC("1", buyerECPair.getPublicKeyBuffer(), 10, bitcoinjs.networks.testnet);
+  var htlc = await createHTLC("1", buyerPublicKeyBuffer, 10, bitcoinjs.networks.testnet);
   // var ok = await htlcAddress(htlc.digest, sellerECPair.getPublicKeyBuffer(), htlc.buyerPublicKeyBuffer, 10, bitcoinjs.networks.testnet);
   //buyer verifies contract and sends funds to it
   BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16593');
   var balance = await getBalance();
   console.log(balance);
-  var ok = await verifyHTLC(htlc.digest, htlc.sellerPublicKeyBuffer, buyerECPair.getPublicKeyBuffer(), 10, bitcoinjs.networks.testnet, htlc.address);
+  var ok = await verifyHTLC(htlc.digest, htlc.sellerPublicKeyBuffer, buyerPublicKeyBuffer, 10, bitcoinjs.networks.testnet, htlc.address);
   if (ok) {
     var txid = await sendToHTLC(htlc.address, 0.1)
     var balance = await getBalance();
@@ -34,20 +38,14 @@ async function main() {
     var address = await getAddress();
     console.log(address);
     setTimeout(async function() {
-      var redeem = await redeemAsSeller(htlc.sellerECPair, "1", txid, bitcoinjs.networks.testnet, result.timeout, address, 9990000, htlc.htlc.redeemScript);
+      var redeem = await redeemAsSeller(htlc.sellerECPair, "1", txid, bitcoinjs.networks.testnet, result.timeout, address, 10000000, htlc.htlc.redeemScript);
       console.log(redeem);
-    }, 3000);
+    }, 5000);
 
   }
 }
-async function functionName() {
-  BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16592');
-  var block = await voutFromTransaction('0af1cbc7f9c8a7e7794b82956eb011f05981ec94b31c8c366829abbe788c41ae');
-  console.log(block);
-}
 var rpc;
-// functionName();
-main();
+// main();
 
 // let htlcTransactionObject = {};
 var htlcTransactionObject = new Object();
@@ -133,6 +131,7 @@ function generateBlock() {
 }
 
 async function voutFromTransaction(transId) {
+  console.log(transId);
   return new Promise((resolve, reject) => {
     rpc.getRawTransaction(transId, (err, ret) => {
       if (err) {
@@ -382,7 +381,7 @@ async function buildReedemTransaction(htlcTransId, network, timeout, destination
     var txb = new bitcoinjs.TransactionBuilder(network);
     txb.setLockTime(0);
     txb.addInput(htlcTransId, vout, 0xfffffffe);
-    txb.addOutput(destination, btc);
+    txb.addOutput(destination, btc - 177);
     var tx = txb.buildIncomplete();
     console.log(tx);
     resolve(tx);
