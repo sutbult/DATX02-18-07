@@ -25,10 +25,24 @@ app.ports.notify.subscribe((content) => {
 });
 
 // Filters
+async function loadFilters() {
+    const filters = await store.get("filters");
+    const filterOrder = await store.get("filterOrder");
+
+    if(filters && filterOrder) {
+        app.ports.subFilters.send([
+            "init",
+            filters,
+            filterOrder,
+        ]);
+    }
+}
 app.ports.saveFilters.subscribe(filterData => {
-    //console.log(JSON.stringify(filterData, null, 4));
     app.ports.subFilters.send(filterData);
-    // TODO: Spara filterData på disk
+
+    store.set("filters", filterData[1]).then(() => {
+        store.set("filterOrder", filterData[2]);
+    });
 });
 
 // Api
@@ -36,6 +50,7 @@ startAPI()
     .then(() => {
         setupSSE(app);
         app.ports.apiStarted.send(null);
+        return loadFilters();
     })
     .catch(error => {
         console.error("The API server could not be started");

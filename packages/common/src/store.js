@@ -57,7 +57,7 @@ async function loadStore(storeName) {
     return JSON.parse(storeString);
 }
 async function saveStore(storeName, store) {
-    return await saveStoreString(storeName, JSON.stringify(store));
+    await saveStoreString(storeName, JSON.stringify(store));
 }
 async function getStoreRaw(storeName) {
     try {
