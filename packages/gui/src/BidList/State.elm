@@ -29,7 +29,7 @@ init : Bool -> String -> (Model, Cmd Msg)
 init showStatus bidPath =
     let
         (tableModel, tableCmd) = TableState.init showStatus
-        (filterModel, filterCmd) = FilterState.init
+        (filterModel, filterCmd) = FilterState.init bidPath
         (errorModel, errorCmd) = ErrorState.init
     in
         (   { table = tableModel
