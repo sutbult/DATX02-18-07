@@ -1,7 +1,24 @@
 const Ipfs = require('ipfs')
 const OrbitDB = require('orbit-db')
 const headless = require("./Headless.js")
+const os = require("os");
+const path = require("path");
 var directory
+
+
+const STORAGE_DIR = path.join(
+    os.homedir(),
+    ".DATX02-18-07",
+    "storage"
+);
+const IPFS_DIR = path.join(
+    STORAGE_DIR,
+    "ipfs"
+);
+const ORBITDB_DIR = path.join(
+    STORAGE_DIR,
+    "orbitdb"
+);
 
 
 async function init() {
@@ -32,7 +49,7 @@ const access = {
 function initOrbitDB() {
     return new Promise((resolve, reject) => {
         ipfs = new Ipfs({
-            repo: directory + "/storage/ipfs",
+            repo: IPFS_DIR,
             config: {
                 Addresses: {
                     Swarm: [
@@ -54,7 +71,7 @@ function initOrbitDB() {
         });
         ipfs.once('ready', () => {
             try {
-                orbitdb = new OrbitDB(ipfs, directory + "/storage/orbitdb");
+                orbitdb = new OrbitDB(ipfs, ORBITDB_DIR);
                 key = orbitdb.key.getPublic('hex');
                 resolve();
             }
