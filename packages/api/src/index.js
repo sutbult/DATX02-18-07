@@ -5,6 +5,7 @@ const runOnce = require("./runOnce.js");
 const trader = require("./tradeHandler.js");
 const diskStore = require("./diskStore.js");
 const localStore = require("./localStore.js");
+const headless = require("./Headless.js");
 
 // Describes every currency that is available to the user
 const availableCurrencies = [
@@ -24,6 +25,11 @@ async function init() {
      * @todo clearInterval once all bids are accepted: https://nodejs.org/en/docs/guides/timers-in-node/
      */
     const interval = setInterval(checkAccBid, 20000);
+}
+async function close() {
+    await headless.close();
+    // TODO: Stäng av IPFS och OrbitDB också.
+    // Det går nog att göra samtifigt som headless Chrome.
 }
 const ensureInitialized = runOnce(init);
 
@@ -205,4 +211,5 @@ module.exports = {
     setSettings,
     setPasswords,
     setMessageHandler,
+    close,
 };

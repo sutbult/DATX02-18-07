@@ -15,7 +15,7 @@ function startAPI() {
             cwd: apiCwd
         });
         function kill() {
-            api.kill();
+            api.kill("SIGINT");
         }
         api.stdout.on("data", data => {
             const msg = data.toString("utf-8");

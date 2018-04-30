@@ -146,3 +146,22 @@ server.listen(51337, "localhost", () => {
     setupSSE();
     console.log("Daemon is now running");
 });
+
+
+// Close listeners
+
+var closing = false;
+
+async function close() {
+    if(!closing) {
+        closing = true;
+        await api.close();
+        process.exit();
+    }
+}
+
+process.on("exit", close);
+process.on("SIGINT", close);
+process.on("SIGUSR1", close);
+process.on("SIGUSR2", close);
+process.on("uncaughtException", close);

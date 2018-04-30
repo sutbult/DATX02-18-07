@@ -43,7 +43,9 @@ async function createDB(name, type, permission) {
 }
 
 async function close(){
-  await browser.close()
+    if(browser) {
+        await browser.close();
+    }
 }
 function listener(word) {
     var string = JSON.stringify(word, null, 2)
