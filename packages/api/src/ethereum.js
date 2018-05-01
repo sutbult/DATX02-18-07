@@ -78,7 +78,7 @@ async function getEtherBalance(account_address){
 }
 
 async function getTokenBalance(account_address){
-    var balance, token_address;
+    var balance, token_address, token;
     
     token_address = this.token;
     token = new this.chain.eth.Contract(this.erc20.abi, token_address);
@@ -129,7 +129,7 @@ async function validateERC20Contract(contract_address, self_address, value_in_to
 /** This function validates parts of a HTLC contract, used by other functions
 */
 async function validateContract(contract_address, self_address, digest = null){
-    var res_code, res_dest, res_digest;
+    var res_code, res_dest, res_digest, res_refund;
 
     console.log("Validating contract ");
     res_code = await validateCode.bind(this)(contract_address);
