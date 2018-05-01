@@ -80,6 +80,15 @@ function unlockWithSecret(whisper){
     claim(currency, message);
 }
 
+async function validateBuyerContract(currency, message){
+    var valid;
+    
+    console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
+    valid = await currency.validate(message.contractAddress, currency.wallet, message.bid.from.amount, message.digest, margin_seller);
+    
+    return valid;
+}
+
 async function issueSellerContract(currency, message){
    var wallet = await currency.wallet();
    //Make sure only one contract is deployed, this does that by changing status to pending
@@ -111,10 +120,31 @@ async function runBuyer(whisper){
     if(whisper.constructor === {}.constructor) message = whisper;
     else message = JSON.parse(whisper);
 
-    currency = currencies[message.bid.to.currency];
+    exchange_to = currencies[message.bid.to.currency];
+    exchange_from = currencies[message.bid.from.currency];
+    
     console.log("To " + message.bid.to.currency);
-    receipt = await issueBuyerContract.bind(this)(currency, message);
-    messenger.pushContractInfo(receipt, message, unlockWithSecret);
+    valid   = await validateSellerContract(exchange_from, message)
+    
+    if (valid){
+        console.log("ヽ(ヅ)ノ Buyer finds Seller contract valid! ヽ(ヅ)ノ");
+        receipt = await issueBuyerContract.bind(this)(exchange_to, message);
+        messenger.pushContractInfo(receipt, message, unlockWithSecret);
+    }
+    else {
+        console.log("(-公- ;) Buyer finds Seller contract invalid... (-公- ;)");
+        //WHAT SHOULD HAPPEN HERE?
+    }
+    
+}
+
+async function validateSellerContract(currency, message){
+    var valid;
+    
+    console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
+    valid = await currency.validate(message.contractAddress, currency.wallet, message.bid.to.amount, null, margin_buyer);
+    
+    return valid;
 }
 
 async function issueBuyerContract(currency, message){
@@ -150,7 +180,7 @@ async function claim(currency, message){
 
         
         if(message.secret != null){
-	    console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
+            console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
             pre_image_hash = JSON.stringify(message.secret);
             return await currency.claim(pre_image_hash, from_address, claim_address);
         }else{
