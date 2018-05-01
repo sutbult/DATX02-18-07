@@ -99,7 +99,7 @@ async function issueSellerContract(currency, message){
         from_addr = wallet;
         
         console.log("(´･ω･`) Unlocking account for first contract (´･ω･`)");
-        result = await currency.unlock(from_addr, "111");
+        result = await currency.unlock(from_addr, "111", 10000);
         
         console.log("(´･ω･`) Sending first contract (´･ω･`)");
         receipt = await currency.send(from_addr, sha256.hash(secret), to_addr, value, refund_seller);
