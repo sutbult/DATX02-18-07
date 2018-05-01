@@ -4,6 +4,14 @@ const Web3 = require("web3");
 const sha256 = require("./sha256.js");
 const Currency = require("./currency.js");
 
+// Refund time (in hours) and the time margin when validating the first contract (in seconds)
+const refund_time1 = 48;
+const time_margin1 = 44;
+
+// Refund time (in hours) and the time margin when validating the second contract (in seconds)
+const refund_time2 = 24;
+const time_margin2 = 22;
+
 //const web3 = new Web3(Web3.givenProvider  || getIpcPath(), require("net"));
 const web3 = new Web3("http://localhost:8545");
 
@@ -13,58 +21,25 @@ var htlc_ether = JSON.parse(fs.readFileSync('../../contracts/HTLC.json', 'utf8')
 var htlc_erc20 = JSON.parse(fs.readFileSync('../../contracts/HTLC_ERC20.json', 'utf8'));
 
 function Ether(rpc = "http://localhost:8545") {
-    var currency = new Currency.construct(getEtherBalance, sendEtherContract, validateEtherContract, claimContract, getPastClaim, unlockAccount, getWallet);
+    var currency = new Currency.construct(getEtherBalance, sendEtherContract, validateEtherContract, claimContract, getPastClaim, unlockAccount, wallet);
     currency.chain = new Web3(rpc);
     currency.contract = htlc_ether;
+    currency.token = false;
     return currency;
 }
 
 function Token(token_address, rpc = "http://localhost:8545") {
-    var currency = new Currency.construct(getTokenBalance, sendERC20Contract, validateERC20Contract, claimContract, getPastClaim, unlockAccount);
+    var currency = new Currency.construct(getTokenBalance, sendERC20Contract, validateERC20Contract, claimContract, getPastClaim, unlockAccount, wallet);
     currency.chain = new Web3(rpc);
     currency.token = token_address;
     currency.contract = htlc_erc20;
     currency.erc20 = erc20;
+    currency.token = true;
     return currency;
 }
 
-//Use to check which chain you are on.
-async function validateGenesis(ethchain, hash){
-    var genesis;
-    
-    genesis = await ethchain.eth.getBlock(0);
-    
-        //THESE ARE ONLY FOR ETHEREUM; FIND THE NEW ONES FOR ETHEREUM CLASSIC
-        // if(genblock.hash == "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3"){//Mainnet genesis block
-        //     (console.log("Connected to mainnet"));
-        // }else{
-        //     //console.log(genblock.hash)
-        //     if(genblock.hash == "0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d"){//Ropsten testnet genesis block, for testing
-        //         (console.log("Connected to Ropsten testnet"));
-        //     }
-        // }
-    
-    return genesis.hash == hash;
-}
-
-//Use to check which chain you are on.
-async function validateEthereum(ethchain){
-    var valid, hash;
-    hash = "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3";
-    valid = await validateGenesis(ethchain, hash);
-    return valid;
-}
-
-async function validateRopsten(ethchain){
-    var valid, hash;
-    hash = "0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d";
-    valid = await validateGenesis(ethchain, hash);
-    return valid;
-}
-
-
 /** FUNCTION IS SUPPOSED TO GET YOU WALLET BUT IS HARDCODED FOR NOW */
-async function getWallet(){
+async function wallet(){
     var accounts;
     accounts = await this.chain.eth.getAccounts();
     return accounts[2];
@@ -91,36 +66,30 @@ async function unlockAccount(account_address, account_password, time_in_ms = 100
     console.log("Unlocked: " + account);
 }
 
-async function readDigest(contract_address){
-    var contract, contract_digest;
-
-    contract = new this.chain.eth.Contract(this.contract.abi, contract_address);
-    contract_digest = await contract.methods.digest().call();
-    return contract_digest;
-}
-
 /**  This function will validate an Ether HTLC contract
-*  @param {string} digest - The digest of the contract, if there is any (only for second contracts)
 *  @param {string} self_address - The destination of the contract, ie: yourself
+*  @param {string} value_in_wei - The value of Ether that should be in the contract in its smallest unit (wei)
+*  @param {string} digest - The digest of the contract, if there is any (only for second contracts)
+*  @param {int}    time_margin - How much time should at least be remaining for it to be a valid contract
 */
-async function validateEtherContract(contract_address, self_address, value_in_wei, digest = null){
+async function validateEtherContract(contract_address, self_address, value_in_wei, digest = null, time_margin){
     var res_cont, res_val;
     
-    res_cont = await validateContract.bind(this)(contract_address, self_address, digest);
+    res_cont = await validateContract.bind(this)(contract_address, self_address, digest, time_margin);
     res_val = await validateValue.bind(this)(value_in_wei, contract_address);
     return res_cont && res_val;
 }
 
 /**  This function will validate a ERC20 HTLC contract
-*  @param {string} token_address - The address of the token
+*  @param {string} self_address - The destination of the contract, ie: yourself
 *  @param {string} value_in_tokens - The number of tokens, without decimals, so fix decimals before putting something in!
 *  @param {string} digest - The digest of the contract, if there is any (only for second contracts)
-*  @param {string} self_address - The destination of the contract, ie: yourself
+*  @param {int}    time_margin - How much time should at least be remaining for it to be a valid contract
 */
-async function validateERC20Contract(contract_address, self_address, value_in_tokens, digest = null){
+async function validateERC20Contract(contract_address, self_address, value_in_tokens, digest = null, time_margin){
     var res_cont, res_address, res_val;
 
-    res_cont = await validateContract.bind(this)(contract_address, self_address, digest);
+    res_cont = await validateContract.bind(this)(contract_address, self_address, digest, time_margin);
     res_address = await validateERC20Address.bind(this)(contract_address);
     res_val = await validateERC20Value.bind(this)(value_in_tokens, contract_address);
     return res_cont && res_val && res_address;
@@ -128,15 +97,15 @@ async function validateERC20Contract(contract_address, self_address, value_in_to
 
 /** This function validates parts of a HTLC contract, used by other functions
 */
-async function validateContract(contract_address, self_address, digest = null){
-    var res_code, res_dest, res_digest;
+async function validateContract(contract_address, self_address, digest = null, time_margin){
+    var res_code, res_dest, res_digest, res_refund;
 
     console.log("Validating contract ");
     res_code = await validateCode.bind(this)(contract_address);
     console.log("Code: " + res_code);
     res_dest = await validateDestination.bind(this)(self_address, contract_address);
     console.log("Destination: " + res_dest);
-    res_refund = await validateRefund.bind(this)(contract_address);
+    res_refund = await validateRefund.bind(this)(contract_address, time_margin);
     console.log("Refund: " + res_refund);
     res_digest = true;
     if(digest != null){
@@ -159,14 +128,12 @@ async function validateCode(contract_address){
 /** This function will validate that the there is at least 500 blocks until the contract can be unlocked and that it will be locked for 1000 blocks
 */
 
-async function validateRefund(contract_address){
+async function validateRefund(contract_address, time_margin){
     var contract, unlock_block, locked_blocks;
 
     contract = new this.chain.eth.Contract(this.contract.abi, contract_address);
-    unlock_block = await contract.methods.unlockAtBlock().call();
-    locked_blocks = await contract.methods.numBlocksLocked().call();
-    block_height = await this.chain.eth.getBlockNumber();
-    return (unlock_block - block_height) > 500 && locked_blocks == 1000;
+    time_remaining = await contract.methods.remaining().call();
+    return time_remaining > time_margin;
 }
 
 /** This function will validate that the destination on a contract is correct.
@@ -223,25 +190,30 @@ async function validateERC20Address(contract_address){
     return this.token == contract_token;
 }
 
-/**
- * This modules main function
- * @param {hex} from_adr -  adress the user wishes to send money from
+/** This function will deploy a HTLC for Ether with Ether
+ * @param {hex} from_adr - adress the user wishes to send money from
+ * @param {hex} digest - the digest, or hashed value (sha256) that the contract is locked with
+ * @param {hex} destination - the destination of the contract
  */
 
- async function sendEtherContract(from_address, secret, digest, destination, value_in_wei){
-    var args, gen_digest, receipt;
-
-    gen_digest = generateDigest(secret, digest);
-    args = [gen_digest, destination];
+ async function sendEtherContract(from_address, digest, destination, value_in_wei, refund_time){
+    var args, receipt;
+    
+    args = [digest, destination, refund_time];
     receipt = await sendContract.bind(this)(args, from_address, gen_digest, value_in_wei);
     return receipt;
 }
- 
-async function sendERC20Contract(from_address, secret = null, digest = null, destination, value_in_tokens){
-    var args, gen_digest, contract_address, receipt;
 
-    gen_digest = generateDigest(secret, digest);
-    args = [gen_digest, destination, this.token];
+/** This function will deploy a HTLC for a Token and then send Tokens to that contract 
+ * @param {hex} from_adr - adress the user wishes to send money from
+ * @param {hex} digest - the digest, or hashed value (sha256) that the contract is locked with
+ * @param {hex} destination - the destination of the contract
+ */
+ 
+async function sendERC20Contract(from_address, digest, destination, value_in_tokens, refund_time){
+    var args, receipt;
+    
+    args = [digest, destination, this.token, refund_time];
     receipt = await sendContract.bind(this)(args, from_address, gen_digest, 0);
     sendTokensToContract.bind(this)(from_address, receipt.address, value_in_tokens);
     return receipt;
@@ -268,15 +240,6 @@ async function sendContract(args, from_address, digest, value_in_wei){
     receipt.address = from_address; //this is incorrect, remove
     //returnObj.promise = subPromise;
     return receipt;
-}
-
-function generateDigest(secret, digest){
-    if(secret != null){
-        return sha256.hash(secret);
-    }
-    else{
-        return digest;
-    }
 }
 
 /**  This function will validate a ERC20 HTLC contract
@@ -334,6 +297,14 @@ async function claimContract(pre_image_hash, from_address, claim_address){
     catch(e){
         return false;
     }
+}
+
+async function readDigest(contract_address){
+    var contract, contract_digest;
+
+    contract = new this.chain.eth.Contract(this.contract.abi, contract_address);
+    contract_digest = await contract.methods.digest().call();
+    return contract_digest;
 }
 
 module.exports = {
