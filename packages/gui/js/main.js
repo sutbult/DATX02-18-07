@@ -16,7 +16,7 @@ function setupChokidar() {
     const chokidar = require('chokidar');
 
     const WATCH = [
-        'js/**.js',
+        '**/*.js',
         'index.html',
         'elm.js',
     ];

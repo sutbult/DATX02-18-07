@@ -42,7 +42,7 @@ async function getEtherBalance(account_address){
 }
 
 async function getTokenBalance(account_address){
-    var balance, token_address;
+    var balance, token_address, token;
     
     token_address = this.token;
     token = new this.chain.eth.Contract(this.erc20.abi, token_address);
