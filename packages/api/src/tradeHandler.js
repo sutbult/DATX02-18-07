@@ -1,9 +1,17 @@
 const messenger = require("./OrbitDBHandler");
 const db = require("./DBHandler.js");
+const sha256 = require("./sha256.js");
+
+// Refund time (in hours) and the time margin when validating the first contract (in seconds)
+const refund_seller = 48;
+const margin_seller = 22;
+
+// Refund time (in hours) and the time margin when validating the second contract (in seconds)
+const refund_buyer = 24;
+const margin_buyer = 44;
+
 //"global" variable, will be assigned if function whenBidAccepted is called, otherwise stays null
 var secret = null;
-
-
 
 /** Different types of currencies following the currency format in currency.js
     Usage example: currencies["ETH"] to get the ETH currency
@@ -85,7 +93,7 @@ async function issueSellerContract(currency, message){
         result = await currency.unlock(from_addr, "111");
         
         console.log("(´･ω･`) Sending first contract (´･ω･`)");
-        receipt = await currency.send(from_addr, secret, null, to_addr, value, 48);
+        receipt = await currency.send(from_addr, sha256.hash(secret), to_addr, value, refund_seller);
         console.log("(´･ω･`) Maybe sent first contract (´･ω･`)");
         
         return receipt;
@@ -122,7 +130,7 @@ async function issueBuyerContract(currency, message){
         result = await currency.unlock(from_addr, "111");
         
         console.log("(´･ω･`) Sending second contract (´･ω･`)");
-        receipt = await currency.send(from_addr, null, digest, to_addr, value, 24);
+        receipt = await currency.send(from_addr, digest, to_addr, value, refund_buyer);
         console.log("(´･ω･`) Maybe sent second contract (´･ω･`)");
         
         return receipt;

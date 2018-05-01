@@ -1,16 +1,7 @@
 /**Imports */
 const fs = require("fs");
 const Web3 = require("web3");
-const sha256 = require("./sha256.js");
 const Currency = require("./currency.js");
-
-// Refund time (in hours) and the time margin when validating the first contract (in seconds)
-const refund_time1 = 48;
-const time_margin1 = 44;
-
-// Refund time (in hours) and the time margin when validating the second contract (in seconds)
-const refund_time2 = 24;
-const time_margin2 = 22;
 
 //const web3 = new Web3(Web3.givenProvider  || getIpcPath(), require("net"));
 const web3 = new Web3("http://localhost:8545");
@@ -24,7 +15,6 @@ function Ether(rpc = "http://localhost:8545") {
     var currency = new Currency.construct(getEtherBalance, sendEtherContract, validateEtherContract, claimContract, getPastClaim, unlockAccount, wallet);
     currency.chain = new Web3(rpc);
     currency.contract = htlc_ether;
-    currency.token = false;
     return currency;
 }
 
@@ -34,7 +24,6 @@ function Token(token_address, rpc = "http://localhost:8545") {
     currency.token = token_address;
     currency.contract = htlc_erc20;
     currency.erc20 = erc20;
-    currency.token = true;
     return currency;
 }
 
@@ -200,7 +189,7 @@ async function validateERC20Address(contract_address){
     var args, receipt;
     
     args = [digest, destination, refund_time];
-    receipt = await sendContract.bind(this)(args, from_address, gen_digest, value_in_wei);
+    receipt = await sendContract.bind(this)(args, from_address, value_in_wei);
     return receipt;
 }
 
@@ -214,14 +203,14 @@ async function sendERC20Contract(from_address, digest, destination, value_in_tok
     var args, receipt;
     
     args = [digest, destination, this.token, refund_time];
-    receipt = await sendContract.bind(this)(args, from_address, gen_digest, 0);
+    receipt = await sendContract.bind(this)(args, from_address, 0);
     sendTokensToContract.bind(this)(from_address, receipt.address, value_in_tokens);
     return receipt;
 }
 
 
 
-async function sendContract(args, from_address, digest, value_in_wei){
+async function sendContract(args, from_address, value_in_wei){
     var ether, gas_estimate, contract, contract_instance, contract_address, receipt;
     gas_estimate =  572810;
 
