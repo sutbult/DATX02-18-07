@@ -1,30 +1,30 @@
-const orbitDB = require("./OrbitDBHandler.js")
-var globalDB
-var statusDB
-var localDB
-var messageHandler
-var key
+const orbitDB = require("./OrbitDBHandler.js");
+var globalDB;
+var statusDB;
+var localDB;
+var messageHandler;
+var key;
 
 async function init(msgHandler){
-  var messageHandler = msgHandler
+    var messageHandler = msgHandler;
 
   // Address to a global keyvalue database containing status of the bids
 
-  var status = await orbitDB.createDB("bidStatus", "keyvalue", "public")
-  statusDB = await orbitDB.getKVDB(status)
-  await statusDB.load()
+    var status = await orbitDB.createDB("bidStatus", "keyvalue", "public");
+    statusDB = await orbitDB.getKVDB(status);
+    await statusDB.load();
 
   // Address to the global database containing all bids
-  var bids = await orbitDB.createDB("Bids", "log", "public")
-  globalDB = await orbitDB.getLogDB(bids)
-  await globalDB.load()
-  key = globalDB.key.getPublic('hex')
+    var bids = await orbitDB.createDB("Bids", "log", "public");
+    globalDB = await orbitDB.getLogDB(bids);
+    await globalDB.load();
+    key = globalDB.key.getPublic('hex');
 
 
   // Address to the local databaes containing accepted bidStatus
-  var localbids = await orbitDB.createDB("acceptedBids", "keyvalue", "local")
-  localDB = await orbitDB.getKVDB(localbids)
-  await localDB.load()
+    var localbids = await orbitDB.createDB("acceptedBids", "keyvalue", "local");
+    localDB = await orbitDB.getKVDB(localbids);
+    await localDB.load();
 
   //Add Listeners
   statusDB.events.on('replicated', () => {
@@ -79,7 +79,7 @@ async function addBid(bid){
 
   // Add bid to global database
   //Consult Samuel about structure of bids
-  var id = await globalDB.add(bid) //object instead of bid
+    var id = await globalDB.add(bid); //object instead of bid
   // Add bid to local database
   await statusDB.put(id, "ACTIVE");
   console.log("***********StatusDB: %o", statusDB.get(id));
@@ -88,8 +88,8 @@ async function addBid(bid){
 }
 
 async function acceptBid(bidID) {
-  await statusDB.put(bidID, "PENDING")
-  await localDB.put(bidID, "PENDING")
+    await statusDB.put(bidID, "PENDING");
+    await localDB.put(bidID, "PENDING");
   //await orbitDB.acceptBid(bid);
 }
 

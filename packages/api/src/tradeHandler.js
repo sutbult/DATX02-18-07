@@ -17,8 +17,8 @@ var currencies =
 
 //Called from an interval set in index.js if bid has been accepted
 //bid is accepted if the bid.channel contains a step 2
-async function whenBidAccepted(whisper){
-    var message;
+async function runSeller(whisper){
+    var message, currency, receipt;
     //remove bid from db to prevent multiple contracts
 
     //use random function to get a good secret
@@ -30,23 +30,31 @@ async function whenBidAccepted(whisper){
     
     console.log("ლಠ益ಠ)ლ From " + message.bid.from.currency);
     
+    currency = currencies[message.bid.to.currency];
+    
     if(message.bid.status == "ACTIVE"){
-	db.acceptBid(message.bid.id);
-	firstContract.bind(this)(message);      
+	await db.acceptBid(message.bid.id);
+	
+	receipt = await issueSellerContract(currency, message);
+	
+	console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
+        
+	receipt.bid = message.bid;
+	messenger.pushDigestInfo(receipt, unlockWithSecret);
     }else{
         console.log("Already deployed");
     }
 }
 
 async function acceptBid(bidID){
-    var bid = await db.getBid2(bidID);
-    var message;
-    var address;
-    var currency = currencies[bid.from.currency];
+    var bid = await db.getBid2(bidID), message, address, currency, wallet;
+    
+    currency = currencies[bid.from.currency];
+
     if(currency != null){
 	console.log("(´･ω･`) Bid accepted (´･ω･`)");
         wallet = await currency.wallet();
-        messenger.acceptBid(bid, wallet, secondContract.bind(this));
+        messenger.acceptBid(bid, wallet, runBuyer.bind(this));
     }
     else{
         console.log("Ooh, what an exotic currency, perhaps we will support it someday!");        
@@ -64,23 +72,9 @@ function unlockWithSecret(whisper){
     claim(currency, message);
 }
 
-async function firstContract(message){
-    var receipt, currency;
-
-    //Make sure only one contract is deployed, this does that by changing status to pending
-    
-    currency = currencies[message.bid.to.currency];
-        
-    receipt = await deployFirstContract(currency, message);
-    console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
-        
-    receipt.bid = message.bid;
-    messenger.pushDigestInfo(receipt, unlockWithSecret);
-}
-
-async function deployFirstContract(currency, message){
+async function issueSellerContract(currency, message){
    var wallet = await currency.wallet();
-   
+   //Make sure only one contract is deployed, this does that by changing status to pending
     if(wallet != null){
         to_addr = message.address;
         value = message.bid.from.amount;
@@ -91,7 +85,7 @@ async function deployFirstContract(currency, message){
         result = await currency.unlock(from_addr, "111");
         
         console.log("(´･ω･`) Sending first contract (´･ω･`)");
-        receipt = await currency.send(from_addr, secret, null, to_addr, value);
+        receipt = await currency.send(from_addr, secret, null, to_addr, value, 48);
         console.log("(´･ω･`) Maybe sent first contract (´･ω･`)");
         
         return receipt;
@@ -102,7 +96,7 @@ async function deployFirstContract(currency, message){
     return undefined;
 }
 
-async function secondContract(whisper){
+async function runBuyer(whisper){
     //In pushContractInfo we send a json object, otherwise we send a string
     var message, receipt, currency;
     
@@ -111,11 +105,11 @@ async function secondContract(whisper){
 
     currency = currencies[message.bid.to.currency];
     console.log("To " + message.bid.to.currency);
-    receipt = await deploySecondContract.bind(this)(currency, message);
+    receipt = await issueBuyerContract.bind(this)(currency, message);
     messenger.pushContractInfo(receipt, message, unlockWithSecret);
 }
 
-async function deploySecondContract(currency, message){
+async function issueBuyerContract(currency, message){
     var wallet = await currency.wallet();
     
     if(wallet != null){
@@ -128,7 +122,7 @@ async function deploySecondContract(currency, message){
         result = await currency.unlock(from_addr, "111");
         
         console.log("(´･ω･`) Sending second contract (´･ω･`)");
-        receipt = await currency.send(from_addr, null, digest, to_addr, value);
+        receipt = await currency.send(from_addr, null, digest, to_addr, value, 24);
         console.log("(´･ω･`) Maybe sent second contract (´･ω･`)");
         
         return receipt;
@@ -169,6 +163,6 @@ async function claim(currency, message){
 }
 
 module.exports = {
-    whenBidAccepted,
-    acceptBid
+    acceptBid,
+    runSeller
 };

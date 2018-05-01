@@ -1,6 +1,6 @@
 
 const db = require("./DBHandler.js");
-const messenger = require("./OrbitDBHandler")
+const messenger = require("./OrbitDBHandler");
 const runOnce = require("./runOnce.js");
 const trader = require("./tradeHandler.js");
 const diskStore = require("./diskStore.js");
@@ -37,8 +37,8 @@ function setMessageHandler(messageHandlerArg) {
 async function addBid(bid) {
     await ensureInitialized();
     console.log("Is this thing on");
-    bid.status = "ACTIVE"
-    bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    bid.status = "ACTIVE";
+    bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     await db.addBid(bid);
 }
 
@@ -55,7 +55,7 @@ async function checkAccBid(){
         // console.log(bid);
         console.log(db.getBidStatus(bid.id)); //bidStatus in statusDB is changed in tradeHandler if accepted
         //This is to stop multiple deploys
-        if(bid.status == "ACTIVE" && db.getBidStatus(bid.id) == "ACTIVE") messenger.bidAccepted(bid,trader.whenBidAccepted);
+        if(bid.status == "ACTIVE" && db.getBidStatus(bid.id) == "ACTIVE") messenger.bidAccepted(bid,trader.runSeller);
     });
 }
 
@@ -109,11 +109,11 @@ async function getWallet() {
 // Fetches all bids associated with the user
 async function getUserBids() {
     await ensureInitialized();
-    return db.getUserBids(50)
+    return db.getUserBids(50);
 }
 async function getAcceptedBids() {
     await ensureInitialized();
-    return db.getAcceptedBids(50)
+    return db.getAcceptedBids(50);
 }
 
 // Fetches the currencies which is available for the user to create bids with
@@ -137,7 +137,7 @@ async function getSettings() {
     }
     return {
         blockchainPathList,
-    }
+    };
 }
 async function setSettings(newSettings) {
     await ensureInitialized();
