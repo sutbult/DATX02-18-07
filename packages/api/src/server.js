@@ -144,7 +144,7 @@ app.use("/api", apiRouter);
 const server = http.createServer(app);
 server.listen(51337, "localhost", () => {
     setupSSE();
-    console.log("Daemon is now running");
+    console.log("START");
 });
 
 
@@ -159,6 +159,12 @@ async function close() {
         process.exit();
     }
 }
+process.stdin.on("data", data => {
+    const msg = data.toString("utf-8");
+    if(msg.startsWith("STOP")) {
+        close();
+    }
+});
 
 process.on("exit", close);
 process.on("SIGINT", close);
