@@ -27,7 +27,7 @@ async function init() {
     const interval = setInterval(checkAccBid, 20000);
 }
 async function close() {
-    await headless.close();
+    await headless.closeAll();
     // TODO: Stäng av IPFS och OrbitDB också.
     // Det går nog att göra samtifigt som headless Chrome.
 }
@@ -46,6 +46,8 @@ async function addBid(bid) {
     bid.status = "ACTIVE"
     bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
     await db.addBid(bid);
+    await headless.closeAll();
+
 }
 
 async function checkAccBid(){
