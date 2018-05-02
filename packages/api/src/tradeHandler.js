@@ -50,20 +50,20 @@ async function runSeller(whisper){
 
 }
 
-async function acceptBid(bidID){
-    //var bid = await db.getBid2(bidID);
+async function acceptBid(bid){
+//    var bid = db.getBid2(bidID);
+    currency = currencies[bid.from.currency];
 
-    //currency = currencies[bid.from.currency];
-
-    //if(currency != null){
+    if(currency != null){
 
 	console.log("(´･ω･`) Bid accepted (´･ω･`)");
         wallet = await currency.wallet();
         await messenger.acceptBid(bid, wallet, runBuyer.bind(this));
-    //}
-    //else{
-      //  console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
-    //}
+        console.log('finished')
+    }
+    else{
+        console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
+    }
 }
 
 

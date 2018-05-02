@@ -65,8 +65,17 @@ function getBids(amount){
     return bids;
 }
 
-async function getBid2(bidID){
-  return await this.globalDB.get(bidID).payload.value;
+ function getBid2(bidID){
+   console.log('getbid2')
+  var bids = getBid(50, this.globalDB);
+  for(var i = bids.length -1; i >=0; i--){
+    if(bids[i].id == bidID){
+      console.log('here')
+      return bids[i]
+    }
+  }
+  console.log('null')
+  return null
 }
 
 async function addBid(bid){
@@ -82,8 +91,17 @@ async function addBid(bid){
 }
 
 async function acceptBid(bidID) {
-    await this.statusDB.put(bidID, "PENDING");
-    await this.localDB.put(bidID, "PENDING");
+  await this.statusDB.put(bidID, "PENDING");
+  await this.localDB.put(bidID, "PENDING");
+  var bids = getBid.bind(this)(50, this.globalDB)
+  for(var i = bids.length -1; i >=0; i--){
+    if(bids[i].id == bidID){
+      console.log('SAME ID')
+      return bids[i]
+    }
+  }
+   return null
+
 }
 
 /**

@@ -116,20 +116,22 @@ async function getKVData(key, address){
 }
 
 async function acceptBid(bid, address, callback){
+    console.log('messenger')
     var messagingChannel = await createDB(bid.channel, "log", "public");
     channel = await getLogDB(messagingChannel);
     await channel.load();
     var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
-    
+
     var acceptMessage = new Object();
     acceptMessage.step = 1;
     acceptMessage.address = address;
     acceptMessage.bid = bid;
-    
+
     var JSONObject = JSON.stringify(acceptMessage);
     var returnvalue = await channel.add(JSONObject);
-    
+    console.log('sent to the channel')
     await require("./DBHandler.js").acceptBid(bid.id);
+
     checkForStep(2,callback);
 }
 
