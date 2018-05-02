@@ -3,6 +3,7 @@ const OrbitDB = require('orbit-db')
 const headless = require("./Headless.js")
 const os = require("os");
 const path = require("path");
+const trader = require("./tradeHandler.js");
 var directory
 
 
@@ -40,6 +41,7 @@ var orbitdb
 var channel
 var key
 var ipfs
+var channels = {}
 
 const access = {
     // Give write access to ourselves
@@ -100,7 +102,29 @@ async function createDB(name, type, permission){
 /*
 Remove
 */
-async function addData(data, channelName, address){
+async function addData(bid) {
+  console.log("Reached 1");
+  var messagingChannel = await createDB(bid.channel, "log", "public")
+  channel = await getLogDB(messagingChannel)
+  channels[bid.channel] = channel
+  await channel.load()
+
+  console.log("test 1: " + bid.channel);
+  console.log("test 2: " + channel);
+
+  console.log("Reached 2");
+
+  channel.events.on('replicated',(address) => {
+        console.log("In onChannelMessage");
+        var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
+        console.log(message);
+        bidAccepted(bid, trader.runSeller);
+    });
+
+  /*
+      Add Listener to the new channels then call Magnus function.
+  */
+
   //var messaging = await createDB(channelName, "log", "public")
   //channel = await getLogDB(messaging)
   //await channel.load()
@@ -135,7 +159,6 @@ async function acceptBid(bid, address, callback){
   var messagingChannel = await createDB(bid.channel, "log", "public")
   channel = await getLogDB(messagingChannel)
   await channel.load()
-  var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
 
   var acceptMessage = new Object();
   acceptMessage.step = 1;
@@ -149,16 +172,13 @@ async function acceptBid(bid, address, callback){
 }
 
 async function bidAccepted(bid, callback){
-  var messagingChannel = await createDB(bid.channel, "log", "public")
-  channel = await getLogDB(messagingChannel)
-  await channel.load()
-  var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
-
+  channel = channels[bid.channel];
   checkForStep(1,callback);
 }
 
 //If correct step is found the information in the channel will be returned to the callback function
 function checkForStep(step, callback) {
+  channel.load
   var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
   try{
     console.log(message);

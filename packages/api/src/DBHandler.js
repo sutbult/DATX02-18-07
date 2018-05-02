@@ -84,7 +84,7 @@ async function addBid(bid){
   await statusDB.put(id, "ACTIVE");
   console.log("***********StatusDB: %o", statusDB.get(id));
 
-  await orbitDB.addData(bid.channel);
+  await orbitDB.addData(bid);
 }
 
 async function acceptBid(bidID) {
