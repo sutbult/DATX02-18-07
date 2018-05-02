@@ -51,10 +51,9 @@ async function close(){
 }
 
 async function closeAll(){
-  var length = browsers.length
-  for (var i = 0; i < length ; i ++){
-    console.log(browsers[i])
+  for (var i = browsers.length - 1; i >= 0 ; i --){
     await browsers[i].close();
+    browsers.splice(i,1);
   }
 }
 function listener(word) {
