@@ -3,6 +3,8 @@ const OrbitDB = require('orbit-db')
 const headless = require("./Headless.js")
 const os = require("os");
 const path = require("path");
+const trader = require("./tradeHandler.js");
+
 var directory
 
 
@@ -38,6 +40,7 @@ async function init() {
 
 var orbitdb
 var channel
+var channels = {}
 var key
 var ipfs
 
@@ -97,24 +100,29 @@ async function createDB(name, type, permission){
   return headless.createDB(name, type, permission)
 }
 
-/*
-Remove
-*/
-async function addData(data, channelName, address){
-  //var messaging = await createDB(channelName, "log", "public")
-  //channel = await getLogDB(messaging)
-  //await channel.load()
+async function loadChannels(bids) {
+  var i;
+  for(i = 0; i < bids.length; i++) {
+    await initChannel(bids[i].channel);
+  }
+}
 
-  //var initialMessage = new Object();
-  //initialMessage.step = 1;
-  //initialMessage.address = address;
+async function initChannel(channelAddress) {
+  var messagingChannel = await createDB(channelAddress, "log", "public");
+  channel = await getLogDB(messagingChannel);
+  channels[channelAddress] = channel;
+  await channel.load();
 
-  //var initialJSON = JSON.stringify(initialMessage);
+  channel.events.on('replicated',(address) => {
+        console.log("In onChannelMessage");
+        var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value)
+        console.log(message);
+        bidAccepted(bid, trader.runSeller);
+    });
+}
 
-  //var key = await channel.add(initialJSON)
-
-  //For testing
-  //const date = channel.iterator({ limit: -1 }).collect().map((e) => e.payload.value)
+async function addData(data) {
+  await initChannel(data.channel);
 }
 
 // Used for keyvalue database
