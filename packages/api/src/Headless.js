@@ -46,7 +46,7 @@ async function createDB(name, type, permission) {
 
 async function close(){
     if(browser) {
-  //    await browser.close();
+      await browser.close();
     }
 }
 
