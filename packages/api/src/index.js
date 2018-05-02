@@ -1,6 +1,6 @@
 
 const db = require("./DBHandler.js");
-const messenger = require("./OrbitDBHandler");
+const messenger = require("./OrbitDBHandler.js");
 const runOnce = require("./runOnce.js");
 const trader = require("./tradeHandler.js");
 const diskStore = require("./diskStore.js");

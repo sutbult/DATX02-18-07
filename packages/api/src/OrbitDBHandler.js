@@ -265,4 +265,4 @@ module.exports = {
     getKVDB,
     changeStatus,
     onChannelMessage
-}
+};
