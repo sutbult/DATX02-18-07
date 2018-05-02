@@ -6,6 +6,7 @@ const trader = require("./tradeHandler.js");
 const diskStore = require("./diskStore.js");
 const localStore = require("./localStore.js");
 const headless = require("./Headless.js");
+const ethereum = require("./ethereum.js");
 
 // Describes every currency that is available to the user
 const availableCurrencies = [
@@ -92,6 +93,15 @@ async function getWallet() {
         };
     }
 
+    var accounts = [];
+    if(eth.web3 !== undefined) {
+        const accs = await eth.web3.eth.getAccounts();
+        const amount = eth.web3.eth.getBalance(accs[2]);
+        accounts.push(Account("ETH", amount));
+    }
+    return accounts;
+    // Gammal version
+    /*
     var returnArr = [];
     try{
         var eth = require("./ethereum.js");
@@ -112,6 +122,7 @@ async function getWallet() {
     console.log(returnArr);
 
     return returnArr;
+    */
 }
 
 // Fetches all bids associated with the user
