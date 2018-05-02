@@ -10,47 +10,49 @@ async function init(msgHandler){
 
   // Address to a global keyvalue database containing status of the bids
 
+    console.log("1");
     var status = await orbitDB.createDB("bidStatus", "keyvalue", "public");
-    statusDB = await orbitDB.getKVDB(status);
-    await statusDB.load();
+    this.statusDB = await orbitDB.getKVDB(status);
+    await this.statusDB.load();
 
+    console.log("2");
   // Address to the global database containing all bids
     var bids = await orbitDB.createDB("Bids", "log", "public");
     this.globalDB = await orbitDB.getLogDB(bids);
     await this.globalDB.load();
-    key = this.globalDB.key.getPublic('hex');
+    this.key = this.globalDB.key.getPublic('hex');
 
-
+    console.log("3");
   // Address to the local databaes containing accepted bidStatus
     var localbids = await orbitDB.createDB("acceptedBids", "keyvalue", "local");
-    localDB = await orbitDB.getKVDB(localbids);
-    await localDB.load();
-
-  //Add Listeners
-  statusDB.events.on('replicated', () => {
-    messageHandler({
-        cmd: "updateBids",
+    this.localDB = await orbitDB.getKVDB(localbids);
+    await this.localDB.load();
+    console.log("4");
+    //Add Listeners
+    this.statusDB.events.on('replicated', () => {
+	messageHandler({
+            cmd: "updateBids",
+	});
     });
-  });
-
-  statusDB.events.on('write', () => {
-    messageHandler({
-        cmd: "updateBids",
+    console.log("5");
+    
+    this.statusDB.events.on('write', () => {
+	messageHandler({
+            cmd: "updateBids",
+	});
     });
-  });
 
-  localDB.events.on('write', () => {
-    messageHandler({
-        cmd: "updateBids",
+    console.log("6");
+    
+    this.localDB.events.on('write', () => {
+	messageHandler({
+            cmd: "updateBids",
+	});
     });
-  });
-
-
-
 }
 
 function getBids(amount){
-    var bids = getBid(amount, this.globalDB);
+    var bids = getBid.bind(this)(amount, this.globalDB);
   // for (var i = bids.length - 1; i >= 0; i--){
     //var tempAmount = bids[i].from.amount
     //bids[i].from.amount = bids[i].to.amount
@@ -81,15 +83,15 @@ async function addBid(bid){
   //Consult Samuel about structure of bids
     var id = await this.globalDB.add(bid); //object instead of bid
   // Add bid to local database
-  await statusDB.put(id, "ACTIVE");
-  console.log("***********StatusDB: %o", statusDB.get(id));
+  await this.statusDB.put(id, "ACTIVE");
+  console.log("***********StatusDB: %o", this.statusDB.get(id));
 
   await orbitDB.addData(bid.channel);
 }
 
 async function acceptBid(bidID) {
-    await statusDB.put(bidID, "PENDING");
-    await localDB.put(bidID, "PENDING");
+    await this.statusDB.put(bidID, "PENDING");
+    await this.localDB.put(bidID, "PENDING");
   //await orbitDB.acceptBid(bid);
 }
 
@@ -100,11 +102,11 @@ async function acceptBid(bidID) {
 */
 
 async function changeBidStatus(bidID, status){
-    await statusDB.put(bidID, status);
+    await this.statusDB.put(bidID, status);
 }
 
 function getUserBids(amount){
-    var bids = getBid(amount, this.globalDB);
+    var bids = getBid.bind(this)(amount, this.globalDB);
     for (var i = bids.length - 1; i >= 0; i--){
 	if(bids[i].key != key){
 	    bids.splice(i,1);
@@ -114,9 +116,9 @@ function getUserBids(amount){
 }
 
 function getAcceptedBids(amount){
-    var bids = getBids(amount);
+    var bids = getBids.bind(this)(amount);
     for (var i = bids.length - 1; i >= 0; i--){
-	if(localDB.get(bids[i].id) == undefined){
+	if(this.localDB.get(bids[i].id) == undefined){
 	    bids.splice(i,1);
 	}
     }
@@ -124,7 +126,7 @@ function getAcceptedBids(amount){
 }
 
 function getBidStatus(bidID){
-    return statusDB.get(bidID);
+    return this.statusDB.get(bidID);
 }
 
 function getBid(amount, db){
@@ -134,7 +136,7 @@ function getBid(amount, db){
 	var bid = data[i].payload.value;
 	bid.id = data[i].hash;
 	bid.key = data[i].key;
-	bid.status = statusDB.get(data[i].hash);
+	bid.status = this.statusDB.get(data[i].hash);
 	bids.push(bid);
     }
     return bids;
@@ -152,4 +154,4 @@ module.exports = {
     getBidStatus,
     init,
     globalDB
-}
+};

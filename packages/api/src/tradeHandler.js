@@ -53,10 +53,10 @@ async function runSeller(whisper){
 async function acceptBid(bidID){
     var bid = await db.getBid2(bidID), message, address, currency, wallet;
     
-    currency = currencies[bid.from.currency];
-
+    currency = currencies[bid.from.currency];    
+    
     if(currency != null){
-	await db.acceptBid(message.bid.id);
+	
 	console.log("(´･ω･`) Bid accepted (´･ω･`)");
         wallet = await currency.wallet();
         messenger.acceptBid(bid, wallet, runBuyer.bind(this));
@@ -112,7 +112,7 @@ async function issueSellerContract(currency, message){
 
 async function runBuyer(whisper){
     //In pushContractInfo we send a json object, otherwise we send a string
-    var message, receipt, currency;
+    var message, receipt, currency, valid, exchange_to, exchange_from;
     
     if(whisper.constructor === {}.constructor) message = whisper;
     else message = JSON.parse(whisper);
