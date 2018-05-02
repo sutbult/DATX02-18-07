@@ -36,7 +36,7 @@ async function addBid(bid) {
     bid.status = "ACTIVE";
     bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     await db.addBid(bid);
-    
+
 }
 
 // Fetches all available bids from the decentralized database
@@ -50,7 +50,7 @@ async function getBids() {
 async function acceptBid(bidID, seed) {
     await ensureInitialized();
     // db.acceptBid(bidID);
-    trader.acceptBid(bidID);
+    await trader.acceptBid(bidID);
     // console.log("User accepts the bid with this ID: %s", bidID);
 }
 
