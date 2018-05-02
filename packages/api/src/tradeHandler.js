@@ -18,7 +18,7 @@ var secret = null;
 */
 
 var currencies =
-    { 
+    {
 	ETH: require("./ethereum.js").Ether("http://localhost:8545"),
 	ETC: require("./ethereum.js").Ether("http://localhost:8546")
     };
@@ -31,39 +31,39 @@ async function runSeller(whisper){
 
     //use random function to get a good secret
     secret = 1;
-    
+
     // console.log("****LETS SEE WHAT WE HAVE HERE %s and the whole thing %o", message.bid.status, message);
     message = JSON.parse(whisper);
     message.secret = secret;
-    
+
     console.log("ლಠ益ಠ)ლ From " + message.bid.from.currency);
-    
+
     currency = currencies[message.bid.to.currency];
-    
-    
+
+
     receipt = await issueSellerContract(currency, message);
-    
+
     console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
-    
+
     receipt.bid = message.bid;
     messenger.pushDigestInfo(receipt, unlockWithSecret);
-    
+
 }
 
 async function acceptBid(bidID){
-    var bid = await db.getBid2(bidID);
-    
-    currency = currencies[bid.from.currency];    
-    
-    if(currency != null){
-	
+    //var bid = await db.getBid2(bidID);
+
+    //currency = currencies[bid.from.currency];
+
+    //if(currency != null){
+
 	console.log("(´･ω･`) Bid accepted (´･ω･`)");
         wallet = await currency.wallet();
-        messenger.acceptBid(bid, wallet, runBuyer.bind(this));
-    }
-    else{
-        console.log("Ooh, what an exotic currency, perhaps we will support it someday!");        
-    }
+        await messenger.acceptBid(bid, wallet, runBuyer.bind(this));
+    //}
+    //else{
+      //  console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
+    //}
 }
 
 
@@ -72,17 +72,17 @@ function unlockWithSecret(whisper){
     if(whisper.constructor === {}.constructor) message = whisper;
     else message = JSON.parse(whisper);
     message.secret = secret;
-    
+
     var currency = currencies[message.bid.to.currency];
     claim(currency, message);
 }
 
 async function validateBuyerContract(currency, message){
     var valid;
-    
+
     console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
     valid = await currency.validate(message.contractAddress, currency.wallet, message.bid.from.amount, message.digest, margin_seller);
-    
+
     return valid;
 }
 
@@ -94,14 +94,14 @@ async function issueSellerContract(currency, message){
         value = message.bid.from.amount;
         secret = JSON.stringify(message.secret);
         from_addr = wallet;
-        
+
         console.log("(´･ω･`) Unlocking account for first contract (´･ω･`)");
         result = await currency.unlock(from_addr, "111");
-        
+
         console.log("(´･ω･`) Sending first contract (´･ω･`)");
         receipt = await currency.send(from_addr, sha256.hash(secret), to_addr, value, refund_seller);
         console.log("(´･ω･`) Maybe sent first contract (´･ω･`)");
-        
+
         return receipt;
     }else {
         console.log("ಠ▃ಠ You don't have an account ಠ▃ಠ");
@@ -113,16 +113,16 @@ async function issueSellerContract(currency, message){
 async function runBuyer(whisper){
     //In pushContractInfo we send a json object, otherwise we send a string
     var message, receipt, currency, valid, exchange_to, exchange_from;
-    
+
     if(whisper.constructor === {}.constructor) message = whisper;
     else message = JSON.parse(whisper);
 
     exchange_to = currencies[message.bid.to.currency];
     exchange_from = currencies[message.bid.from.currency];
-    
+
     console.log("To " + message.bid.to.currency);
     valid   = await validateSellerContract(exchange_from, message);
-    
+
     if (valid){
         console.log("ヽ(ヅ)ノ Buyer finds Seller contract valid! ヽ(ヅ)ノ");
         receipt = await issueBuyerContract.bind(this)(exchange_to, message);
@@ -132,34 +132,34 @@ async function runBuyer(whisper){
         console.log("(-公- ;) Buyer finds Seller contract invalid... (-公- ;)");
         //WHAT SHOULD HAPPEN HERE?
     }
-    
+
 }
 
 async function validateSellerContract(currency, message){
     var valid;
-    
+
     console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
     valid = await currency.validate(message.contractAddress, currency.wallet, message.bid.to.amount, null, margin_buyer);
-    
+
     return valid;
 }
 
 async function issueBuyerContract(currency, message){
     var wallet = await currency.wallet();
-    
+
     if(wallet != null){
         to_addr = message.address;
         value = message.bid.from.amount;
         digest = message.digest;
         from_addr = wallet;
-        
+
         console.log("(´･ω･`) Unlocking account for second contract (´･ω･`)");
         result = await currency.unlock(from_addr, "111");
-        
+
         console.log("(´･ω･`) Sending second contract (´･ω･`)");
         receipt = await currency.send(from_addr, digest, to_addr, value, refund_buyer);
         console.log("(´･ω･`) Maybe sent second contract (´･ω･`)");
-        
+
         return receipt;
     }else{
         console.log("ಠ▃ಠ You don't have an account ಠ▃ಠ");
@@ -170,12 +170,12 @@ async function issueBuyerContract(currency, message){
 
 async function claim(currency, message){
     var wallet = await currency.wallet();
-    
+
     if(wallet != null){
         from_address = wallet;
         claim_address = message.contractAddress;
 
-        
+
         if(message.secret != null){
             console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
             pre_image_hash = JSON.stringify(message.secret);

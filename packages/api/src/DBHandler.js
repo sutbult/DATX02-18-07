@@ -36,7 +36,7 @@ async function init(msgHandler){
 	});
     });
     console.log("5");
-    
+
     this.statusDB.events.on('write', () => {
 	messageHandler({
             cmd: "updateBids",
@@ -44,7 +44,7 @@ async function init(msgHandler){
     });
 
     console.log("6");
-    
+
     this.localDB.events.on('write', () => {
 	messageHandler({
             cmd: "updateBids",
@@ -78,7 +78,7 @@ async function addBid(bid){
   console.log("***********bid is: %o", bid);
 
   await orbitDB.onChannelMessage(bid);
-  
+
 }
 
 async function acceptBid(bidID) {
