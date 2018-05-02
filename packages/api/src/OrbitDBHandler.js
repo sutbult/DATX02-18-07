@@ -241,7 +241,7 @@ async function onChannelMessage(bid){
     messagingChannel = await createDB(bid.channel, "log", "public");
     channel = await getLogDB(messagingChannel);
     await channel.load();
-    console.log(channel);
+    // console.log(channel);
     channel.events.on('replicated',(address) => {
         console.log("In onChannelMessage");
         bidAccepted(bid, trader.runSeller);

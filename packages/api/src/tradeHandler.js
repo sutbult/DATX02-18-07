@@ -51,7 +51,7 @@ async function runSeller(whisper){
 }
 
 async function acceptBid(bidID){
-    var bid = await db.getBid2(bidID), message, address, currency, wallet;
+    var bid = await db.getBid2(bidID);
     
     currency = currencies[bid.from.currency];    
     
