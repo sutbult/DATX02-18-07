@@ -97,26 +97,6 @@ async function createDB(name, type, permission){
     return headless.createDB(name, type, permission);
 }
 
-/*
-Remove
-*/
-async function addData(data, channelName, address){
-  //var messaging = await createDB(channelName, "log", "public")
-  //channel = await getLogDB(messaging)
-  //await channel.load()
-
-  //var initialMessage = new Object();
-  //initialMessage.step = 1;
-  //initialMessage.address = address;
-
-  //var initialJSON = JSON.stringify(initialMessage);
-
-  //var key = await channel.add(initialJSON)
-
-  //For testing
-  //const date = channel.iterator({ limit: -1 }).collect().map((e) => e.payload.value)
-}
-
 // Used for keyvalue database
 async function addKVData(key, value, address){
     var db = await orbitdb.keyvalue(address);
@@ -253,9 +233,25 @@ async function changeStatus(message, newStatus){
 
 }
 
+async function onChannelMessage(_channel, func){
+    var messagingChannel, channel;
+
+    messagingChannel = await createDB(_channel, "log", "public");
+    channel = await getLogDB(messagingChannel);
+    await channel.load();
+    setInterval(console.log(channel.iterator({ limit : amount }).collect()),5000);
+    channel.events.on('replicated',(address) => {
+        console.log("In onChannelMessage");
+        console.log(channel);
+        console.log(message);
+        if(_channel == channel){
+            func();
+        }
+    });
+}
+
 module.exports = {
     init,
-    addData,
     getData,
     bidAccepted,
     acceptBid,
@@ -267,5 +263,6 @@ module.exports = {
     getKVData,
     getLogDB,
     getKVDB,
-    changeStatus
+    changeStatus,
+    onChannelMessage
 }

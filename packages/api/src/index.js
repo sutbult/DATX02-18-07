@@ -42,6 +42,7 @@ async function addBid(bid) {
     bid.status = "ACTIVE";
     bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     await db.addBid(bid);
+    
 }
 
 async function checkAccBid(){
@@ -49,6 +50,7 @@ async function checkAccBid(){
     /**Not sure how the limit in this function works, but need all userBids, soo
     *@todo someone with knowledge fix this
     */
+   console.log("******************************************HERE");
     var bids = await db.getUserBids(1000000000000000);
     // console.log("*********Lets see ******");
     // console.log(db.getAcceptedBids(50));

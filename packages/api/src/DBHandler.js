@@ -69,30 +69,19 @@ async function getBid2(bidID){
 }
 
 async function addBid(bid){
-
-  //var channelName = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) //randomly generated String https://gist.github.com/6174/6062387
-
-  //var bidStringify = JSON.stringify(bid);
-  //var bidParsed = JSON.parse(bidStringify)
-  //var object = {"id" : bidParsed.id, "status" : bidParsed.status, "from" : bidParsed.from, "to" : bidParsed.to, "address" : "", "channel" : channelName};
-  //console.log("BID: " + JSON.stringify(object));
-  //console.log("Bid: " + bid);
-
-
   // Add bid to global database
   //Consult Samuel about structure of bids
     var id = await this.globalDB.add(bid); //object instead of bid
   // Add bid to local database
   await this.statusDB.put(id, "ACTIVE");
-  console.log("***********StatusDB: %o", this.statusDB.get(id));
+  console.log("***********bid is: %o", bid);
 
-  await orbitDB.addData(bid.channel);
+  await orbitDB.onChannelMessage(bid.channel, () => console.log("Yey"));
 }
 
 async function acceptBid(bidID) {
     await this.statusDB.put(bidID, "PENDING");
     await this.localDB.put(bidID, "PENDING");
-  //await orbitDB.acceptBid(bid);
 }
 
 /**
