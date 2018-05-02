@@ -24,7 +24,7 @@ async function init() {
      * @todo clearInterval once all bids are accepted: https://nodejs.org/en/docs/guides/timers-in-node/
      */
     console.log(db.globalDB);
-    setTimeout(() => db.globalDB.events.on('write', checkAccBid()), 5000);
+    setTimeout(() => {db.globalDB.events.on('write', () => {checkAccBid()})}, 5000);
     //const interval = setInterval(checkAccBid, 20000);
 }
 

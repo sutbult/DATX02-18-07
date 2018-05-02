@@ -16,9 +16,9 @@ async function init(msgHandler){
 
   // Address to the global database containing all bids
     var bids = await orbitDB.createDB("Bids", "log", "public");
-    globalDB = await orbitDB.getLogDB(bids);
-    await globalDB.load();
-    key = globalDB.key.getPublic('hex');
+    this.globalDB = await orbitDB.getLogDB(bids);
+    await this.globalDB.load();
+    key = this.globalDB.key.getPublic('hex');
 
 
   // Address to the local databaes containing accepted bidStatus
@@ -50,7 +50,7 @@ async function init(msgHandler){
 }
 
 function getBids(amount){
-    var bids = getBid(amount, globalDB);
+    var bids = getBid(amount, this.globalDB);
   // for (var i = bids.length - 1; i >= 0; i--){
     //var tempAmount = bids[i].from.amount
     //bids[i].from.amount = bids[i].to.amount
@@ -63,7 +63,7 @@ function getBids(amount){
 }
 
 async function getBid2(bidID){
-  return await globalDB.get(bidID).payload.value;
+  return await this.globalDB.get(bidID).payload.value;
 }
 
 async function addBid(bid){
@@ -79,7 +79,7 @@ async function addBid(bid){
 
   // Add bid to global database
   //Consult Samuel about structure of bids
-    var id = await globalDB.add(bid); //object instead of bid
+    var id = await this.globalDB.add(bid); //object instead of bid
   // Add bid to local database
   await statusDB.put(id, "ACTIVE");
   console.log("***********StatusDB: %o", statusDB.get(id));
@@ -104,7 +104,7 @@ async function changeBidStatus(bidID, status){
 }
 
 function getUserBids(amount){
-    var bids = getBid(amount, globalDB);
+    var bids = getBid(amount, this.globalDB);
     for (var i = bids.length - 1; i >= 0; i--){
 	if(bids[i].key != key){
 	    bids.splice(i,1);
