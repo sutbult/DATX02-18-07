@@ -40,18 +40,14 @@ async function runSeller(whisper){
     
     currency = currencies[message.bid.to.currency];
     
-    if(message.bid.status == "ACTIVE"){
-	await db.acceptBid(message.bid.id);
-	
-	receipt = await issueSellerContract(currency, message);
-	
-	console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
-        
-	receipt.bid = message.bid;
-	messenger.pushDigestInfo(receipt, unlockWithSecret);
-    }else{
-        console.log("Already deployed");
-    }
+    
+    receipt = await issueSellerContract(currency, message);
+    
+    console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
+    
+    receipt.bid = message.bid;
+    messenger.pushDigestInfo(receipt, unlockWithSecret);
+    
 }
 
 async function acceptBid(bidID){
@@ -60,6 +56,7 @@ async function acceptBid(bidID){
     currency = currencies[bid.from.currency];
 
     if(currency != null){
+	await db.acceptBid(message.bid.id);
 	console.log("(´･ω･`) Bid accepted (´･ω･`)");
         wallet = await currency.wallet();
         messenger.acceptBid(bid, wallet, runBuyer.bind(this));
@@ -124,7 +121,7 @@ async function runBuyer(whisper){
     exchange_from = currencies[message.bid.from.currency];
     
     console.log("To " + message.bid.to.currency);
-    valid   = await validateSellerContract(exchange_from, message)
+    valid   = await validateSellerContract(exchange_from, message);
     
     if (valid){
         console.log("ヽ(ヅ)ノ Buyer finds Seller contract valid! ヽ(ヅ)ノ");

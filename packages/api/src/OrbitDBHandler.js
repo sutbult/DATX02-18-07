@@ -1,9 +1,9 @@
-const Ipfs = require('ipfs')
-const OrbitDB = require('orbit-db')
-const headless = require("./Headless.js")
+const Ipfs = require('ipfs');
+const OrbitDB = require('orbit-db');
+const headless = require("./Headless.js");
 const os = require("os");
 const path = require("path");
-var directory
+var directory;
 
 
 const STORAGE_DIR = path.join(
@@ -22,13 +22,13 @@ const ORBITDB_DIR = path.join(
 
 
 async function init() {
-  var string = __dirname.split("\\packages")
-  directory = string[0].replace(/\\/g, "/")
+    var string = __dirname.split("\\packages");
+    directory = string[0].replace(/\\/g, "/");
 
-  const orbitDBPromise = initOrbitDB();
-  const headlessPromise = headless.init();
-  await orbitDBPromise;
-  await headlessPromise;
+    const orbitDBPromise = initOrbitDB();
+    const headlessPromise = headless.init();
+    await orbitDBPromise;
+    await headlessPromise;
 }
 
 //1st: Bud och egen address.
@@ -36,10 +36,10 @@ async function init() {
 //1st: lägger upp ett kontrakt, skickar digest och konstraktsadress.
 //2nd: skickar konstraktsadress
 
-var orbitdb
-var channel
-var key
-var ipfs
+var orbitdb;
+var channel;
+var key;
+var ipfs;
 
 const access = {
     // Give write access to ourselves
@@ -92,7 +92,7 @@ function initOrbitDB() {
 */
 async function createDB(name, type, permission){
   if(permission == "local"){
-    permission = key
+      permission = key;
   }
   return headless.createDB(name, type, permission)
 }

@@ -118,7 +118,7 @@ async function validateCode(contract_address){
 */
 
 async function validateRefund(contract_address, time_margin){
-    var contract, unlock_block, locked_blocks;
+    var contract, unlock_block, locked_blocks, time_remaining;
 
     contract = new this.chain.eth.Contract(this.contract.abi, contract_address);
     time_remaining = await contract.methods.remaining().call();

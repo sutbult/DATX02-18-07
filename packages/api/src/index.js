@@ -23,8 +23,11 @@ async function init() {
     /**check in a set interval if anyone accepted your bid
      * @todo clearInterval once all bids are accepted: https://nodejs.org/en/docs/guides/timers-in-node/
      */
-    const interval = setInterval(checkAccBid, 20000);
+    console.log(db.globalDB);
+    setTimeout(() => db.globalDB.events.on('write', checkAccBid()), 5000);
+    //const interval = setInterval(checkAccBid, 20000);
 }
+
 const ensureInitialized = runOnce(init);
 
 var messageHandler = null;

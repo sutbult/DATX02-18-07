@@ -43,14 +43,14 @@ async function init(msgHandler){
     messageHandler({
         cmd: "updateBids",
     });
-  })
+  });
 
 
 
 }
 
 function getBids(amount){
-  var bids = getBid(amount, globalDB)
+    var bids = getBid(amount, globalDB);
   // for (var i = bids.length - 1; i >= 0; i--){
     //var tempAmount = bids[i].from.amount
     //bids[i].from.amount = bids[i].to.amount
@@ -59,7 +59,7 @@ function getBids(amount){
   //    bids.splice(i,1);
     // }
   // }
-  return bids
+    return bids;
 }
 
 async function getBid2(bidID){
@@ -100,55 +100,56 @@ async function acceptBid(bidID) {
 */
 
 async function changeBidStatus(bidID, status){
-  await statusDB.put(bidID, status)
+    await statusDB.put(bidID, status);
 }
 
 function getUserBids(amount){
-  var bids = getBid(amount, globalDB)
-  for (var i = bids.length - 1; i >= 0; i--){
-    if(bids[i].key != key){
-      bids.splice(i,1);
+    var bids = getBid(amount, globalDB);
+    for (var i = bids.length - 1; i >= 0; i--){
+	if(bids[i].key != key){
+	    bids.splice(i,1);
+	}
     }
-  }
-  return bids
+    return bids;
 }
 
 function getAcceptedBids(amount){
-  var bids = getBids(amount)
-  for (var i = bids.length - 1; i >= 0; i--){
-    if(localDB.get(bids[i].id) == undefined){
-      bids.splice(i,1);
+    var bids = getBids(amount);
+    for (var i = bids.length - 1; i >= 0; i--){
+	if(localDB.get(bids[i].id) == undefined){
+	    bids.splice(i,1);
+	}
     }
-  }
-  return bids
+    return bids;
 }
 
 function getBidStatus(bidID){
-  return statusDB.get(bidID);
+    return statusDB.get(bidID);
 }
 
 function getBid(amount, db){
-  var data = db.iterator({ limit : amount }).collect()
-  var bids = []
-  for (var i = 0; i < data.length; i++) {
-    var bid = data[i].payload.value
-    bid.id = data[i].hash
-    bid.key = data[i].key
-    bid.status = statusDB.get(data[i].hash)
-    bids.push(bid)
-  }
-  return bids
+    var data = db.iterator({ limit : amount }).collect();
+    var bids = [];
+    for (var i = 0; i < data.length; i++) {
+	var bid = data[i].payload.value;
+	bid.id = data[i].hash;
+	bid.key = data[i].key;
+	bid.status = statusDB.get(data[i].hash);
+	bids.push(bid);
+    }
+    return bids;
 }
 
 module.exports = {
-  addBid,
-  getBid,
-  getBid2,
-  getBids,
-  acceptBid,
-  changeBidStatus,
-  getUserBids,
-  getAcceptedBids,
-  getBidStatus,
-  init
+    addBid,
+    getBid,
+    getBid2,
+    getBids,
+    acceptBid,
+    changeBidStatus,
+    getUserBids,
+    getAcceptedBids,
+    getBidStatus,
+    init,
+    globalDB
 }
