@@ -19,12 +19,6 @@ async function init() {
     await messengerPromise;
     const dbPromise = db.init(messageHandler);
     await dbPromise;
-
-    /**check in a set interval if anyone accepted your bid
-     * @todo clearInterval once all bids are accepted: https://nodejs.org/en/docs/guides/timers-in-node/
-     */
-    db.globalDB.events.on('write', () => { checkAccBid(); });
-    //const interval = setInterval(checkAccBid, 20000);
 }
 
 const ensureInitialized = runOnce(init);
@@ -43,26 +37,6 @@ async function addBid(bid) {
     bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     await db.addBid(bid);
     
-}
-
-async function checkAccBid(){
-    // console.log("CHECK IF ANY BID IS ACCEPTED");
-    /**Not sure how the limit in this function works, but need all userBids, soo
-    *@todo someone with knowledge fix this
-    */
-   console.log("******************************************HERE");
-    var bids = await db.getUserBids(1000000000000000);
-    // console.log("*********Lets see ******");
-    // console.log(db.getAcceptedBids(50));
-    // console.log(bids);
-    for (var i = 0; i < bids.length ; i++){
-      // console.log(bid);
-      console.log(db.getBidStatus(bids[i].id)); //bidStatus in statusDB is changed in tradeHandler if accepted
-      //This is to stop multiple deploys
-      if(bids[i].status == "ACTIVE" && db.getBidStatus(bids[i].id) == "ACTIVE") {
-        await messenger.bidAccepted(bids[i], trader.runSeller);
-      }
-    }
 }
 
 // Fetches all available bids from the decentralized database

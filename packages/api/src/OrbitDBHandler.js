@@ -3,6 +3,8 @@ const OrbitDB = require('orbit-db');
 const headless = require("./Headless.js");
 const os = require("os");
 const path = require("path");
+const trader = require("./tradeHandler.js");
+
 var directory;
 
 
@@ -233,20 +235,16 @@ async function changeStatus(message, newStatus){
 
 }
 
-async function onChannelMessage(_channel, func){
+async function onChannelMessage(bid){
     var messagingChannel, channel;
-
-    messagingChannel = await createDB(_channel, "log", "public");
+    console.log("Let's go");
+    messagingChannel = await createDB(bid.channel, "log", "public");
     channel = await getLogDB(messagingChannel);
     await channel.load();
-    setInterval(console.log(channel.iterator({ limit : amount }).collect()),5000);
+    console.log(channel);
     channel.events.on('replicated',(address) => {
         console.log("In onChannelMessage");
-        console.log(channel);
-        console.log(message);
-        if(_channel == channel){
-            func();
-        }
+        bidAccepted(bid, trader.runSeller);
     });
 }
 

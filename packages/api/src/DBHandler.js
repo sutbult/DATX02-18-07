@@ -12,6 +12,7 @@ async function init(msgHandler){
 
     console.log("1");
     var status = await orbitDB.createDB("bidStatus", "keyvalue", "public");
+    console.log(status);
     this.statusDB = await orbitDB.getKVDB(status);
     await this.statusDB.load();
 
@@ -76,7 +77,8 @@ async function addBid(bid){
   await this.statusDB.put(id, "ACTIVE");
   console.log("***********bid is: %o", bid);
 
-  await orbitDB.onChannelMessage(bid.channel, () => console.log("Yey"));
+  await orbitDB.onChannelMessage(bid);
+  
 }
 
 async function acceptBid(bidID) {
