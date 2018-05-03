@@ -62,7 +62,7 @@ async function acceptBid(bid){
        console.log(messenger);
         try{
             //messenger is undefined inside here?
-            await require("./OrbitDBHandler.js").acceptBid(bid, wallet, runBuyer);
+            await require("./OrbitDBHandler.js").acceptBid(bid, wallet, runBuyer.bind(this));
         }catch(e){
             console.log(e);
         }
