@@ -1,4 +1,4 @@
-const orbitDB = require("./OrbitDBHandler.js");
+const messenger = require("./OrbitDBHandler.js");
 const db = require("./DBHandler.js");
 const sha256 = require("./sha256.js");
 
@@ -59,15 +59,14 @@ async function acceptBid(bid){
 	    console.log("(´･ω･`) Bid accepted (´･ω･`)");
       wallet =  await currency.wallet();
       console.log("wallet: %s", wallet);
-       console.log(this.messenger);
-      /*  try{
-            console.log('here')
+       console.log(messenger);
+        try{
+            //messenger is undefined inside here?
             await require("./OrbitDBHandler.js").acceptBid(bid, wallet, runBuyer);
-            console.log('hello')
         }catch(e){
             console.log(e);
         }
-        console.log('finished')*/
+        console.log('finished')
     }
     else{
         console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
