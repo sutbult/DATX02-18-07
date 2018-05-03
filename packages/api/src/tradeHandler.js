@@ -85,12 +85,13 @@ function unlockWithSecret(whisper){
 }
 
 async function validateBuyerContract(currency, message){
-    var valid;
+    return true;
+    // var valid;
 
-    console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
-    valid = await currency.validate(message.contractAddress, currency.wallet, message.bid.from.amount, message.digest, margin_seller);
+    // console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
+    // valid = await currency.validate(message.contractAddress, currency.wallet, message.bid.from.amount, message.digest, margin_seller);
 
-    return valid;
+    // return valid;
 }
 
 async function issueSellerContract(currency, message){
@@ -143,12 +144,13 @@ async function runBuyer(whisper){
 }
 
 async function validateSellerContract(currency, message){
-    var valid;
+    return true;
+    // var valid;
 
-    console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
-    valid = await currency.validate(message.contractAddress, currency.wallet, message.bid.to.amount, null, margin_buyer);
+    // console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
+    // valid = await currency.validate(message.contractAddress, currency.wallet, message.bid.to.amount, null, margin_buyer);
 
-    return valid;
+    // return valid;
 }
 
 async function issueBuyerContract(currency, message){
@@ -186,7 +188,11 @@ async function claim(currency, message){
         if(message.secret != null){
             console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
             pre_image_hash = JSON.stringify(message.secret);
-            return await currency.claim(pre_image_hash, from_address, claim_address);
+            try{
+                return await currency.claim(pre_image_hash, from_address, claim_address);
+            }catch(e){
+                console.log("Claim was wrong: %s", e);
+            }
         }else{
             console.log("(´･ω･`) Searching for secret (´･ω･`)");
             var result = await currency.search(message.contractAddress, 0);

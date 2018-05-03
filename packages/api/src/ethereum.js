@@ -272,6 +272,7 @@ async function getPastClaim(contract_address, from_block = 10849){
 }
 
 async function claimContract(pre_image_hash, from_address, claim_address){
+    console.log("In claimContract in Ethereum");
     var contract;
 
     /**@todo the account claiming the contract should be based on user input */
