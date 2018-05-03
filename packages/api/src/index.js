@@ -50,7 +50,6 @@ async function getBids() {
 async function acceptBid(bidID, seed) {
     await ensureInitialized();
     var bid = await db.acceptBid(bidID);
-    console.log(bid)
     await trader.acceptBid(bid);
     // console.log("User accepts the bid with this ID: %s", bidID);
 }

@@ -93,7 +93,7 @@ async function addBid(bid){
 async function acceptBid(bidID) {
   await this.statusDB.put(bidID, "PENDING");
   await this.localDB.put(bidID, "PENDING");
-  return this.globalDB.get(bidID)
+  return this.globalDB.get(bidID).payload.value;
 
 }
 
