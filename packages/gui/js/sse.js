@@ -8,7 +8,12 @@ function setupSSE(app) {
                 break;
 
             case "acceptBidResponse":
-                app.ports.acceptBidResponse.send(msg.status);
+                if(msg.status === "ok") {
+                    app.ports.acceptBidSuccess.send(null);
+                }
+                else {
+                    app.ports.acceptBidFailure.send(msg.error);
+                }
                 break;
 
             case "updateBids":
