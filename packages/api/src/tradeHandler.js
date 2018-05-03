@@ -46,7 +46,7 @@ async function runSeller(whisper){
     console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
 
     receipt.bid = message.bid;
-    messenger.pushDigestInfo(receipt, unlockWithSecret);
+    require("./OrbitDBHandler.js").pushDigestInfo(receipt, unlockWithSecret);
 
 }
 
@@ -133,7 +133,7 @@ async function runBuyer(whisper){
     if (valid){
         console.log("ヽ(ヅ)ノ Buyer finds Seller contract valid! ヽ(ヅ)ノ");
         receipt = await issueBuyerContract.bind(this)(exchange_to, message);
-        messenger.pushContractInfo(receipt, message, unlockWithSecret);
+        require("./OrbitDBHandler.js").pushContractInfo(receipt, message, unlockWithSecret);
     }
     else {
         console.log("(-公- ;) Buyer finds Seller contract invalid... (-公- ;)");
