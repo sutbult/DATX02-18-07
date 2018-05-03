@@ -195,19 +195,29 @@ async function claim(currency, message){
             }
         }else{
             console.log("(´･ω･`) Searching for secret (´･ω･`)");
-            var result = await currency.search(message.contractAddress, 0);
-            if(result.claimed){
-                console.log("(´･ω･`) Found secret (´･ω･`)");
-                console.log("(´･ω･`) Claiming contract (´･ω･`)");
-                return await currency.claim(result.secret, from_address, claim_address);
-            }
-            else {
-		console.log("(;﹏;) Couldn't find secret (;﹏;)");
-                return false;
-            }
+            // var result = await currency.search(message.contractAddress, 0);
+            setInterval(pollingClaimed(currency, message, from_address,claim_address), 5000);
+        //     if(result.claimed){
+        //         console.log("(´･ω･`) Found secret (´･ω･`)");
+        //         console.log("(´･ω･`) Claiming contract (´･ω･`)");
+        //         return await currency.claim(result.secret, from_address, claim_address);
+        //     }
+        //     else {
+		// console.log("(;﹏;) Couldn't find secret (;﹏;)");
+        //         return false;
+        //     }
         }
     }
     return false;
+}
+
+async function pollingClaimed(currency, message, from_address,claim_address){
+    var result = await currency.search(message.contractAddress, 0);
+    if(result.claimed){
+        console.log("(´･ω･`) Found secret (´･ω･`)");
+        console.log("(´･ω･`) Claiming contract (´･ω･`)");
+        return await currency.claim(result.secret, from_address, claim_address);
+    }
 }
 
 module.exports = {
