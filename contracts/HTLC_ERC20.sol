@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.18;
 
 contract ERC20Partial {
     mapping (address => uint256) public balanceOf;
@@ -20,7 +20,7 @@ contract HTLC_ERC20 {
 
     event Claim(string _hash);
 
-    constructor (bytes32 _digest, address _dest, address _token, uint256 _hoursLocked) public payable {
+    function HTLC_ERC20(bytes32 _digest, address _dest, address _token, uint256 _hoursLocked) public payable {
         digest = _digest;
         dest = _dest;
         token = _token;
@@ -30,7 +30,7 @@ contract HTLC_ERC20 {
     function claim(string _hash) public returns(bool result) {
        require(digest == sha256(_hash));
        transfer(dest);
-       emit Claim(_hash);       
+       Claim(_hash);       
        selfdestruct(dest);
        return true; //This will not occur
     }
