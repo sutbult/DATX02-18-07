@@ -93,14 +93,7 @@ async function addBid(bid){
 async function acceptBid(bidID) {
   await this.statusDB.put(bidID, "PENDING");
   await this.localDB.put(bidID, "PENDING");
-  var bids = getBid.bind(this)(50, this.globalDB)
-  for(var i = bids.length -1; i >=0; i--){
-    if(bids[i].id == bidID){
-      console.log('SAME ID')
-      return bids[i]
-    }
-  }
-   return null
+  return this.globalDB.get(bidID)
 
 }
 
