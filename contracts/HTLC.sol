@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.21;
 
 contract HTLC {
     bytes32 public digest;
@@ -10,7 +10,7 @@ contract HTLC {
 
     event Claim(string _hash);
 
-    constructor (bytes32 _digest, address _dest, uint256 _hoursLocked) public payable {
+    function HTLC(bytes32 _digest, address _dest, uint256 _hoursLocked) public payable {
         digest = _digest;
         dest = _dest;
         unlockAtTime = now + (_hoursLocked * 1 hours);
@@ -21,7 +21,7 @@ contract HTLC {
        emit Claim(_hash);
        selfdestruct(dest);
        return true; //This will not be called
-       }
+    }
 
     // allow payments
     function () public payable {}
