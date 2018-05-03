@@ -26,7 +26,8 @@ init =
             , password = passwordModel
             }
     in
-        (model, Cmd.batch
+        ( model
+        , Cmd.batch
             [ Platform.Cmd.map mapPasswordCmd passwordCmd
             ]
         )
