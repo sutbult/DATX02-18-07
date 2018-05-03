@@ -25,6 +25,9 @@ async function init() {
      */
     const interval = setInterval(checkAccBid, 20000);
 }
+async function close() {
+    await messenger.exit();
+}
 const ensureInitialized = runOnce(init);
 
 var messageHandler = null;
@@ -205,4 +208,5 @@ module.exports = {
     setSettings,
     setPasswords,
     setMessageHandler,
+    close,
 };

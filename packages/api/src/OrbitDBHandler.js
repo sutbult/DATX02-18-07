@@ -250,6 +250,16 @@ async function changeStatus(message, newStatus){
 
 }
 
+async function exit(){
+  await headless.closeAll()
+  if(orbitdb) {
+    await orbitdb.stop()
+  }
+  if(ipfs) {
+    await ipfs.stop()
+  }
+}
+
 module.exports = {
   init,
   addData,
@@ -264,5 +274,6 @@ module.exports = {
   getKVData,
   getLogDB,
   getKVDB,
-  changeStatus
+  changeStatus,
+  exit
 }
