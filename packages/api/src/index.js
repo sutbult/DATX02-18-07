@@ -92,12 +92,19 @@ async function getWallet() {
     }
 
     var accounts = [];
-    if(eth.web3 !== undefined) {
-        const accs = await eth.web3.eth.getAccounts();
-        const amount = eth.web3.eth.getBalance(accs[2]);
-        accounts.push(Account("ETH", amount));
+    try{
+        console.log(eth.web3);
+        if(eth.web3 !== undefined) {
+            console.log("In here");
+            const accs = await eth.web3.eth.getAccounts();
+            const amount = await eth.web3.eth.getBalance(accs[2]);
+            console.log("The amount is %s", amount);
+            accounts.push(Account("ETH", amount));
+        }
+        return accounts;
+    }catch(e){
+        console.log(e);
     }
-    return accounts;
     // Gammal version
     /*
     var returnArr = [];
