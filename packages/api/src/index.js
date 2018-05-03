@@ -6,7 +6,7 @@ const trader = require("./tradeHandler.js");
 const diskStore = require("./diskStore.js");
 const localStore = require("./localStore.js");
 const headless = require("./Headless.js");
-const ethereum = require("./ethereum.js");
+const eth = require("./ethereum.js");
 
 // Describes every currency that is available to the user
 const availableCurrencies = [
@@ -28,9 +28,7 @@ async function init() {
     const interval = setInterval(checkAccBid, 20000);
 }
 async function close() {
-    await headless.close();
-    // TODO: Stäng av IPFS och OrbitDB också.
-    // Det går nog att göra samtifigt som headless Chrome.
+    await messenger.exit();
 }
 const ensureInitialized = runOnce(init);
 
