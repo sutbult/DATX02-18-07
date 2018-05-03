@@ -189,7 +189,7 @@ async function claim(currency, message){
             console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
             pre_image_hash = JSON.stringify(message.secret);
             try{
-                return await currency.claim(pre_image_hash, from_address, claim_address);
+                return await currency.claim(pre_image_hash, from_address.toString(), claim_address.toString());
             }catch(e){
                 console.log("Claim was wrong: %s", e);
             }
@@ -202,7 +202,7 @@ async function claim(currency, message){
                 if(result.claimed){
                     console.log("(´･ω･`) Found secret (´･ω･`)");
                     console.log("(´･ω･`) Claiming contract (´･ω･`)");
-                    var res =  await currency.claim(result.secret, from_address, claim_address);
+                    var res =  await currency.claim(result.secret, from_address.toString(), claim_address.toString());
                     looping = false;
                     return res;
 
@@ -211,15 +211,6 @@ async function claim(currency, message){
         }
     }
     return false;
-}
-
-async function pollingClaimed(currency, message, from_address,claim_address){
-    var result = await currency.search(message.contractAddress, 0);
-    if(result.claimed){
-        console.log("(´･ω･`) Found secret (´･ω･`)");
-        console.log("(´･ω･`) Claiming contract (´･ω･`)");
-        return await currency.claim(result.secret, from_address, claim_address);
-    }
 }
 
 module.exports = {

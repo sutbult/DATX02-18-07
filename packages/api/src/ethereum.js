@@ -273,17 +273,21 @@ async function getPastClaim(contract_address, from_block = 10849){
 }
 
 async function claimContract(pre_image_hash, from_address, claim_address){
+    console.log(pre_image_hash.toString());
+    console.log(from_address.toString());
+    console.log(claim_address.toString());
     console.log("In claimContract in Ethereum");
     var contract;
 
     /**@todo the account claiming the contract should be based on user input */
 
-    contract = new this.chain.eth.Contract(this.contract.abi);
-    contract.options.address = claim_address;
+    contract = new this.chain.eth.Contract(this.contract.abi, claim_address);
     
     try {
         console.log(pre_image_hash);
-        await contract.methods.claim(pre_image_hash).send({from: from_address});
+        var result = await contract.methods.claim(pre_image_hash).send({from: from_address});
+
+        console.log(result);
         return true;
     }
     catch(e){
