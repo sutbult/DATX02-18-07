@@ -5,6 +5,8 @@ const runOnce = require("./runOnce.js");
 const trader = require("./tradeHandler.js");
 const diskStore = require("./diskStore.js");
 const localStore = require("./localStore.js");
+const headless = require("./Headless.js");
+const eth = require("./ethereum.js");
 
 // Describes every currency that is available to the user
 const availableCurrencies = [
@@ -81,34 +83,27 @@ async function acceptBid(bidID, seed) {
 
 // Fetches all accounts associated with the user
 async function getWallet() {
-    await ensureInitialized();
     function Account(currency, amount) {
         return {
             currency: currency,
             amount: amount,
         };
     }
+    await ensureInitialized();
 
-    var returnArr = [];
-    try{
-        var eth = require("./ethereum.js");
-        if(eth.web3 != undefined){
-            var address = eth.web3.eth.getAccounts()
-            .then(accs => {
-                eth.web3.eth.getBalance(accs[2])
-                .then(amount => {
-                    returnArr.push(Account("Ethereum", amount));
-                });
-            });
+    var accounts = [];
+    try {
+        if(eth.web3 !== undefined) {
+            const accs = await eth.web3.eth.getAccounts();
+            const amount = await eth.web3.eth.getBalance(accs[2]);
+            accounts.push(Account("ETH", amount));
         }
-
-    } catch(e){
-        console.log("Error in index.getWallet(): " + e);
     }
-
-    console.log(returnArr);
-
-    return returnArr;
+    catch(e) {
+        console.log(e);
+        throw e;
+    }
+    return accounts;
 }
 
 // Fetches all bids associated with the user
