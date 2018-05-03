@@ -57,17 +57,17 @@ async function acceptBid(bid){
     if(currency != null){
 
 	    console.log("(´･ω･`) Bid accepted (´･ω･`)");
-      //  wallet =  await currency.wallet();
-      //  console.log("wallet: %s", wallet);
-       console.log(messenger);
-        try{
+      wallet =  await currency.wallet();
+      console.log("wallet: %s", wallet);
+       console.log(this.messenger);
+      /*  try{
             console.log('here')
             await require("./OrbitDBHandler.js").acceptBid(bid, wallet, runBuyer);
             console.log('hello')
         }catch(e){
             console.log(e);
         }
-        console.log('finished')
+        console.log('finished')*/
     }
     else{
         console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
