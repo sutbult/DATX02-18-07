@@ -282,11 +282,12 @@ async function claimContract(pre_image_hash, from_address, claim_address){
     contract.options.address = claim_address;
     
     try {
+        console.log(pre_image_hash);
         await contract.methods.claim(pre_image_hash).send({from: from_address});
         return true;
     }
     catch(e){
-        return false;
+        console.log(e);
     }
 }
 
