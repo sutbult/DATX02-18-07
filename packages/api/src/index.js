@@ -83,51 +83,27 @@ async function acceptBid(bidID, seed) {
 
 // Fetches all accounts associated with the user
 async function getWallet() {
-    await ensureInitialized();
     function Account(currency, amount) {
         return {
             currency: currency,
             amount: amount,
         };
     }
+    await ensureInitialized();
 
     var accounts = [];
-    try{
-        console.log(eth.web3);
+    try {
         if(eth.web3 !== undefined) {
-            console.log("In here");
             const accs = await eth.web3.eth.getAccounts();
             const amount = await eth.web3.eth.getBalance(accs[2]);
-            console.log("The amount is %s", amount);
             accounts.push(Account("ETH", amount));
         }
-        return accounts;
-    }catch(e){
+    }
+    catch(e) {
         console.log(e);
+        throw e;
     }
-    // Gammal version
-    /*
-    var returnArr = [];
-    try{
-        var eth = require("./ethereum.js");
-        if(eth.web3 != undefined){
-            var address = eth.web3.eth.getAccounts()
-            .then(accs => {
-                eth.web3.eth.getBalance(accs[2])
-                .then(amount => {
-                    returnArr.push(Account("Ethereum", amount));
-                });
-            });
-        }
-
-    } catch(e){
-        console.log("Error in index.getWallet(): " + e);
-    }
-
-    console.log(returnArr);
-
-    return returnArr;
-    */
+    return accounts;
 }
 
 // Fetches all bids associated with the user
