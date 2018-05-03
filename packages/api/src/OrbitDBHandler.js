@@ -252,8 +252,12 @@ async function changeStatus(message, newStatus){
 
 async function exit(){
   await headless.closeAll()
-  await orbitdb.stop()
-  await ipfs.stop()
+  if(orbitdb) {
+    await orbitdb.stop()
+  }
+  if(ipfs) {
+    await ipfs.stop()
+  }
 }
 
 module.exports = {
