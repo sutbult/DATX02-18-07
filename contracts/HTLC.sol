@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.18;
 
 contract HTLC {
     bytes32 public digest;
@@ -18,7 +18,7 @@ contract HTLC {
     
     function claim(string _hash) public returns(bool result) {
        require(digest == sha256(_hash));
-       emit Claim(_hash);
+       Claim(_hash);
        selfdestruct(dest);
        return true; //This will not be called
     }
