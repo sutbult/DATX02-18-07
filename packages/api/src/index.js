@@ -5,7 +5,6 @@ const runOnce = require("./runOnce.js");
 const trader = require("./tradeHandler.js");
 const diskStore = require("./diskStore.js");
 const localStore = require("./localStore.js");
-const headless = require("./Headless.js");
 
 // Describes every currency that is available to the user
 const availableCurrencies = [
@@ -27,9 +26,7 @@ async function init() {
     const interval = setInterval(checkAccBid, 20000);
 }
 async function close() {
-    await headless.closeAll();
-    // TODO: Stäng av IPFS och OrbitDB också.
-    // Det går nog att göra samtifigt som headless Chrome.
+    await messenger.exit();
 }
 const ensureInitialized = runOnce(init);
 
@@ -46,8 +43,6 @@ async function addBid(bid) {
     bid.status = "ACTIVE"
     bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
     await db.addBid(bid);
-    await headless.closeAll();
-
 }
 
 async function checkAccBid(){

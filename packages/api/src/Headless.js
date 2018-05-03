@@ -13,7 +13,7 @@ async function init() {
 async function createDB(name, type, permission) {
     try {
         browser = new HeadlessChrome({
-          headless: false // If you turn this off, you can actually see the browser navigate with your instructions
+          headless: true // If you turn this off, you can actually see the browser navigate with your instructions
           // see above if using remote interface
         });
         await browser.init()
@@ -46,15 +46,14 @@ async function createDB(name, type, permission) {
 
 async function close(){
     if(browser) {
-  //    await browser.close();
+      await browser.close();
     }
 }
 
 async function closeAll(){
-  var length = browsers.length
-  for (var i = 0; i < length ; i ++){
-    console.log(browsers[i])
+  for (var i = browsers.length - 1; i >= 0 ; i --){
     await browsers[i].close();
+    browsers.splice(i,1);
   }
 }
 function listener(word) {
