@@ -338,5 +338,6 @@ async function claimContract(pre_image_hash, from_address, claim_address){
 
 module.exports = {
     Ether,
-    Token
+    Token,
+    web3
 };
