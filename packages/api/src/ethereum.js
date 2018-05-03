@@ -253,12 +253,13 @@ function tokensNoDecimals(tokens, decimals) {
 */
 async function getPastClaim(contract_address, from_block = 10849){
     var contract, events, result;
+    console.log("In getPastClaim");
     contract = new this.chain.eth.Contract(this.contract.abi, contract_address);
     events = await contract.getPastEvents('Claim', {
       fromBlock: from_block,
       toBlock: 'latest'
     });
-    
+    console.log(events);
     result = new Object();
     
     if(events.length == 0){
