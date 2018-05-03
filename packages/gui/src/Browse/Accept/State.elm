@@ -9,6 +9,7 @@ import Task
 import Browse.Accept.Types exposing (..)
 import Browse.Accept.Rest exposing (acceptBid)
 import Ports
+import Error.Types
 
 init : (Model, Cmd Msg)
 init =
@@ -86,7 +87,15 @@ processSubs model =
         Ports.getSSEId GetSSEId
 
     else if model.processing then
-        Ports.acceptBidResponse <| (\_ -> EndProcessingBid)
+        Sub.batch
+            [ Ports.acceptBidSuccess
+                <| \_ -> EndProcessingBid
+
+            , Ports.acceptBidFailure
+                <| \error -> AcceptFailure
+                <| Error.Types.Display "Exchange error"
+                <| "The exchange failed with the error message '" ++ error ++ "'."
+            ]
 
     else
         Sub.none

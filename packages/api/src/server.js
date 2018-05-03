@@ -96,7 +96,7 @@ post("/acceptBid", async body => {
                 sendSSE(body.clientID, {
                     cmd: "acceptBidResponse",
                     status: "error",
-                    error,
+                    error: error.toString(),
                 });
             });
     }
