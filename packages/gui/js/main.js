@@ -24,8 +24,9 @@ function setupChokidar() {
 
     // Electron
     const ELECTRON_WATCH = [
-        'js/*.js',
-        'html/index.html',
+        "js/*.js",
+        "html/index.html",
+        "../api/src/*.js",
     ];
     chokidar.watch(ELECTRON_WATCH).on('change', reload);
 
