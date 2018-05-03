@@ -1,9 +1,14 @@
 
 const child_process = require('child_process');
 
+const NPM_CMD = /^win/.test(process.platform)
+    ? "npm.cmd"
+    : "npm"
+    ;
+
 function compileElm() {
     return new Promise((resolve, reject) => {
-        const proc = child_process.spawn("npm", ["run", "elm:build"], {
+        const proc = child_process.spawn(NPM_CMD, ["run", "elm:build"], {
             cwd: ".",
         });
         function kill() {
