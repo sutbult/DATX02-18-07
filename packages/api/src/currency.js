@@ -1,6 +1,7 @@
 function construct (balance, send, validate, claim, search, unlock, wallet) {
     /** balance(address)
      * @param {hex} address - The address to check the balance of
+     * @returns {int} The address balance
      */
     this.balance = balance;
 
@@ -14,6 +15,7 @@ function construct (balance, send, validate, claim, search, unlock, wallet) {
      * expressed in the smallest unit
      * @param {int} refund_time - How many (hours) the contract should
      * be locked
+     * @returns {receipt} Object with .contractAddress, .digest and .timelock
      */
     this.send = send;
 
@@ -28,6 +30,7 @@ function construct (balance, send, validate, claim, search, unlock, wallet) {
      * unlocked
      * @param {int} margin - The acceptable amount of margin in
      * timestamp difference
+     * @returns {bool} If the contract is valid or not
      */
     this.validate = validate;
 
@@ -37,13 +40,14 @@ function construct (balance, send, validate, claim, search, unlock, wallet) {
      * @param {hex} account - The address/account to unlock the
      * contract with
      * @param {hex} contract - The address of the contract to claim
+     * @returns {bool} Returns true if it's claimed
      */
     this.claim = claim;
 
     /** search(contract, from_block) 
      * @param {hex} contract - The address of the contract
      * @param {int} [from_block] - (Optional) From what block to
-     * search
+     * @returns {string} Returns the secret, if found
      */
     this.search = search;
 
@@ -54,12 +58,12 @@ function construct (balance, send, validate, claim, search, unlock, wallet) {
      * with
      * @param {int} [time] - (Optional) The time to have the account
      * unlocked
+     * @returns {bool} Returns true if unlocked
      */
     this.unlock = unlock;
 
-
-
     /** wallet()
+     * @returns {account} Returns the account in some form
      */
     this.wallet = wallet;
 }
