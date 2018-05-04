@@ -100,7 +100,7 @@ async function issueSellerContract(currency, message){
     if(wallet != null){
         to_addr = message.address;
         value = message.bid.from.amount;
-        secret = JSON.stringify(message.secret);
+        secret = message.secret;
         from_addr = wallet;
 
         console.log("(´･ω･`) Unlocking account for first contract (´･ω･`)");
@@ -187,7 +187,7 @@ async function claim(currency, message){
 
         if(message.secret != null){
             console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
-            pre_image_hash = JSON.stringify(message.secret);
+            pre_image_hash = message.secret;
             try{
                 return await currency.claim(pre_image_hash, from_address.toString(), claim_address.toString());
             }catch(e){
