@@ -31,8 +31,4 @@ contract HTLC {
         selfdestruct(issuer);
         return true;
     }
-    
-    function remaining() constant public returns(uint256 time){
-        return unlockAtTime - now;
-    }
 }

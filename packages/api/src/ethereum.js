@@ -61,10 +61,10 @@ async function unlockAccount(account_address, account_password, time_in_ms = 100
 *  @param {string} digest - The digest of the contract, if there is any (only for second contracts)
 *  @param {int}    time_margin - How much time should at least be remaining for it to be a valid contract
 */
-async function validateEtherContract(contract_address, self_address, value_in_wei, digest = null, time_margin){
+async function validateEtherContract(contract_address, self_address, value_in_wei, digest = null, unlock_time, time_margin){
     var res_cont, res_val;
     
-    res_cont = await validateContract.bind(this)(contract_address, self_address, digest, time_margin);
+    res_cont = await validateContract.bind(this)(contract_address, self_address, digest, unlock_time, time_margin);
     res_val = await validateValue.bind(this)(value_in_wei, contract_address);
     return res_cont && res_val;
 }
@@ -75,10 +75,10 @@ async function validateEtherContract(contract_address, self_address, value_in_we
 *  @param {string} digest - The digest of the contract, if there is any (only for second contracts)
 *  @param {int}    time_margin - How much time should at least be remaining for it to be a valid contract
 */
-async function validateERC20Contract(contract_address, self_address, value_in_tokens, digest = null, time_margin){
+async function validateERC20Contract(contract_address, self_address, value_in_tokens, digest = null, unlock_time, time_margin){
     var res_cont, res_address, res_val;
 
-    res_cont = await validateContract.bind(this)(contract_address, self_address, digest, time_margin);
+    res_cont = await validateContract.bind(this)(contract_address, self_address, digest, unlock_time, time_margin);
     res_address = await validateERC20Address.bind(this)(contract_address);
     res_val = await validateERC20Value.bind(this)(value_in_tokens, contract_address);
     return res_cont && res_val && res_address;
@@ -86,21 +86,21 @@ async function validateERC20Contract(contract_address, self_address, value_in_to
 
 /** This function validates parts of a HTLC contract, used by other functions
 */
-async function validateContract(contract_address, self_address, digest = null, time_margin){
+async function validateContract(contract_address, self_address, digest = null, unlock_time, time_margin){
     var res_code, res_dest, res_digest, res_refund;
 
     console.log("Validating contract ");
     res_code = await validateCode.bind(this)(contract_address);
-    console.log("Code: " + res_code);
+    console.log("(・ωｰ)～☆ Code: " + res_code);
     res_dest = await validateDestination.bind(this)(self_address, contract_address);
-    console.log("Destination: " + res_dest);
-    res_refund = await validateRefund.bind(this)(contract_address, time_margin);
-    console.log("Refund: " + res_refund);
+    console.log("(・ωｰ)～☆ Destination: " + res_dest);
+    res_refund = await validateRefund.bind(this)(contract_address, time_margin, unlock_time);
+    console.log("(・ωｰ)～☆ Refund: " + res_refund);
     res_digest = true;
     if(digest != null){
         res_digest = await validateDigest.bind(this)(digest, contract_address);
     }
-    console.log("Digest: " + res_digest);
+    console.log("(・ωｰ)～☆ Digest: " + res_digest);
     return res_code && res_dest && res_digest && res_refund;
 }
 
@@ -117,12 +117,17 @@ async function validateCode(contract_address){
 /** This function will validate that the there is at least 500 blocks until the contract can be unlocked and that it will be locked for 1000 blocks
 */
 
-async function validateRefund(contract_address, time_margin){
-    var contract, unlock_block, locked_blocks, time_remaining;
+async function validateRefund(contract_address, unlock_time, time_margin){
+    var contract, contract_unlock_time, latest_block;
 
     contract = new this.chain.eth.Contract(this.contract.abi, contract_address);
-    time_remaining = await contract.methods.remaining().call();
-    return time_remaining > time_margin;
+    contract_unlock_time = await contract.methods.unlockAtTime().call();
+    latest_block = await this.chain.eth.getBlock('latest');
+    console.log("unlock time: " + unlock_time);
+    console.log("latest block: " + latest_block);
+    console.log("time margin: " + time_margin);
+    return contract_unlock_time == unlock_time &&
+	(unlock_time - latest_block.timestamp) > time_margin;
 }
 
 /** This function will validate that the destination on a contract is correct.
@@ -219,13 +224,14 @@ async function sendContract(args, from_address, value_in_wei){
     contract_instance = contract.deploy({data: '0x' + this.contract.code, arguments: args});
     receipt = await contract_instance.send({from: from_address, gasPrice: "18", gas: gas_estimate*2, value: value_in_wei});
     contract_address = receipt._address;
-    console.log("Contract deployed at address " + contract_address);
+    console.log("(ΘεΘʃƪ) Contract deployed at address " + contract_address + " (ΘεΘʃƪ)");
 
     contract.options.address = contract_address;
     //var subPromise = subscribeToClaim(contract, receipt.blockNumber);
     receipt = new Object();
     receipt.contractAddress = contract_address;
     receipt.digest = args[0];
+    receipt.timelock = await contract.methods.unlockAtTime().call();
     receipt.address = from_address; //this is incorrect, remove
     //returnObj.promise = subPromise;
     return receipt;
@@ -235,13 +241,16 @@ async function sendContract(args, from_address, value_in_wei){
 *  @param {string} value_in_tokens - The number of tokens, without decimals, so fix decimals before putting something in!
 */
 async function sendTokensToContract(from_address, contract_address, value_in_tokens){
-    var token, gas_estimate;
+    
+    var token, gas_estimate, transaction;
     gas_estimate =  4712386;
     token = new this.chain.eth.Contract(this.erc20.abi, this.token);
-    return token
+    transaction = await token
         .methods
         .transfer(contract_address, value_in_tokens)
         .send({from: from_address, gasPrice: "18", gas: gas_estimate, value: 0});
+    console.log("(ΘεΘʃƪ) Sent Tokens to contract (ΘεΘʃƪ)");
+    return transaction;
 }
 
 function tokensNoDecimals(tokens, decimals) {

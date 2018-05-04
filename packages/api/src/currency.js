@@ -1,12 +1,14 @@
 function construct (balance, send, validate, claim, search, unlock, wallet) {
-    /** validate(contract, destination, value, digest, unlock_time)
+    /** validate(contract, destination, value, digest, margin, timelock)
      * @param {hex} contract - The address of the contract
      * @param {hex} destination - The claim destination of the
      * contract
      * @param {int} value - The value in the contract expressed in the
      * smallest unit
      * @param {hex} digest - The digest that is locking the contract
-     * @param {int} unlock_time - The time when the contract is
+     * @param {int} margin - The acceptable amount of margin in
+     * timestamp difference
+     * @param {int} timelock - The timestamp when the contract is
      * unlocked
      */
     this.validate = validate;

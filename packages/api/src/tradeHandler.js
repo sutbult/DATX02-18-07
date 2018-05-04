@@ -51,7 +51,9 @@ async function runSeller(whisper){
 }
 
 async function acceptBid(bid){
-//    var bid = db.getBid2(bidID);
+    var currency, wallet;
+    //    var bid = db.getBid2(bidID);
+    
     currency = currencies[bid.from.currency];
 
     if(currency != null){
@@ -66,7 +68,7 @@ async function acceptBid(bid){
         }catch(e){
             console.log(e);
         }
-        console.log('finished')
+        console.log('finished');
     }
     else{
         console.log("Ooh, what an exotic currency, perhaps we will support it someday!");
@@ -85,29 +87,27 @@ function unlockWithSecret(whisper){
 }
 
 async function validateBuyerContract(currency, message){
-    return true;
-    // var valid;
+    var valid;
 
-    // console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
-    // valid = await currency.validate(message.contractAddress, currency.wallet, message.bid.from.amount, message.digest, margin_seller);
+    console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
+    valid = await currency.validate(message.contractAddress, currency.wallet, message.bid.from.amount, message.digest, message.timelock, margin_seller);
 
-    // return valid;
+    return valid;
 }
 
 async function issueSellerContract(currency, message){
-   var wallet = await currency.wallet();
+    var wallet = await currency.wallet(), to, value, result, receipt;
    //Make sure only one contract is deployed, this does that by changing status to pending
     if(wallet != null){
-        to_addr = message.address;
+        to = message.address;
         value = message.bid.from.amount;
         secret = JSON.stringify(message.secret);
-        from_addr = wallet;
 
         console.log("(´･ω･`) Unlocking account for first contract (´･ω･`)");
-        result = await currency.unlock(from_addr, "111");
+        result = await currency.unlock(wallet, "111");
 
         console.log("(´･ω･`) Sending first contract (´･ω･`)");
-        receipt = await currency.send(from_addr, sha256.hash(secret), to_addr, value, refund_seller);
+        receipt = await currency.send(wallet, sha256.hash(secret), to, value, refund_seller);
         console.log("(´･ω･`) Maybe sent first contract (´･ω･`)");
 
         return receipt;
@@ -154,19 +154,18 @@ async function validateSellerContract(currency, message){
 }
 
 async function issueBuyerContract(currency, message){
-    var wallet = await currency.wallet();
+    var wallet = await currency.wallet(), receipt, to, digest, value, result;
 
     if(wallet != null){
-        to_addr = message.address;
+        to = message.address;
         value = message.bid.from.amount;
         digest = message.digest;
-        from_addr = wallet;
 
         console.log("(´･ω･`) Unlocking account for second contract (´･ω･`)");
-        result = await currency.unlock(from_addr, "111");
+        result = await currency.unlock(wallet, "111");
 
         console.log("(´･ω･`) Sending second contract (´･ω･`)");
-        receipt = await currency.send(from_addr, digest, to_addr, value, refund_buyer);
+        receipt = await currency.send(wallet, digest, to, value, refund_buyer);
         console.log("(´･ω･`) Maybe sent second contract (´･ω･`)");
 
         return receipt;
@@ -178,18 +177,17 @@ async function issueBuyerContract(currency, message){
 }
 
 async function claim(currency, message){
-    var wallet = await currency.wallet();
+    var wallet = await currency.wallet(), from, contract, secret;
 
     if(wallet != null){
-        from_address = wallet;
-        claim_address = message.contractAddress;
+        contract = message.contractAddress;
 
 
         if(message.secret != null){
             console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
-            pre_image_hash = JSON.stringify(message.secret);
+            secret = JSON.stringify(message.secret);
             try{
-                return await currency.claim(pre_image_hash, from_address.toString(), claim_address.toString());
+                return await currency.claim(secret, from, contract);
             }catch(e){
                 console.log("Claim was wrong: %s", e);
             }
@@ -202,7 +200,7 @@ async function claim(currency, message){
                 if(result.claimed){
                     console.log("(´･ω･`) Found secret (´･ω･`)");
                     console.log("(´･ω･`) Claiming contract (´･ω･`)");
-                    var res =  await currency.claim(result.secret, from_address.toString(), claim_address.toString());
+                    var res =  await currency.claim(result.secret, from, contract);
                     looping = false;
                     return res;
 
