@@ -15,11 +15,11 @@ function startAPI() {
             cwd: apiCwd
         });
         function kill() {
-            api.kill();
+            api.stdin.write("STOP");
         }
         api.stdout.on("data", data => {
             const msg = data.toString("utf-8");
-            if(msg.startsWith("Daemon is now running")) {
+            if(msg.startsWith("START")) {
                 resolve();
             }
             else {

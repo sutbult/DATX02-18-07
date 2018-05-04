@@ -96,7 +96,7 @@ post("/acceptBid", async body => {
                 sendSSE(body.clientID, {
                     cmd: "acceptBidResponse",
                     status: "error",
-                    error,
+                    error: error.toString(),
                 });
             });
     }
@@ -144,5 +144,30 @@ app.use("/api", apiRouter);
 const server = http.createServer(app);
 server.listen(51337, "localhost", () => {
     setupSSE();
-    console.log("Daemon is now running");
+    console.log("START");
 });
+
+
+// Close listeners
+
+var closing = false;
+
+async function close() {
+    if(!closing) {
+        closing = true;
+        await api.close();
+        process.exit();
+    }
+}
+process.stdin.on("data", data => {
+    const msg = data.toString("utf-8");
+    if(msg.startsWith("STOP")) {
+        close();
+    }
+});
+
+process.on("exit", close);
+process.on("SIGINT", close);
+process.on("SIGUSR1", close);
+process.on("SIGUSR2", close);
+process.on("uncaughtException", close);

@@ -305,5 +305,6 @@ async function readDigest(contract_address){
 
 module.exports = {
     Ether,
-    Token
+    Token,
+    web3
 };

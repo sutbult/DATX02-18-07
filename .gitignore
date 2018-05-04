@@ -1,8 +1,8 @@
 **/.DS_Store
 **/node_modules
 **/elm-stuff
-**/elm.js
 **/yarn-error.log
+**/build
 **/ipfs
 **/orbitdb
 **/lerna-debug.log

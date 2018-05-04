@@ -4,18 +4,20 @@ var path = require("path")
 var directory;
 var dbAddress;
 var browser;
+var browsers = []
 
 async function init() {
     directory = path.resolve("./");
     dbAddress = "null";
-    browser = new HeadlessChrome({
-        headless: true // If you turn this off, you can actually see the browser navigate with your instructions
-        // see above if using remote interface
-    });
 }
 async function createDB(name, type, permission) {
     try {
+        browser = new HeadlessChrome({
+          headless: true // If you turn this off, you can actually see the browser navigate with your instructions
+          // see above if using remote interface
+        });
         await browser.init()
+        browsers.push(browser)
         const mainTab = await browser.newTab({
             privateTab: false
         })
@@ -43,7 +45,16 @@ async function createDB(name, type, permission) {
 }
 
 async function close(){
-  await browser.close()
+    if(browser) {
+      await browser.close();
+    }
+}
+
+async function closeAll(){
+  for (var i = browsers.length - 1; i >= 0 ; i --){
+    await browsers[i].close();
+    browsers.splice(i,1);
+  }
 }
 function listener(word) {
     var string = JSON.stringify(word, null, 2)
@@ -55,5 +66,6 @@ function listener(word) {
 module.exports = {
     init,
     createDB,
-    close
+    close,
+    closeAll
 };

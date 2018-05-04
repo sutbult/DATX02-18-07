@@ -116,7 +116,7 @@ async function getKVData(key, address){
 }
 
 async function acceptBid(bid, address, callback){
-    console.log('messenger')
+    console.log('messenger');
     var messagingChannel = await createDB(bid.channel, "log", "public");
     channel = await getLogDB(messagingChannel);
     await channel.load();
@@ -129,7 +129,7 @@ async function acceptBid(bid, address, callback){
 
     var JSONObject = JSON.stringify(acceptMessage);
     var returnvalue = await channel.add(JSONObject);
-    console.log('sent to the channel')
+    console.log('sent to the channel');
     await require("./DBHandler.js").acceptBid(bid.id);
 
     checkForStep(2,callback);
@@ -250,6 +250,16 @@ async function onChannelMessage(bid){
     });
 }
 
+async function exit(){
+    await headless.closeAll();
+  if(orbitdb) {
+      await orbitdb.stop();
+  }
+  if(ipfs) {
+      await ipfs.stop();
+  }
+}
+
 module.exports = {
     init,
     getData,
@@ -264,5 +274,6 @@ module.exports = {
     getLogDB,
     getKVDB,
     changeStatus,
-    onChannelMessage
+    onChannelMessage,
+    exit
 };
