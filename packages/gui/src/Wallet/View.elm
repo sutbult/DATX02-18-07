@@ -15,16 +15,25 @@ root : Model -> Html Msg
 root model =
     div []
         [ Html.map ToError <| Error.View.root model.error
-        , walletTable model
+        , walletTable model.accounts
         ]
 
-walletTable : Model -> Html Msg
-walletTable model =
-    table [class "table is-fullwidth is-hoverable is-striped"]
-        [ head
-        , tbody []
-            <| List.map accountView model.accounts
-        ]
+
+walletTable : List Account -> Html Msg
+walletTable accounts =
+    if List.isEmpty accounts then
+        article [class "message is-danger"]
+            [ div [class "message-body"]
+                [ p [] [text "Your wallet is empty"]
+                ]
+            ]
+    else
+        table [class "table is-fullwidth is-hoverable is-striped"]
+            [ head
+            , tbody []
+                <| List.map accountView accounts
+            ]
+
 
 head : Html Msg
 head =
@@ -34,6 +43,7 @@ head =
             , th [] [text "In wallet"]
             ]
         ]
+
 
 accountView : Account -> Html Msg
 accountView account =

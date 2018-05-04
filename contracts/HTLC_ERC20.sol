@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.18;
 
 contract ERC20Partial {
     mapping (address => uint256) public balanceOf;
@@ -13,25 +13,24 @@ contract HTLC_ERC20 {
     bytes32 public digest;
     address public dest;
     address public token;
-    uint256 public unlockAtBlock;
-    uint256 public numBlocksLocked = 1000;
+    uint256 public unlockAtTime;
     address issuer = msg.sender;
 
     modifier onlyIssuer {require(msg.sender == issuer); _; }
 
     event Claim(string _hash);
 
-    function HTLC_ERC20(bytes32 _digest, address _dest, address _token) public payable {
+    function HTLC_ERC20(bytes32 _digest, address _dest, address _token, uint256 _hoursLocked) public payable {
         digest = _digest;
         dest = _dest;
         token = _token;
-        unlockAtBlock = block.number + numBlocksLocked;
+        unlockAtTime = now + (_hoursLocked * 1 hours);
     }
 
     function claim(string _hash) public returns(bool result) {
        require(digest == sha256(_hash));
        transfer(dest);
-       emit Claim(_hash);       
+       Claim(_hash);       
        selfdestruct(dest);
        return true; //This will not occur
     }
@@ -47,7 +46,7 @@ contract HTLC_ERC20 {
     }
     
     function refund() onlyIssuer public returns(bool result) {
-        require(block.number >= unlockAtBlock);
+        require(now >= unlockAtTime);
         transfer(issuer);
         selfdestruct(issuer);
         return true;

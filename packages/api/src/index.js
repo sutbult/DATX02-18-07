@@ -1,10 +1,12 @@
 
 const db = require("./DBHandler.js");
-const messenger = require("./OrbitDBHandler")
+const messenger = require("./OrbitDBHandler.js");
 const runOnce = require("./runOnce.js");
 const trader = require("./tradeHandler.js");
 const diskStore = require("./diskStore.js");
 const localStore = require("./localStore.js");
+const headless = require("./Headless.js");
+const eth = require("./ethereum.js");
 
 // Describes every currency that is available to the user
 const availableCurrencies = [
@@ -19,12 +21,12 @@ async function init() {
     await messengerPromise;
     const dbPromise = db.init(messageHandler);
     await dbPromise;
-
-    /**check in a set interval if anyone accepted your bid
-     * @todo clearInterval once all bids are accepted: https://nodejs.org/en/docs/guides/timers-in-node/
-     */
-    const interval = setInterval(checkAccBid, 20000);
 }
+
+async function close() {
+    await messenger.exit();
+}
+
 const ensureInitialized = runOnce(init);
 
 var messageHandler = null;
@@ -37,28 +39,10 @@ function setMessageHandler(messageHandlerArg) {
 async function addBid(bid) {
     await ensureInitialized();
     console.log("Is this thing on");
-    bid.status = "ACTIVE"
-    bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    bid.status = "ACTIVE";
+    bid.channel = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     await db.addBid(bid);
-}
 
-async function checkAccBid(){
-    // console.log("CHECK IF ANY BID IS ACCEPTED");
-    /**Not sure how the limit in this function works, but need all userBids, soo
-    *@todo someone with knowledge fix this
-    */
-    var bids = await db.getUserBids(1000000000000000);
-    // console.log("*********Lets see ******");
-    // console.log(db.getAcceptedBids(50));
-    // console.log(bids);
-    for (var i = 0; i < bids.length ; i++){
-      // console.log(bid);
-      console.log(db.getBidStatus(bids[i].id)); //bidStatus in statusDB is changed in tradeHandler if accepted
-      //This is to stop multiple deploys
-      if(bids[i].status == "ACTIVE" && db.getBidStatus(bids[i].id) == "ACTIVE") {
-        await messenger.bidAccepted(bids[i],trader.whenBidAccepted);
-      }
-    }
 }
 
 // Fetches all available bids from the decentralized database
@@ -71,51 +55,44 @@ async function getBids() {
 // Accepts a bid and starts the swapping process
 async function acceptBid(bidID, seed) {
     await ensureInitialized();
-    // db.acceptBid(bidID);
-    trader.acceptBid(bidID);
+    var bid = await db.acceptBid(bidID);
+    await trader.acceptBid(bid);
     // console.log("User accepts the bid with this ID: %s", bidID);
 }
 
 // Fetches all accounts associated with the user
 async function getWallet() {
-    await ensureInitialized();
     function Account(currency, amount) {
         return {
             currency: currency,
             amount: amount,
         };
     }
+    await ensureInitialized();
 
-    var returnArr = [];
-    try{
-        var eth = require("./ethereum.js");
-        if(eth.web3 != undefined){
-            var address = eth.web3.eth.getAccounts()
-            .then(accs => {
-                eth.web3.eth.getBalance(accs[2])
-                .then(amount => {
-                    returnArr.push(Account("Ethereum", amount));
-                });
-            });
+    var accounts = [];
+    try {
+        if(eth.web3 !== undefined) {
+            const accs = await eth.web3.eth.getAccounts();
+            const amount = await eth.web3.eth.getBalance(accs[2]);
+            accounts.push(Account("ETH", amount));
         }
-
-    } catch(e){
-        console.log("Error in index.getWallet(): " + e);
     }
-
-    console.log(returnArr);
-
-    return returnArr;
+    catch(e) {
+        console.log(e);
+        throw e;
+    }
+    return accounts;
 }
 
 // Fetches all bids associated with the user
 async function getUserBids() {
     await ensureInitialized();
-    return db.getUserBids(50)
+    return db.getUserBids(50);
 }
 async function getAcceptedBids() {
     await ensureInitialized();
-    return db.getAcceptedBids(50)
+    return db.getAcceptedBids(50);
 }
 
 // Fetches the currencies which is available for the user to create bids with
@@ -139,7 +116,7 @@ async function getSettings() {
     }
     return {
         blockchainPathList,
-    }
+    };
 }
 async function setSettings(newSettings) {
     await ensureInitialized();
@@ -205,4 +182,5 @@ module.exports = {
     setSettings,
     setPasswords,
     setMessageHandler,
+    close,
 };
