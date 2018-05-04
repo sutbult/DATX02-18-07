@@ -3,12 +3,12 @@ const db = require("./DBHandler.js");
 const sha256 = require("./sha256.js");
 
 // Refund time (in hours) and the time margin when validating the first contract (in seconds)
-const refund_seller = 48;
-const margin_seller = 22;
+const refund_seller = 48; // in hours
+const margin_seller = 7920; //22 hours in seconds
 
 // Refund time (in hours) and the time margin when validating the second contract (in seconds)
-const refund_buyer = 24;
-const margin_buyer = 44;
+const refund_buyer = 24; //in hours
+const margin_buyer = 15840; //44 hours in seconds
 
 //"global" variable, will be assigned if function whenBidAccepted is called, otherwise stays null
 var secret = null;
@@ -101,8 +101,8 @@ async function issueSellerContract(currency, message){
     if(wallet != null){
         to = message.address;
         value = message.bid.from.amount;
-        secret = JSON.stringify(message.secret);
-
+        secret = message.secret;
+	
         console.log("(´･ω･`) Unlocking account for first contract (´･ω･`)");
         result = await currency.unlock(wallet, "111");
 
@@ -145,12 +145,12 @@ async function runBuyer(whisper){
 
 async function validateSellerContract(currency, message){
     return true;
-    // var valid;
+    var valid;
 
-    // console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
-    // valid = await currency.validate(message.contractAddress, currency.wallet, message.bid.to.amount, null, margin_buyer);
+    console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
+    valid = await currency.validate(message.contractAddress, currency.wallet, message.bid.to.amount, message.digest, message.timelock, margin_buyer);
 
-    // return valid;
+    return valid;
 }
 
 async function issueBuyerContract(currency, message){
@@ -185,7 +185,7 @@ async function claim(currency, message){
 
         if(message.secret != null){
             console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
-            secret = JSON.stringify(message.secret);
+            secret = message.secret;
             try{
                 return await currency.claim(secret, from, contract);
             }catch(e){

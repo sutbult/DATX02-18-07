@@ -29,9 +29,7 @@ function Token(token_address, rpc = "http://localhost:8545") {
 
 /** FUNCTION IS SUPPOSED TO GET YOU WALLET BUT IS HARDCODED FOR NOW */
 async function wallet(){
-    var accounts;
-    accounts = await this.chain.eth.getAccounts();
-    return accounts[2];
+    return await this.chain.eth.getCoinbase();
 }
 
 async function getEtherBalance(account_address){
