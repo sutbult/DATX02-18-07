@@ -14,16 +14,32 @@ app.on('ready', createWindow);
 
 function setupChokidar() {
     const chokidar = require('chokidar');
+    const compileElm = require("./elm.js");
 
-    const WATCH = [
-        '**/*.js',
-        'index.html',
-        'elm.js',
-    ];
-    chokidar.watch(WATCH).on('change', () => {
+    function reload() {
         if(mainWindow) {
             mainWindow.reload();
         }
+    }
+
+    // Electron
+    const ELECTRON_WATCH = [
+        "js/*.js",
+        "html/index.html",
+        "../api/src/*.js",
+    ];
+    chokidar.watch(ELECTRON_WATCH).on('change', reload);
+
+    // Elm
+    const ELM_WATCH = [
+        "**/*.elm",
+    ];
+    chokidar.watch(ELM_WATCH).on("change", () => {
+        compileElm().then(() => {
+            reload();
+        }).catch(error => {
+            console.error("Elm fail: %s", error);
+        });
     });
 }
 function createWindow () {
