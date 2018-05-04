@@ -144,7 +144,6 @@ async function runBuyer(whisper){
 }
 
 async function validateSellerContract(currency, message){
-    return true;
     var valid;
 
     console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
