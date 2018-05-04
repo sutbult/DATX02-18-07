@@ -180,12 +180,12 @@ async function pushDigestInfo(contractInfo, func) {
     // await channel.load();
     // close();
 
-    var jsonObj = new Object();
+    var jsonObj = contractInfo;
     jsonObj.step = 2;
-    jsonObj.digest = contractInfo.digest;
-    jsonObj.contractAddress = contractInfo.contractAddress;
-    jsonObj.address = contractInfo.address;
-    jsonObj.bid = contractInfo.bid;
+    // jsonObj.digest = contractInfo.digest;
+    // jsonObj.contractAddress = contractInfo.contractAddress;
+    // jsonObj.address = contractInfo.address;
+    // jsonObj.bid = contractInfo.bid;
 
     var digestMessage = JSON.stringify(jsonObj);
     await channel.add(digestMessage);
@@ -237,6 +237,7 @@ async function changeStatus(message, newStatus){
 
 }
 
+var bidz
 async function onChannelMessage(bid){
     var messagingChannel, channel;
     console.log("Let's go");
@@ -244,6 +245,7 @@ async function onChannelMessage(bid){
     channel = await getLogDB(messagingChannel);
     await channel.load();
     // console.log(channel);
+    bidz = bid;
     channel.events.on('replicated',(address) => {
         console.log("In onChannelMessage");
         bidAccepted(bid, trader.runSeller);

@@ -92,7 +92,7 @@ async function validateContract(contract_address, self_address, digest = null, u
     console.log("(・ωｰ)～☆ Code: " + res_code);
     res_dest = await validateDestination.bind(this)(self_address, contract_address);
     console.log("(・ωｰ)～☆ Destination: " + res_dest);
-    res_refund = await validateRefund.bind(this)(contract_address, time_margin, unlock_time);
+    res_refund = await validateRefund.bind(this)(contract_address, unlock_time, time_margin);
     console.log("(・ωｰ)～☆ Refund: " + res_refund);
     res_digest = true;
     if(digest != null){
@@ -122,7 +122,7 @@ async function validateRefund(contract_address, unlock_time, time_margin){
     contract_unlock_time = await contract.methods.unlockAtTime().call();
     latest_block = await this.chain.eth.getBlock('latest');
     console.log("unlock time: " + unlock_time);
-    console.log("latest block: " + latest_block);
+    console.log("latest block: " + latest_block.timestamp);
     console.log("time margin: " + time_margin);
     return contract_unlock_time == unlock_time &&
 	(unlock_time - latest_block.timestamp) > time_margin;
@@ -136,7 +136,7 @@ async function validateDestination(dest_address, contract_address) {
 
     contract = new this.chain.eth.Contract(this.contract.abi, contract_address);
     contract_dest = await contract.methods.dest().call();
-    return dest_address == contract_dest;
+    return dest_address == contract_dest.toLowerCase();
 }
 
 /** This function validates that the digest on a contract is correct.
