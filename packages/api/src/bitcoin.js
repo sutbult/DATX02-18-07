@@ -191,7 +191,7 @@ async function checkForSecret(compareAddress, numBlocks) {
   return new Promise(async function(resolve, reject) {
     rpc.getBestBlockHash(async function(err1, ret1) {
       if (err1) {
-        reject(err1)
+        reject(err1);
       } else {
         let currentBlock = ret1.result;
         for (var i = 0; i < numBlocks; i++) {
@@ -200,7 +200,7 @@ async function checkForSecret(compareAddress, numBlocks) {
           if (secretJson.found) {
             result.found = true;
             result.secret = secretJson.secret;
-            resolve(result)
+            resolve(result);
           } else {
             currentBlock = txPrev.prev;
           }
@@ -254,7 +254,7 @@ async function getBlockTxsAndPrev(blockhash) {
   return new Promise((resolve, reject) => {
     rpc.getBlock(blockhash, 1, (err, ret) => {
       if (err) {
-        reject(err)
+        reject(err);
       } else {
         result.txs = ret.result.tx;
         result.prev = ret.result.previousblockhash;
