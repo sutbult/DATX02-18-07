@@ -4,6 +4,8 @@ var bcrypto = bitcoinjs.crypto
 var base58check = require('bs58')
 var bip65 = require('bip65')
 var RpcClient = require('bitcoind-rpc');
+var rpc;
+var network;
 
 
 async function main() {
@@ -52,8 +54,30 @@ async function main() {
   }
 }
 
+function send(selPubKey, digest, buyPubKey, btc, timeout) {
+
+}
+
+async function otherFunction() {
+  var value = functionName();
+  console.log(value);
+}
+
+async function functionName() {
+  return 1;
+}
+otherFunction();
+function Bitcoin(host, port, network) {
+  var currency = new Currency.construct(getBalance, send, validateEtherContract, redeemAsSeller, getPastClaim, unlockAccount, undefined);
+  var config = {};
+  config.protocol = 'http';
+  config.host = host;
+  config.port = port;
+  currency.config = config;
+  currency.network = network;
+}
+
 //first to hex, then split into twos and then reverse and get it back into chars
-var rpc;
 main();
 
 // let htlcTransactionObject = {};
@@ -81,6 +105,12 @@ function DefaultBitcoinClient() {
   rpc = new RpcClient(config);
 }
 
+function unlockAccount(user, pass) {
+  this.config.user = user;
+  this.config.pass = pass;
+  this.rpc = new RpcClient(this.config);
+}
+
 function ping(callback) {
   var result = {'error': '', 'status': ''};
   rpc.getNetworkInfo(function (err, ret) {
@@ -93,7 +123,7 @@ function ping(callback) {
   });
 }
 
-function getBalance() {
+function getBalance(ignore) {
   return new Promise((resolve, reject) => {
     var result = {'error': '', 'balance': ''};
     if (rpc === undefined) {
@@ -185,6 +215,8 @@ async function test() {
   console.log(something);
 }
 
+// TODO:
+//get address from transaction instead of having it right away
 async function checkForSecret(compareAddress, numBlocks) {
   result = {'secret': '', found: false}
   return new Promise(async function(resolve, reject) {
@@ -310,7 +342,7 @@ async function generateTimeout(offset) {
   });
 }
 
-
+// TODO: Implement as interface says
 // TODO: Make sure that selPubKeyBuf is one of the seller's actual keys or have it saved in a file?
 // TODO: One block might have been mined between creation of address and verification so remove one timeoutBlocks and check again if regular fails?
 async function verifyHTLC(digest, selPubKeyBuf, buyPubKeyBuf, timeoutOffset, network, compareAddress) {
@@ -399,7 +431,7 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc
   });
 }
 
-async function redeemAsSeller(sellerECPair, secret, htlcTransId, network, destination, btc, redeemScript) {
+async function redeemAsSeller(preImageHash, htlcTransId, sellerECPair,  /*destination, btc,*/ redeemScript) {
   console.log('ins redeemAsSeller');
   console.log(sellerECPair);
   console.log(secret);
@@ -408,8 +440,8 @@ async function redeemAsSeller(sellerECPair, secret, htlcTransId, network, destin
   console.log(destination);
   console.log(btc);
   // console.log(redeemScript);
-  var tx = await buildReedemTransaction(htlcTransId, network, destination, btc);
-  console.log('1');
+  var tx = await buildReedemTransaction(htlcTransId, this.network, destination, btc);
+  // console.log('1');
   var signatureHash = tx.hashForSignature(0, redeemScript, bitcoinjs.Transaction.SIGHASH_ALL);
   // console.log('2');
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
@@ -432,14 +464,12 @@ async function redeemAsSeller(sellerECPair, secret, htlcTransId, network, destin
 }
 
 async function buildReedemTransaction(htlcTransId, network, destination, btc) {
-  return new Promise(async function(resolve, reject) {
-    var vout = await voutFromTransaction(htlcTransId);
-    var txb = new bitcoinjs.TransactionBuilder(network);
-    txb.addInput(htlcTransId, vout, 0xfffffffe);
-    txb.addOutput(destination, btc - 400);
-    var tx = txb.buildIncomplete();
-    resolve(tx);
-  });
+  var vout = await voutFromTransaction(htlcTransId);
+  var txb = new bitcoinjs.TransactionBuilder(network);
+  txb.addInput(htlcTransId, vout, 0xfffffffe);
+  txb.addOutput(destination, btc - 400);
+  var tx = txb.buildIncomplete();
+  return tx;
 }
 
 module.exports = {htlcTransactionObject/*htlc, toDigest, alice, bob, tx, redeemScript*/};
