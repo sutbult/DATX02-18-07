@@ -30,11 +30,13 @@ async function createDB(){
     var name = document.getElementById("nameInput").value
     var type = document.getElementById("typeInput").value
     var permission = document.getElementById("permissionInput").value
+    //var address = document.getElementById("address").value
     if ( permission == 'true' ) {
       const access = {
       write: ['*'],
     }
       db = await orbitdb[type](name, access);
+      document.getElementById("address").value = db.address.toString()
       console.log(db.address.toString())
     }
     else {
@@ -42,6 +44,7 @@ async function createDB(){
       write: [permission],
     }
       db = await orbitdb[type](name, access);
+      document.getElementById("address").value = db.address.toString()
       console.log(db.address.toString())
     }
 

@@ -13,7 +13,7 @@ async function init() {
 async function createDB(name, type, permission) {
     try {
         browser = new HeadlessChrome({
-          headless: true // If you turn this off, you can actually see the browser navigate with your instructions
+          headless: false // If you turn this off, you can actually see the browser navigate with your instructions
           // see above if using remote interface
         });
         await browser.init()
@@ -34,8 +34,15 @@ async function createDB(name, type, permission) {
         }
 
         await mainTab.click("#createBtn")
-        await mainTab.onConsole(listener)
-        await mainTab.wait(6000)
+        await mainTab.wait(5000)
+        const address = await mainTab.evaluate(function(selector) {
+          const selectorHtml = document.querySelector(selector)
+          return selectorHtml.value
+      }, '#address');
+
+      dbAddress = address.result.value
+//        await mainTab.onConsole(listener)
+      //  await mainTab.wait(6000)
         return dbAddress
     } catch (err) {
         console.log("ERROR!", err)
@@ -50,11 +57,14 @@ async function close(){
 }
 
 async function closeAll(){
+  var promises = [];
   for (var i = browsers.length - 1; i >= 0 ; i --){
-    await browsers[i].close();
-    browsers.splice(i,1);
+     promises.push(browsers[i].close());
+     browsers.splice(i,1);
   }
+  await Promise.all(promises)
 }
+
 function listener(word) {
     var string = JSON.stringify(word, null, 2)
     if (string.includes("orbit")) {
