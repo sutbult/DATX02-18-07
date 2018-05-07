@@ -2,13 +2,11 @@ const HeadlessChrome = require("simple-headless-chrome")
 var path = require("path")
 
 var directory;
-var dbAddress;
 var browser;
 var browsers = []
 
 async function init() {
     directory = path.resolve("./");
-    dbAddress = "null";
 }
 async function createDB(name, type, permission) {
     try {
@@ -34,10 +32,12 @@ async function createDB(name, type, permission) {
         }
 
         await mainTab.click("#createBtn")
-        await mainTab.onConsole(listener)
-        await mainTab.wait(2000)
-        //await mainTab.close()
-        return dbAddress
+        await mainTab.wait(9000)
+        const address = await mainTab.evaluate(function(selector) {
+          const selectorHtml = document.querySelector(selector)
+          return selectorHtml.value
+        }, "#address");
+        return address.result.value
     } catch (err) {
         console.log("ERROR!", err)
     }
@@ -51,16 +51,12 @@ async function close(){
 }
 
 async function closeAll(){
+  var promises = [];
   for (var i = browsers.length - 1; i >= 0 ; i --){
-    await browsers[i].close();
-    browsers.splice(i,1);
+     promises.push(browsers[i].close());
+     browsers.splice(i,1);
   }
-}
-function listener(word) {
-    var string = JSON.stringify(word, null, 2)
-    if (string.includes("orbit")) {
-        dbAddress = word[0].value
-    }
+  await Promise.all(promises)
 }
 
 module.exports = {
