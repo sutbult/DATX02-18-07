@@ -4,6 +4,7 @@ var bcrypto = bitcoinjs.crypto
 var base58check = require('bs58')
 var bip65 = require('bip65')
 var RpcClient = require('bitcoind-rpc');
+const Currency = require('./currency.js')
 var rpc;
 var network;
 
@@ -69,7 +70,7 @@ function BitcoinTest(host, port) {
 }
 
 function Bitcoin(host, port, network) {
-  var currency = new Currency.construct(getBalance, send, validateEtherContract, redeemAsSeller, getPastClaim, unlockAccount, undefined);
+  var currency = new Currency.construct(getBalance, send, validate, redeemAsSeller, checkForSecret, unlockAccount, bla);
   var config = {};
   config.protocol = 'http';
   config.host = host;
@@ -78,11 +79,13 @@ function Bitcoin(host, port, network) {
   currency.network = network;
 }
 
+function bla() {
+  return this.config;
+}
+
 //first to hex, then split into twos and then reverse and get it back into chars
 // main();
 
-// let htlcTransactionObject = {};
-var htlcTransactionObject = new Object();
 
 function BitcoinClient(user, password, host, port) {
   var config = {
@@ -466,4 +469,4 @@ async function buildReedemTransaction(htlcTransId, network, destination, satoshi
   return tx;
 }
 
-module.exports = {htlcTransactionObject/*htlc, toDigest, alice, bob, tx, redeemScript*/};
+module.exports = {BitcoinTest/*htlc, toDigest, alice, bob, tx, redeemScript*/};
