@@ -64,6 +64,10 @@ async function validate() {
   return true;
 }
 
+function BitcoinTest(host, port) {
+  Bitcoin(host, port, bitcoinjs.networks.testnet);
+}
+
 function Bitcoin(host, port, network) {
   var currency = new Currency.construct(getBalance, send, validateEtherContract, redeemAsSeller, getPastClaim, unlockAccount, undefined);
   var config = {};
