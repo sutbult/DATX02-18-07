@@ -54,19 +54,16 @@ async function main() {
   }
 }
 
-function send(selPubKey, digest, buyPubKey, btc, timeout) {
-
+async function send(selPubKey, digest, buyPubKey, btc, timeout) {
+  var htlc = await createHTLC(digest, selPubKey, buyPubKey, timeout, this.network);
+  var txid = await sendToHTLC(htlc.address, btc);
+  return txid;
 }
 
-async function otherFunction() {
-  var value = functionName();
-  console.log(value);
+async function validate() {
+  return true;
 }
 
-async function functionName() {
-  return 1;
-}
-otherFunction();
 function Bitcoin(host, port, network) {
   var currency = new Currency.construct(getBalance, send, validateEtherContract, redeemAsSeller, getPastClaim, unlockAccount, undefined);
   var config = {};
@@ -78,7 +75,7 @@ function Bitcoin(host, port, network) {
 }
 
 //first to hex, then split into twos and then reverse and get it back into chars
-main();
+// main();
 
 // let htlcTransactionObject = {};
 var htlcTransactionObject = new Object();
@@ -113,7 +110,7 @@ function unlockAccount(user, pass) {
 
 function ping(callback) {
   var result = {'error': '', 'status': ''};
-  rpc.getNetworkInfo(function (err, ret) {
+  this.rpc.getNetworkInfo(function (err, ret) {
     if (err) {
       result.error = err;
     } else {
@@ -123,7 +120,7 @@ function ping(callback) {
   });
 }
 
-function getBalance(ignore) {
+function getBalance() {
   return new Promise((resolve, reject) => {
     var result = {'error': '', 'balance': ''};
     if (rpc === undefined) {
@@ -131,7 +128,7 @@ function getBalance(ignore) {
       resolve(result);
       return;
     }
-    rpc.getBalance((err, ret) => {
+    this.rpc.getBalance((err, ret) => {
       if (err) {
         reject(err);
       } else {
@@ -143,7 +140,7 @@ function getBalance(ignore) {
 
 function getAddress() {
   return new Promise((resolve, reject) => {
-    rpc.getNewAddress((err, ret) => {
+    this.rpc.getNewAddress((err, ret) => {
       if (err) {
         reject(err)
       }
@@ -154,7 +151,7 @@ function getAddress() {
 
 function generateBlock() {
   return new Promise(function(resolve, reject) {
-    rpc.generate(1, (err, ret) => {
+    this.rpc.generate(1, (err, ret) => {
       if (err) {
         console.log(err);
         reject(err);
@@ -174,12 +171,12 @@ async function voutFromTransaction(transId) {
 
 async function getRawTransactionObject(transId) {
   return new Promise((resolve, reject) => {
-    rpc.getRawTransaction(transId, (err, ret) => {
+    this.rpc.getRawTransaction(transId, (err, ret) => {
       if (err) {
         reject(err);
       }
       var rawTransaction = ret.result;
-      rpc.decodeRawTransaction(rawTransaction, (err1, ret1) => {
+      this.rpc.decodeRawTransaction(rawTransaction, (err1, ret1) => {
         if (err1) {
           reject(err1);
         } else {
@@ -192,11 +189,11 @@ async function getRawTransactionObject(transId) {
 
 function getPrivateKey() {
   return new Promise((resolve, reject) => {
-    rpc.getNewAddress((err1, addr) => {
+    this.rpc.getNewAddress((err1, addr) => {
       if (err1) {
         resolve(err1);
       } else {
-        rpc.dumpPrivKey(addr.result.toString(), (err2, priv) => {
+        this.rpc.dumpPrivKey(addr.result.toString(), (err2, priv) => {
           if (err2) {
             reject(err2)
           } else {
@@ -220,7 +217,7 @@ async function test() {
 async function checkForSecret(compareAddress, numBlocks) {
   result = {'secret': '', found: false}
   return new Promise(async function(resolve, reject) {
-    rpc.getBestBlockHash(async function(err1, ret1) {
+    this.rpc.getBestBlockHash(async function(err1, ret1) {
       if (err1) {
         reject(err1);
       } else {
@@ -283,7 +280,7 @@ function extractSecret(asm) {
 async function getBlockTxsAndPrev(blockhash) {
   var result = {'txs': '', 'prev': ''};
   return new Promise((resolve, reject) => {
-    rpc.getBlock(blockhash, 1, (err, ret) => {
+    this.rpc.getBlock(blockhash, 1, (err, ret) => {
       if (err) {
         reject(err);
       } else {
@@ -301,7 +298,7 @@ function toDigest(secret){
 
 function sendToHTLC(address, btc) {
   return new Promise((resolve, reject) => {
-    rpc.sendToAddress(address, btc, (err, ret) => {
+    this.rpc.sendToAddress(address, btc, (err, ret) => {
       if (err) {
         reject(err);
       } else {
@@ -313,7 +310,7 @@ function sendToHTLC(address, btc) {
 
 async function generateTimeoutBlocks(timeoutBlocks) {
   return new Promise((resolve, reject) => {
-    rpc.getBlockCount((err, ret) => {
+    this.rpc.getBlockCount((err, ret) => {
       if (err) {
         reject("Couldn't get current block count");
       }
@@ -325,11 +322,11 @@ async function generateTimeoutBlocks(timeoutBlocks) {
 
 async function generateTimeout(offset) {
   return new Promise((resolve, reject) => {
-    rpc.getBestBlockHash((err, ret) => {
+    this.rpc.getBestBlockHash((err, ret) => {
       if (err) {
         reject(err);
       } else {
-        rpc.getBlock(ret.result, 1, (err1, ret1) => {
+        this.rpc.getBlock(ret.result, 1, (err1, ret1) => {
           if (err1) {
             reject(err1)
           } else {
@@ -343,8 +340,7 @@ async function generateTimeout(offset) {
 }
 
 // TODO: Implement as interface says
-// TODO: Make sure that selPubKeyBuf is one of the seller's actual keys or have it saved in a file?
-// TODO: One block might have been mined between creation of address and verification so remove one timeoutBlocks and check again if regular fails?
+// TODO: rename validate and get information from transaction
 async function verifyHTLC(digest, selPubKeyBuf, buyPubKeyBuf, timeoutOffset, network, compareAddress) {
   // generate htlcAddress and make sure it matches htlcAddress
   var htlc = await htlcAddress(digest, selPubKeyBuf, buyPubKeyBuf, timeoutOffset, network);
@@ -422,7 +418,7 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc
   ], redeemScript);
   tx.setInputScript(0, redeemScriptSig);
   return new Promise(function(resolve, reject) {
-    rpc.sendRawTransaction(tx, true, (err, ret) => {
+    this.rpc.sendRawTransaction(tx, true, (err, ret) => {
       if (err) {
         reject(err);
       }
@@ -431,29 +427,23 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc
   });
 }
 
+// TODO: get Destination
+// TODO: get amount from Transaction
 async function redeemAsSeller(preImageHash, htlcTransId, sellerECPair,  /*destination, btc,*/ redeemScript) {
-  console.log('ins redeemAsSeller');
-  console.log(sellerECPair);
-  console.log(secret);
-  console.log(htlcTransId);
-  console.log(network);
-  console.log(destination);
-  console.log(btc);
-  // console.log(redeemScript);
-  var tx = await buildReedemTransaction(htlcTransId, this.network, destination, btc);
-  // console.log('1');
+  var destination = await getAddress();
+  var transObject = await getRawTransactionObject(htlcTransId);
+  var satoshi = transObject.vout[0].value*100000000; // multiply with hundred million to get satoshi
+  var tx = await buildReedemTransaction(htlcTransId, this.network, destination, satoshi);
   var signatureHash = tx.hashForSignature(0, redeemScript, bitcoinjs.Transaction.SIGHASH_ALL);
-  // console.log('2');
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
     sellerECPair.sign(signatureHash).toScriptSignature(bitcoinjs.Transaction.SIGHASH_ALL),
     sellerECPair.getPublicKeyBuffer(),
-    Buffer.from(secret),
+    Buffer.from(preImageHash),
     bitcoinjs.opcodes.OP_TRUE
   ], redeemScript);
-  // console.log('3');
   tx.setInputScript(0, redeemScriptSig);
   return new Promise(function(resolve, reject) {
-    rpc.sendRawTransaction(tx.toHex(), true, (err, ret) => {
+    this.rpc.sendRawTransaction(tx.toHex(), true, (err, ret) => {
       if (err) {
         reject(err);
       } else {
@@ -463,11 +453,11 @@ async function redeemAsSeller(preImageHash, htlcTransId, sellerECPair,  /*destin
   });
 }
 
-async function buildReedemTransaction(htlcTransId, network, destination, btc) {
+async function buildReedemTransaction(htlcTransId, network, destination, satoshi) {
   var vout = await voutFromTransaction(htlcTransId);
   var txb = new bitcoinjs.TransactionBuilder(network);
   txb.addInput(htlcTransId, vout, 0xfffffffe);
-  txb.addOutput(destination, btc - 400);
+  txb.addOutput(destination, satoshi - 400);
   var tx = txb.buildIncomplete();
   return tx;
 }
