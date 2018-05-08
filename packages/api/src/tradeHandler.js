@@ -181,11 +181,10 @@ async function issueBuyerContract(currency, message){
 }
 
 async function claim(currency, message){
+    var wallet = await currency.wallet(), contract, secret;
 
-    var wallet = await currency.wallet(), from, contract, secret;
     if(wallet != null){
         contract = message.contractAddress;
-
 
         if(message.secret != null){
             console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
