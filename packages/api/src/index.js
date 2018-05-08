@@ -74,7 +74,7 @@ async function getWallet() {
     try {
         if(eth.web3 !== undefined) {
             const accs = await eth.web3.eth.getAccounts();
-            const amount = await eth.web3.eth.getBalance(accs[2]);
+            const amount = await eth.web3.eth.getBalance(accs[0]);
             accounts.push(Account("ETH", amount));
         }
     }
