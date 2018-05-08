@@ -1,5 +1,6 @@
 {
     "name": "gui",
+    "license": "MIT",
     "devDependencies": {
         "chokidar": "^2.0.0"
     },
