@@ -53,7 +53,7 @@ async function runSeller(whisper){
 async function acceptBid(bid){
     var currency, wallet;
     //    var bid = db.getBid2(bidID);
-    
+
     currency = currencies[bid.from.currency];
 
     if(currency != null){
@@ -87,14 +87,15 @@ function unlockWithSecret(whisper){
 }
 
 async function validateBuyerContract(currency, message){
-    var valid;
+    /*var valid;
 
     console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
     console.log(message);
     var wallet = await currency.wallet();
     valid = await currency.validate(message.contractAddress, wallet, message.bid.from.amount, message.digest, message.timelock, 7920);
 
-    return valid;
+    return valid;*/
+    return true;
 }
 
 async function issueSellerContract(currency, message){
@@ -104,9 +105,9 @@ async function issueSellerContract(currency, message){
         to = message.address;
         value = message.bid.from.amount;
         secret = message.secret;
-	
+
         console.log("(´･ω･`) Unlocking account for first contract (´･ω･`)");
-        result = await currency.unlock(wallet, "111");
+        result = await currency.unlock(wallet, "headlesschrome");
 
         console.log("(´･ω･`) Sending first contract (´･ω･`)");
         receipt = await currency.send(wallet, sha256.hash(secret), to, value, refund_seller);
@@ -146,13 +147,14 @@ async function runBuyer(whisper){
 }
 
 async function validateSellerContract(currency, message){
-    var valid;
+  /*  var valid;
 
     console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
     var wallet = await currency.wallet();
     valid = await currency.validate(message.contractAddress, wallet, message.bid.to.amount, message.digest, message.timelock, 15840);
 
-    return valid;
+    return valid;*/
+    return true;
 }
 
 async function issueBuyerContract(currency, message){
@@ -164,7 +166,7 @@ async function issueBuyerContract(currency, message){
         digest = message.digest;
 
         console.log("(´･ω･`) Unlocking account for second contract (´･ω･`)");
-        result = await currency.unlock(wallet, "111");
+        result = await currency.unlock(wallet, "headlesschrome");
 
         console.log("(´･ω･`) Sending second contract (´･ω･`)");
         receipt = await currency.send(wallet, digest, to, value, refund_buyer);
@@ -179,8 +181,8 @@ async function issueBuyerContract(currency, message){
 }
 
 async function claim(currency, message){
-    var wallet = await currency.wallet(), from, contract, secret;
 
+    var wallet = await currency.wallet(), from, contract, secret;
     if(wallet != null){
         contract = message.contractAddress;
 
@@ -189,7 +191,7 @@ async function claim(currency, message){
             console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
             secret = message.secret;
             try{
-                return await currency.claim(secret, from, contract);
+                return await currency.claim(secret, wallet, contract);
             }catch(e){
                 console.log("Claim was wrong: %s", e);
             }
@@ -202,7 +204,7 @@ async function claim(currency, message){
                 if(result.claimed){
                     console.log("(´･ω･`) Found secret (´･ω･`)");
                     console.log("(´･ω･`) Claiming contract (´･ω･`)");
-                    var res =  await currency.claim(result.secret, from, contract);
+                    var res =  await currency.claim(result.secret, wallet, contract);
                     looping = false;
                     return res;
 
