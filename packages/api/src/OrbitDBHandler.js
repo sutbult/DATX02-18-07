@@ -262,6 +262,20 @@ async function exit(){
   }
 }
 
+function getContract(){
+  var data = channel.iterator({ limit : -1 }).collect().map((e) => e.payload.value)
+  var message = []
+  for (var i = 0; i < data.length; i++){
+    message[i] = JSON.parse(data[i])
+  }
+
+  for(var i = 0; i < message.length; i++){
+    if(message[i].step == 2){
+        return message[i].contractAddress;
+    }
+  }
+}
+
 module.exports = {
     init,
     getData,
@@ -277,5 +291,6 @@ module.exports = {
     getKVDB,
     changeStatus,
     onChannelMessage,
-    exit
+    exit,
+    getContract
 };

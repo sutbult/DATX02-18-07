@@ -195,6 +195,8 @@ async function claim(currency, message){
                 console.log("Claim was wrong: %s", e);
             }
         }else{
+          contract = require("./OrbitDBHandler.js").getContract();
+          console.log("Second User Claiming from: " + contract)
             console.log("(´･ω･`) Searching for secret (´･ω･`)");
             var looping = true;
             while(looping){
