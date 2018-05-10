@@ -70,7 +70,7 @@ function BitcoinTest(host, port) {
 }
 
 function Bitcoin(host, port, network) {
-  var currency = new Currency.construct(getBalance, send, validate, redeemAsSeller, checkForSecret, unlockAccount, bla);
+  var currency = new Currency.construct(getBalance, send, validate, redeemAsSeller, checkForSecret, unlockAccount, wallet);
   var config = {};
   config.protocol = 'http';
   config.host = host;
@@ -79,7 +79,7 @@ function Bitcoin(host, port, network) {
   currency.network = network;
 }
 
-function bla() {
+function wallet() {
   return this.config;
 }
 
@@ -219,11 +219,19 @@ async function test() {
   console.log(something);
 }
 
+async function getAddressFromTransation(txid) {
+  this.rpc.getRawTransaction()
+}
+
 // TODO:
 //get address from transaction instead of having it right away
-async function checkForSecret(compareAddress, numBlocks) {
+async function checkForSecret(txid, numBlocks) {
+
   result = {'secret': '', found: false}
   return new Promise(async function(resolve, reject) {
+    var transactionObject = await getRawTransactionObject(txid);
+    var compareAddress = transactionObject.vout[0].scriptPubKey.addresses[1];
+
     this.rpc.getBestBlockHash(async function(err1, ret1) {
       if (err1) {
         reject(err1);
@@ -434,13 +442,12 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc
   });
 }
 
-// TODO: get Destination
-// TODO: get amount from Transaction
-async function redeemAsSeller(preImageHash, htlcTransId, sellerECPair,  /*destination, btc,*/ redeemScript) {
+async function redeemAsSeller(preImageHash, htlcTransId, sellerECPair, redeemScript) {
   var destination = await getAddress();
   var transObject = await getRawTransactionObject(htlcTransId);
   var satoshi = transObject.vout[0].value*100000000; // multiply with hundred million to get satoshi
-  var tx = await buildReedemTransaction(htlcTransId, this.network, destination, satoshi);
+  var p2shAddr = transObject.vout[0].scriptPubKey.addresses[0];
+  var tx = await buildReedemTransaction(htlcTransId, this.network, destination, satoshi, p2shAddr);
   var signatureHash = tx.hashForSignature(0, redeemScript, bitcoinjs.Transaction.SIGHASH_ALL);
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
     sellerECPair.sign(signatureHash).toScriptSignature(bitcoinjs.Transaction.SIGHASH_ALL),
@@ -460,11 +467,14 @@ async function redeemAsSeller(preImageHash, htlcTransId, sellerECPair,  /*destin
   });
 }
 
-async function buildReedemTransaction(htlcTransId, network, destination, satoshi) {
+async function buildReedemTransaction(htlcTransId, network, destination, satoshi, p2shAddr) {
   var vout = await voutFromTransaction(htlcTransId);
   var txb = new bitcoinjs.TransactionBuilder(network);
   txb.addInput(htlcTransId, vout, 0xfffffffe);
   txb.addOutput(destination, satoshi - 400);
+  if (p2shAddr !== undefined) {
+    txb.addOutput(p2shAddr, 1);
+  }
   var tx = txb.buildIncomplete();
   return tx;
 }
