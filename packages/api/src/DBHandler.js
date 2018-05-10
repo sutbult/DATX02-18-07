@@ -53,17 +53,19 @@ async function init(msgHandler){
 }
 
 function getBids(amount){
-    var bids = getBid.bind(this)(amount, this.globalDB);
-  // for (var i = bids.length - 1; i >= 0; i--){
-    //var tempAmount = bids[i].from.amount
-    //bids[i].from.amount = bids[i].to.amount
-    //bids[i].to.amount = tempAmount
-    // if(bids[i].key == key || bids[i].status == "PENDING" || bids[i].status == "FINISHED"){
-  //    bids.splice(i,1);
-    // }
-  // }
-    return bids;
+  var bids = getBid.bind(this)(amount, this.globalDB);
+  for (var i = bids.length - 1; i >= 0; i--){
+    var temp = bids[i].from
+    bids[i].from = bids[i].to
+    bids[i].to = temp
+    if(bids[i].key == this.key || bids[i].status == "PENDING" || bids[i].status == "FINISHED"){
+      bids.splice(i,1);
+    }
+  }
+  return bids;
 }
+
+
 
  function getBid2(bidID){
    console.log('getbid2')
@@ -110,7 +112,7 @@ async function changeBidStatus(bidID, status){
 function getUserBids(amount){
     var bids = getBid.bind(this)(amount, this.globalDB);
     for (var i = bids.length - 1; i >= 0; i--){
-	if(bids[i].key != key){
+	if(bids[i].key != this.key){
 	    bids.splice(i,1);
 	}
     }
@@ -118,8 +120,11 @@ function getUserBids(amount){
 }
 
 function getAcceptedBids(amount){
-    var bids = getBids.bind(this)(amount);
+    var bids = getBid.bind(this)(amount, this.globalDB);
+    console.log(bids);
     for (var i = bids.length - 1; i >= 0; i--){
+      console.log(bids)
+      console.log(this.localDB.get(bids[i].id))
 	if(this.localDB.get(bids[i].id) == undefined){
 	    bids.splice(i,1);
 	}
