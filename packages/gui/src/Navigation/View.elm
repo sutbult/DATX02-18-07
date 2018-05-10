@@ -22,7 +22,7 @@ views : List (View, String)
 views =
     [ (Add, "Add bid")
     , (Browse, "Browse bids")
-    , (Wallet, "Your wallets")
+    , (Wallet, "Your wallet")
     , (UserBids, "Your bids")
     , (AcceptedBids, "Accepted bids")
     , (Settings, "Settings")
