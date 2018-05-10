@@ -121,10 +121,7 @@ function getUserBids(amount){
 
 function getAcceptedBids(amount){
     var bids = getBid.bind(this)(amount, this.globalDB);
-    console.log(bids);
     for (var i = bids.length - 1; i >= 0; i--){
-      console.log(bids)
-      console.log(this.localDB.get(bids[i].id))
 	if(this.localDB.get(bids[i].id) == undefined){
 	    bids.splice(i,1);
 	}
@@ -138,6 +135,7 @@ function getBidStatus(bidID){
 
 function getBid(amount, db){
     var data = db.iterator({ limit : amount }).collect();
+    data = data.reverse();
     var bids = [];
     for (var i = 0; i < data.length; i++) {
 	var bid = data[i].payload.value;
