@@ -29,7 +29,10 @@ function Token(token_address, rpc = "http://localhost:8545") {
 
 /** FUNCTION IS SUPPOSED TO GET YOU WALLET BUT IS HARDCODED FOR NOW */
 async function wallet(){
-    return await this.chain.eth.getCoinbase();
+    var accounts;
+    accounts = await this.chain.eth.getAccounts();
+    return accounts[0];
+    //return await this.chain.eth.getCoinbase();
 }
 
 async function getEtherBalance(account_address){
@@ -64,6 +67,7 @@ async function validateEtherContract(contract_address, self_address, value_in_we
 
     res_cont = await validateContract.bind(this)(contract_address, self_address, digest, unlock_time, time_margin);
     res_val = await validateValue.bind(this)(value_in_wei, contract_address);
+    console.log("(・ωｰ)～☆ Ether: " + res_val);
     return res_cont && res_val;
 }
 
@@ -78,7 +82,9 @@ async function validateERC20Contract(contract_address, self_address, value_in_to
 
     res_cont = await validateContract.bind(this)(contract_address, self_address, digest, unlock_time, time_margin);
     res_address = await validateERC20Address.bind(this)(contract_address);
+    ("(・ωｰ)～☆ Token: " + res_address);
     res_val = await validateERC20Value.bind(this)(value_in_tokens, contract_address);
+    ("(・ωｰ)～☆ Value: " + res_val);
     return res_cont && res_val && res_address;
 }
 
@@ -136,7 +142,7 @@ async function validateDestination(dest_address, contract_address) {
 
     contract = new this.chain.eth.Contract(this.contract.abi, contract_address);
     contract_dest = await contract.methods.dest().call();
-    return dest_address == contract_dest.toLowerCase();
+    return dest_address == contract_dest;
 }
 
 /** This function validates that the digest on a contract is correct.
@@ -220,7 +226,7 @@ async function sendContract(args, from_address, value_in_wei){
     contract = new this.chain.eth.Contract(this.contract.abi);
 
     contract_instance = contract.deploy({data: '0x' + this.contract.code, arguments: args});
-    receipt = await contract_instance.send({from: from_address, gasPrice: "18", gas: gas_estimate*2, value: value_in_wei});
+    receipt = await contract_instance.send({from: from_address, gasPrice: "100000000000", gas: gas_estimate*2, value: value_in_wei});
     contract_address = receipt._address;
     console.log("(ΘεΘʃƪ) Contract deployed at address " + contract_address + " (ΘεΘʃƪ)");
 
@@ -246,7 +252,7 @@ async function sendTokensToContract(from_address, contract_address, value_in_tok
     transaction = await token
         .methods
         .transfer(contract_address, value_in_tokens)
-        .send({from: from_address, gasPrice: "18", gas: gas_estimate, value: 0});
+        .send({from: from_address, gasPrice: "100000000000", gas: gas_estimate, value: 0});
     console.log("(ΘεΘʃƪ) Sent Tokens to contract (ΘεΘʃƪ)");
     return transaction;
 }
@@ -280,9 +286,9 @@ async function getPastClaim(contract_address, from_block = 10849){
 }
 
 async function claimContract(pre_image_hash, from_address, claim_address){
-    console.log(pre_image_hash.toString());
-    console.log(from_address.toString());
-    console.log(claim_address.toString());
+  //  console.log(pre_image_hash.toString());
+  //  console.log(from_address.toString());
+  //  console.log(claim_address.toString());
     console.log("In claimContract in Ethereum");
     var contract;
 
@@ -292,7 +298,7 @@ async function claimContract(pre_image_hash, from_address, claim_address){
 
     try {
         console.log(pre_image_hash);
-        var result = await contract.methods.claim(pre_image_hash).send({from: from_address});
+        var result = await contract.methods.claim(pre_image_hash.toString()).send({from: from_address});
 
         console.log(result);
         return true;

@@ -4,6 +4,9 @@ const headless = require("./Headless.js");
 const os = require("os");
 const path = require("path");
 const trader = require("./tradeHandler.js");
+const access = {
+write: ['*'],
+}
 
 var directory;
 
@@ -42,11 +45,6 @@ var orbitdb;
 var channel;
 var key;
 var ipfs;
-
-const access = {
-    // Give write access to ourselves
-    write: ['*'],
-};
 
 function initOrbitDB() {
     return new Promise((resolve, reject) => {
@@ -93,10 +91,16 @@ function initOrbitDB() {
 * @param permission The write permission of the database. (public, local)
 */
 async function createDB(name, type, permission){
-  if(permission == "local"){
-      permission = key;
+  if(os.platform() == "win32"){
+    if(permission == "local"){
+        permission = key;
+    }
+      return headless.createDB(name, type, permission);
   }
-    return headless.createDB(name, type, permission);
+  else {
+    return name;
+  }
+
 }
 
 // Used for keyvalue database
@@ -208,15 +212,27 @@ async function pushContractInfo(contract, message, callback) {
 
 
 async function getLogDB(address){
-    var db = await orbitdb.log(address);
-    headless.close();
+  var db;
+    if(os.platform() == "win32"){
+      db = await orbitdb.log(address);
+      headless.close();
+    }
+    else{
+      db = await orbitdb.log(address, access);
+    }
     return db;
 
 }
 
 async function getKVDB(address){
+  var db;
+  if(os.platform() == "win32"){
     var db = await orbitdb.keyvalue(address);
     headless.close();
+  }
+  else {
+    db = await orbitdb.keyvalue(address, access);
+  }
     return db;
 }
 
@@ -262,6 +278,20 @@ async function exit(){
   }
 }
 
+function getContract(){
+  var data = channel.iterator({ limit : -1 }).collect().map((e) => e.payload.value)
+  var message = []
+  for (var i = 0; i < data.length; i++){
+    message[i] = JSON.parse(data[i])
+  }
+
+  for(var i = 0; i < message.length; i++){
+    if(message[i].step == 2){
+        return message[i].contractAddress;
+    }
+  }
+}
+
 module.exports = {
     init,
     getData,
@@ -277,5 +307,6 @@ module.exports = {
     getKVDB,
     changeStatus,
     onChannelMessage,
-    exit
+    exit,
+    getContract
 };

@@ -1,7 +1,7 @@
 {
     "name": "DATX02-18-07",
     "version": "0.0.1",
-    "license": "UNLICENSED",
+    "license": "MIT",
     "private": true,
     "main": "packages/gui/js/main.js",
     "build": {

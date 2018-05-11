@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="420mm"
+   height="297mm"
+   viewBox="0 0 420 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="poster_1.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.59870803"
+     inkscape:cx="609.2444"
+     inkscape:cy="529.41043"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer10"
+     showgrid="true"
+     width="430mm"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:measure-start="0,0"
+     inkscape:measure-end="0,0"
+     inkscape:pagecheckerboard="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3713"
+       units="mm"
+       spacingx="5"
+       spacingy="5"
+       enabled="true"
+       visible="true" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Bakgrund"
+     inkscape:groupmode="layer"
+     id="layer1"
+     sodipodi:insensitive="true">
+    <rect
+       id="rect3715"
+       width="410"
+       height="287"
+       x="5"
+       y="4.9999914"
+       style="fill:#00001a;fill-opacity:1;stroke-width:0.26458332" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer9"
+     inkscape:label="QR"
+     style="display:inline"
+     transform="translate(0,-307)"
+     sodipodi:insensitive="true" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer8"
+     inkscape:label="Intresserad"
+     style="display:inline"
+     transform="translate(0,-307)"
+     sodipodi:insensitive="true" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="Bilder"
+     transform="translate(0,-307)" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer10"
+     inkscape:label="Undertitlar"
+     transform="translate(0,-307)">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="112.80623"
+       y="446.86353"
+       id="text4530-3"><tspan
+         sodipodi:role="line"
+         x="112.80623"
+         y="446.86353"
+         style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.28888893px;line-height:1.25;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold Italic';text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332"
+         id="tspan4532-7">Inledning</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="23.569269"
+       y="845.47742"
+       id="text4391"><tspan
+         sodipodi:role="line"
+         x="23.569269"
+         y="845.47742"
+         id="tspan4395"
+         style="font-size:11.28888893px;line-height:100%"> </tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="14.702911"
+       y="580.81238"
+       id="text4399"><tspan
+         sodipodi:role="line"
+         id="tspan4401"
+         x="14.702911"
+         y="580.81238"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.70441675px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff;fill-opacity:1">1. CoinMarketCap. Cryptocurrency Market Capitalizations, https://coinmarketcap.com/ (hämtat 2018-04-30)</tspan><tspan
+         sodipodi:role="line"
+         x="14.702911"
+         y="587.65765"
+         id="tspan4403"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.70441675px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff;fill-opacity:1">2. CoinMarketCap. Historical Snapshot - March 25, 2018, https://coinmarketcap.com/historical/20180325/ (hämtat 2018-03-26)</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer11"
+     inkscape:label="Text"
+     transform="translate(0,-307)">
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-linejoin:round;stroke-opacity:1"
+       id="rect4246"
+       width="195.32542"
+       height="171.99304"
+       x="15.292109"
+       y="424.09958" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-linejoin:round;stroke-opacity:1"
+       id="rect4319"
+       width="186.66862"
+       height="182.89754"
+       x="229.09331"
+       y="529.64923" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-linejoin:round;stroke-opacity:1"
+       id="rect4359"
+       width="192.32524"
+       height="191.85385"
+       x="16.969873"
+       y="704.06183" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.28222221;stroke-linejoin:round;stroke-opacity:1"
+       id="rect4415"
+       width="191.65889"
+       height="53.331165"
+       x="16.746866"
+       y="687.44623" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-linejoin:round;stroke-opacity:1"
+       id="rect4469"
+       width="191.74928"
+       height="211.01889"
+       x="221.49394"
+       y="539.37671" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1005"
+       width="195"
+       height="249.99998"
+       x="15"
+       y="400.99997" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1007"
+       width="195"
+       height="239.99998"
+       x="219.99998"
+       y="531" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1009"
+       width="195"
+       height="164.99998"
+       x="15"
+       y="716" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1486"
+       width="180"
+       height="74.999985"
+       x="30"
+       y="546" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.79688323;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path1562"
+       cx="220.07594"
+       cy="474.12378"
+       r="1.9922079" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.79688329;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path1562-6"
+       cx="220.00928"
+       cy="488.47141"
+       r="1.992208" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.79688329;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path1562-7"
+       cx="220.04832"
+       cy="503.02438"
+       r="1.992208" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1662"
+       width="195"
+       height="214.99998"
+       x="219.99998"
+       y="536" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2218"
+       width="399.99997"
+       height="65"
+       x="15"
+       y="385.99997" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#00001a;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1374"
+       width="195"
+       height="130"
+       x="15"
+       y="433.2334" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#00001a;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1456"
+       width="175"
+       height="60.000008"
+       x="230"
+       y="463.05029" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#00001a;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1478"
+       width="190"
+       height="109.99999"
+       x="15"
+       y="448.2334" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1480"
+       width="190"
+       height="140"
+       x="15"
+       y="424" />
+    <flowRoot
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="flowRoot1482"
+       transform="translate(0.06426191,29.052864)"><flowRegion
+         id="flowRegion1484"><use
+           x="0"
+           y="0"
+           xlink:href="#rect1480"
+           id="use1486"
+           width="100%"
+           height="100%" /></flowRegion><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none"
+         id="flowPara1488">Kryptovalutor ökar snabbt i popularitet. Numera finns det över 1 500 kryptovalutor [1] och deras totala börsvärde överstiger 400 miljarder amerikanska dollar [2]. Detta stora antal kryptovalutor innebär att efterfrågan att kunna växla mellan dem också ökar.</flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none"
+         id="flowPara1490"> </flowPara><flowPara
+         id="flowPara1492"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none" /><flowPara
+         id="flowPara1494"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none">Växling mellan olika kryptovalutor sker ofta genom centraliserade växlingskontor. Detta ger vissa fördelar men även ett antal nackdelar eftersom monetär säkerhet och anonymitet inte kan garanteras. Ett alternativ till centraliserade växlingskontor är att systemet för att genomföra växlingar är decentraliserat.</flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none"
+         id="flowPara1496" /><flowPara
+         id="flowPara1498"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none" /><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none"
+         id="flowPara1500" /><flowPara
+         id="flowPara1502"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none"> </flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none"
+         id="flowPara1506"><flowSpan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none"
+   id="flowSpan1504">Syftet med detta kandidatarbete</flowSpan> är att sätta upp ett antal krav som en sådan decentraliserad växlingstjänst bör uppfylla för att därefter utveckla en prototyp som uppfyller dessa krav.</flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none"
+         id="flowPara1508"> </flowPara><flowPara
+         id="flowPara1510"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none" /></flowRoot>    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1512"
+       width="190"
+       height="140"
+       x="215"
+       y="434.5835" />
+    <flowRoot
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="flowRoot1514"
+       transform="translate(0,11.343178)"><flowRegion
+         id="flowRegion1516"><use
+           x="0"
+           y="0"
+           xlink:href="#rect1512"
+           id="use1518"
+           width="100%"
+           height="100%" /></flowRegion><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1520" /><flowPara
+         id="flowPara1522"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1" /><flowPara
+         id="flowPara1524"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1" /><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1526"> </flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1530"><flowSpan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold'"
+   id="flowSpan1528">Det finns tre huvudproblem</flowSpan> som behöver lösas för att en prototyp ska vara välfungerande:</flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1532"> </flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1534" /><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1536" /><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1538" /><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1540" /><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1542"> </flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1544"> </flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1546"> </flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1548"> </flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1550"> </flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1552"> </flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1554"> </flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1556">Prototypen begränsas till Bitcoin, Ethereum och Ethereum Classic men den testas både på testnätverk och på riktiga nätverk.</flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1558"> </flowPara><flowPara
+         id="flowPara1560"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1" /></flowRoot>    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1562"
+       width="180"
+       height="70"
+       x="224.99998"
+       y="458.81689" />
+    <flowRoot
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="flowRoot1564"
+       transform="translate(0,35.905228)"><flowRegion
+         id="flowRegion1566"><use
+           x="0"
+           y="0"
+           xlink:href="#rect1562"
+           id="use1568"
+           width="100%"
+           height="100%"
+           transform="translate(0,-23.812509)" /></flowRegion><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1570" /><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1572" /><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1574" /><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1576">Det första problemet är att en växling ska kunna genomföras på ett decentraliserat men samtidigt säkert sätt. </flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1578">Det andra problemet är att det ska gå att lagra information som gör att användarna kan hitta varandra på ett decentraliserat sätt. </flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1580">Det tredje problemet är att det ska gå att upprätta en kommunikationskanal mellan två användare så att de kan genomföra en växling.</flowPara><flowPara
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.99722242px;line-height:120.00000477%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';text-align:justify;letter-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         id="flowPara1582" /></flowRoot>    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.26458333;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect945"
+       width="390"
+       height="70"
+       x="15"
+       y="384" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="25"
+       y="349"
+       id="text949"><tspan
+         sodipodi:role="line"
+         id="tspan947"
+         x="25"
+         y="358.36377"
+         style="stroke-width:0.26458332" /></text>
+    <flowRoot
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       id="flowRoot922"
+       transform="translate(0,13.758336)"><flowRegion
+         id="flowRegion924"><use
+           x="0"
+           y="0"
+           xlink:href="#rect945"
+           id="use926"
+           width="100%"
+           height="100%" /></flowRegion><flowPara
+         id="flowPara928"
+         style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.28888893px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold Italic';text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1">Har du bitcoin? Hur växlar du till andra kryptovalutor? Vet du inte hur man kan göra detta eller tycker du det är svårt? Vi har lösningen för dig!</flowPara></flowRoot>  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Titel"
+     transform="translate(0,-307)"
+     sodipodi:insensitive="true">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="214.91319"
+       y="349.03473"
+       id="text4530"><tspan
+         sodipodi:role="line"
+         id="tspan4528"
+         x="214.91319"
+         y="349.03473"
+         style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:25.39999962px;line-height:1.25;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold Italic';text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332">Decentraliserad växling</tspan><tspan
+         sodipodi:role="line"
+         x="214.91319"
+         y="380.78473"
+         style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:25.39999962px;line-height:1.25;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold Italic';text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332"
+         id="tspan4532">av kryptovalutor</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="49.999992"
+       y="701"
+       id="text4572"><tspan
+         sodipodi:role="line"
+         x="49.999992"
+         y="701"
+         style="font-size:10.58333302px;line-height:1.25;fill:#ffffff;fill-opacity:1;stroke-width:0.26458332"
+         id="tspan4574"> </tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer12"
+     inkscape:label="Mittlinje"
+     style="display:none"
+     transform="translate(0,-307)"
+     sodipodi:insensitive="true">
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.26458332;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 210.14111,-25.77088 V 634.16865"
+       id="path4387"
+       inkscape:connector-curvature="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Marginal"
+     style="display:none"
+     transform="translate(0,-307)"
+     sodipodi:insensitive="true">
+    <rect
+       id="rect4525"
+       width="400"
+       height="277"
+       x="10"
+       y="317"
+       style="fill:none;stroke:#ffffff;stroke-width:0.26458332;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>

@@ -107,7 +107,7 @@ async function issueSellerContract(currency, message){
         secret = message.secret;
 
         console.log("(´･ω･`) Unlocking account for first contract (´･ω･`)");
-        result = await currency.unlock(wallet, "111");
+        result = await currency.unlock(wallet, "headlesschrome");
 
         console.log("(´･ω･`) Sending first contract (´･ω･`)");
         receipt = await currency.send(wallet, sha256.hash(secret), to, value, refund_seller);
@@ -132,7 +132,7 @@ async function runBuyer(whisper){
     exchange_from = currencies[message.bid.from.currency];
 
     console.log("To " + message.bid.to.currency);
-    valid   = await validateSellerContract(exchange_from, message);
+    valid = await validateSellerContract(exchange_from, message);
 
     if (valid){
         console.log("ヽ(ヅ)ノ Buyer finds Seller contract valid! ヽ(ヅ)ノ");
@@ -165,7 +165,7 @@ async function issueBuyerContract(currency, message){
         digest = message.digest;
 
         console.log("(´･ω･`) Unlocking account for second contract (´･ω･`)");
-        result = await currency.unlock(wallet, "111");
+        result = await currency.unlock(wallet, "headlesschrome");
 
         console.log("(´･ω･`) Sending second contract (´･ω･`)");
         receipt = await currency.send(wallet, digest, to, value, refund_buyer);
@@ -180,21 +180,22 @@ async function issueBuyerContract(currency, message){
 }
 
 async function claim(currency, message){
-    var wallet = await currency.wallet(), from, contract, secret;
+    var wallet = await currency.wallet(), contract, secret;
 
     if(wallet != null){
         contract = message.contractAddress;
-
 
         if(message.secret != null){
             console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
             secret = message.secret;
             try{
-                return await currency.claim(secret, from, contract);
+                return await currency.claim(secret, wallet, contract);
             }catch(e){
                 console.log("Claim was wrong: %s", e);
             }
         }else{
+          contract = require("./OrbitDBHandler.js").getContract();
+          console.log("Second User Claiming from: " + contract)
             console.log("(´･ω･`) Searching for secret (´･ω･`)");
             var looping = true;
             while(looping){
@@ -203,7 +204,7 @@ async function claim(currency, message){
                 if(result.claimed){
                     console.log("(´･ω･`) Found secret (´･ω･`)");
                     console.log("(´･ω･`) Claiming contract (´･ω･`)");
-                    var res =  await currency.claim(result.secret, from, contract);
+                    var res =  await currency.claim(result.secret, wallet, contract);
                     looping = false;
                     return res;
 
