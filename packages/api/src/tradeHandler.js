@@ -111,9 +111,11 @@ async function issueSellerContract(currencySeller, currencyBuyer, message){
 
         console.log("(´･ω･`) Sending first contract (´･ω･`)");
         receipt = await currencySeller.send(wallet, sha256.hash(secret), to, value, refund_seller);
+	receipt.currencyBuyer = new Object();
+	receipt.currencySeller = new Object();
 	receipt.currencyBuyer.sellerAddress = currencyBuyer.wallet();
 	receipt.currencySeller.sellerAddress = currencySeller.wallet();
-	
+	receipt.currencySeller.buyerAddress = message.currencySeller.buyerAddress;
         console.log("(´･ω･`) Maybe sent first contract (´･ω･`)");
 
         return receipt;
@@ -141,8 +143,12 @@ async function runBuyer(whisper){
         console.log("ヽ(ヅ)ノ Buyer finds Seller contract valid! ヽ(ヅ)ノ");
         receipt = await issueBuyerContract.bind(this)(currencyBuyer, message);
 
+	receipt.currencyBuyer = new Object();
+	receipt.currencySeller = new Object();
 	receipt.currencyBuyer.buyerAddress = currencyBuyer.wallet();
 	receipt.currencySeller.buyerAddress = currencySeller.wallet();
+	receipt.currencySeller.sellerAddress = message.currencySeller.sellerAddress;
+	receipt.currencyBuyer.sellerAddress = message.currencyBuyer.buyerAddress;
 	
         require("./OrbitDBHandler.js").pushContractInfo(receipt, message, unlockWithSecret);
     }
