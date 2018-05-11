@@ -55,7 +55,7 @@ async function acceptBid(bid){
     var currency, wallet;
     //    var bid = db.getBid2(bidID);
 
-    currency = currencies[bid.from.currency];
+    currency = currencies[bid.from.currency]; //to?
 
     if(currency != null){
 
@@ -83,7 +83,7 @@ function unlockWithSecret(whisper){
     else message = JSON.parse(whisper);
     message.secret = secret;
 
-    var currency = currencies[message.bid.to.currency];
+    var currency = currencies[message.bid.from.currency]; //-
     claim(currency, message);
 }
 
@@ -163,7 +163,7 @@ async function issueBuyerContract(currency, message){
 
     if(wallet != null){
         to = message.address;
-        value = message.bid.from.amount;
+        value = message.bid.from.amount; //to amount?
         digest = message.digest;
 
         console.log("(´･ω･`) Unlocking account for second contract (´･ω･`)");
@@ -204,6 +204,7 @@ async function claim(currency, message){
                 console.log("Looping");
                 var result = await currency.search(message.contractAddress, 0);
                 if(result.claimed){
+                    currency = currencies[message.bid.to.currency];
                     console.log("(´･ω･`) Found secret (´･ω･`)");
                     console.log("(´･ω･`) Claiming contract (´･ω･`)");
                     var res =  await currency.claim(result.secret, wallet, contract);
