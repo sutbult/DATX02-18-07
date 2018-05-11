@@ -67,7 +67,7 @@ async function validateEtherContract(contract_address, self_address, value_in_we
 
     res_cont = await validateContract.bind(this)(contract_address, self_address, digest, unlock_time, time_margin);
     res_val = await validateValue.bind(this)(value_in_wei, contract_address);
-    ("(・ωｰ)～☆ Ether: " + res_val);
+    console.log("(・ωｰ)～☆ Ether: " + res_val);
     return res_cont && res_val;
 }
 
@@ -84,7 +84,7 @@ async function validateERC20Contract(contract_address, self_address, value_in_to
     res_address = await validateERC20Address.bind(this)(contract_address);
     ("(・ωｰ)～☆ Token: " + res_address);
     res_val = await validateERC20Value.bind(this)(value_in_tokens, contract_address);
-    ("(・ωｰ)～☆ Value: " + res_val);    
+    ("(・ωｰ)～☆ Value: " + res_val);
     return res_cont && res_val && res_address;
 }
 
