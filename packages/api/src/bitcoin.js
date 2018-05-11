@@ -83,8 +83,6 @@ function wallet() {
   return this.config;
 }
 
-//first to hex, then split into twos and then reverse and get it back into chars
-// main();
 
 
 function BitcoinClient(user, password, host, port) {
@@ -211,7 +209,6 @@ function getPrivateKey() {
     });
   });
 }
-// test();
 async function test() {
   BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16593');
   var something = await checkForSecret('mhK2UW65ffGoUr3irFYovwjfByEaBYwLuQ', 2);
@@ -223,14 +220,10 @@ async function getAddressFromTransation(txid) {
   this.rpc.getRawTransaction()
 }
 
-// TODO:
-//get address from transaction instead of having it right away
 async function checkForSecret(txid, numBlocks) {
 
   result = {'secret': '', found: false}
   return new Promise(async function(resolve, reject) {
-    var transactionObject = await getRawTransactionObject(txid);
-    var compareAddress = transactionObject.vout[0].scriptPubKey.addresses[1];
 
     this.rpc.getBestBlockHash(async function(err1, ret1) {
       if (err1) {
@@ -239,7 +232,7 @@ async function checkForSecret(txid, numBlocks) {
         let currentBlock = ret1.result;
         for (var i = 0; i < numBlocks; i++) {
           var txPrev = await getBlockTxsAndPrev(currentBlock);
-          let secretJson = await findSecretInBlock(txPrev.txs, compareAddress);
+          let secretJson = await findSecretInBlock(txPrev.txs, txid);
           if (secretJson.found) {
             result.found = true;
             result.secret = secretJson.secret;
@@ -254,14 +247,14 @@ async function checkForSecret(txid, numBlocks) {
   });
 }
 
-async function findSecretInBlock(txs, compareAddress) {
+async function findSecretInBlock(txs, txid) {
   var result = {'secret': '', 'found': false};
   return new Promise(async function(resolve, reject) {
     for (var i = 0; i < txs.length; i++) {
       var transaction = await getRawTransactionObject(txs[i]);
       var scriptSig = transaction.vin[0].scriptSig;
       if (scriptSig !== undefined) {
-        if (transaction.vout[0].scriptPubKey.addresses[0] == compareAddress) {
+        if (transaction.vin[0].txid == txid) {
           result.found = true;
           result.secret = extractSecret(scriptSig.asm);
           resolve(result);
@@ -271,10 +264,6 @@ async function findSecretInBlock(txs, compareAddress) {
     resolve(result);
   });
 }
-
-// extractSecret('3045022100e8f2dac1d3188c5f748102a810e592337bf94ce4c93324c1d204630c0e88f505022069d52b8f2622d4d2bbb97ebe242dee01f34a896e9e1a214dc4748369db71a74d[ALL] 02d2190cb746f1b51a7f83e8371aa90b76fcf461c2f9c54e8ff1ffa01d9f7710e4 1634362728 1 63a82053718f4f064c43e6b13f74ab0dc10745b958bde7d938531cb5cc4afd745709d78876a91448070dfcbf9586fe8a2863ba66aa18d28dc9d99b67029701b17576a914184eaa29e57787be8ac75328784aa18c570d29a36888ac');
-// extractSecret('3044022071e65dcd657579556b02e88192b7b9a1a98f8c8f9aab927c22cbfd2dbd2d3776022001bc3333d62baac5e482719b471b3a57c1859cf1ba9f8bc82e050ee416bca665[ALL] 0389e6c5984155275b70b978fc26e0aecdf253a8a9c4cdc47108afc4cf45575dab 12337 1 63a8204a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd58876a9148202efafd6b7b249445ba0398f9fce27fb2a8d3b67028f01b17576a914b4349cd9d2d570376d3ab1d0857de8d6745cfd986888ac');
-// extractSecret('304402207521729dff2dd1fe38c63122c882a2b1a2a740e5ff1c5768a60831a4b81c0e6802204b96b576a4b25b4c10c82ee8a62693a370ed7dcfc2a8be1fc37c05d3d6f4b9df[ALL] 0275374631c2ed89a8e15fb9b491347b390af23e233294e1308847dc920e40dc47 3552822 1 63a820c7e616822f366fb1b5e0756af498cc11d2c0862edcb32ca65882f622ff39de1b8876a91445d6d1d7179bf69c153bec098840b2186911131e67028a01b17576a9142c16495307f014fa83e8ea44328459c24e446fe86888ac');
 
 function extractSecret(asm) {
   var byteSecret = asm.split(' ')[2];
@@ -396,11 +385,6 @@ async function htlcAddress(digest, selPubKeyBuf,  buyPubKeyBuf, timeoutOffset, n
 }
 
 function htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
-  console.log('htlc');
-  console.log(digest);
-  console.log(sellerPublicKeyBuffer);
-  console.log(buyerPublicKeyBuffer);
-  console.log(timeout);
   return bitcoinjs.script.compile //CHECKSQUENCEVERIFY REFUSES TO WORK
   ([
     bitcoinjs.opcodes.OP_IF,
@@ -446,8 +430,7 @@ async function redeemAsSeller(preImageHash, htlcTransId, sellerECPair, redeemScr
   var destination = await getAddress();
   var transObject = await getRawTransactionObject(htlcTransId);
   var satoshi = transObject.vout[0].value*100000000; // multiply with hundred million to get satoshi
-  var p2shAddr = transObject.vout[0].scriptPubKey.addresses[0];
-  var tx = await buildReedemTransaction(htlcTransId, this.network, destination, satoshi, p2shAddr);
+  var tx = await buildReedemTransaction(htlcTransId, this.network, destination, satoshi);
   var signatureHash = tx.hashForSignature(0, redeemScript, bitcoinjs.Transaction.SIGHASH_ALL);
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
     sellerECPair.sign(signatureHash).toScriptSignature(bitcoinjs.Transaction.SIGHASH_ALL),
@@ -467,14 +450,11 @@ async function redeemAsSeller(preImageHash, htlcTransId, sellerECPair, redeemScr
   });
 }
 
-async function buildReedemTransaction(htlcTransId, network, destination, satoshi, p2shAddr) {
+async function buildReedemTransaction(htlcTransId, network, destination, satoshi) {
   var vout = await voutFromTransaction(htlcTransId);
   var txb = new bitcoinjs.TransactionBuilder(network);
   txb.addInput(htlcTransId, vout, 0xfffffffe);
   txb.addOutput(destination, satoshi - 400);
-  if (p2shAddr !== undefined) {
-    txb.addOutput(p2shAddr, 1);
-  }
   var tx = txb.buildIncomplete();
   return tx;
 }
