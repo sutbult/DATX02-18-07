@@ -62,7 +62,7 @@ async function unlockAccount(account_address, account_password, time_in_ms = 100
 *  @param {string} digest - The digest of the contract, if there is any (only for second contracts)
 *  @param {int}    time_margin - How much time should at least be remaining for it to be a valid contract
 */
-async function validateEtherContract(contract_address, self_address, value_in_wei, digest = null, unlock_time, time_margin){
+async function validateEtherContract(contract_address, _, self_address, value_in_wei, digest = null, unlock_time, time_margin){
     var res_cont, res_val;
 
     res_cont = await validateContract.bind(this)(contract_address, self_address, digest, unlock_time, time_margin);
@@ -77,14 +77,14 @@ async function validateEtherContract(contract_address, self_address, value_in_we
 *  @param {string} digest - The digest of the contract, if there is any (only for second contracts)
 *  @param {int}    time_margin - How much time should at least be remaining for it to be a valid contract
 */
-async function validateERC20Contract(contract_address, self_address, value_in_tokens, digest = null, unlock_time, time_margin){
+async function validateERC20Contract(contract_address, _, self_address, value_in_tokens, digest = null, unlock_time, time_margin){
     var res_cont, res_address, res_val;
 
     res_cont = await validateContract.bind(this)(contract_address, self_address, digest, unlock_time, time_margin);
     res_address = await validateERC20Address.bind(this)(contract_address);
-    ("(・ωｰ)～☆ Token: " + res_address);
+    console.log("(・ωｰ)～☆ Token: " + res_address);
     res_val = await validateERC20Value.bind(this)(value_in_tokens, contract_address);
-    ("(・ωｰ)～☆ Value: " + res_val);
+    console.log("(・ωｰ)～☆ Value: " + res_val);
     return res_cont && res_val && res_address;
 }
 
@@ -285,7 +285,7 @@ async function getPastClaim(contract_address, from_block = 10849){
     return result;
 }
 
-async function claimContract(pre_image_hash, from_address, claim_address){
+async function claimContract(pre_image_hash, from_address, message){
   //  console.log(pre_image_hash.toString());
   //  console.log(from_address.toString());
   //  console.log(claim_address.toString());
@@ -294,7 +294,7 @@ async function claimContract(pre_image_hash, from_address, claim_address){
 
     /**@todo the account claiming the contract should be based on user input */
 
-    contract = new this.chain.eth.Contract(this.contract.abi, claim_address);
+    contract = new this.chain.eth.Contract(this.contract.abi, message.contractAddress);
 
     try {
         console.log(pre_image_hash);
