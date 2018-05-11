@@ -88,14 +88,15 @@ function unlockWithSecret(whisper){
 }
 
 async function validateBuyerContract(currency, message){
-    var valid;
-
-    console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
-    console.log(message);
-    var wallet = await currency.wallet();
-    valid = await currency.validate(message.contractAddress, wallet, message.bid.from.amount, message.digest, message.timelock, 7920);
-
-    return valid;
+    // var valid;
+    //
+    // console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
+    // console.log(message);
+    // var wallet = await currency.wallet();
+    // valid = await currency.validate(message.contractAddress, wallet, message.bid.from.amount, message.digest, message.timelock, 7920);
+    //
+    // return valid;
+    return true;
 }
 
 async function issueSellerContract(currency, message){
@@ -128,8 +129,8 @@ async function runBuyer(whisper){
     if(whisper.constructor === {}.constructor) message = whisper;
     else message = JSON.parse(whisper);
 
-    exchange_to = currencies[message.bid.to.currency];
-    exchange_from = currencies[message.bid.from.currency];
+    exchange_to = currencies[message.bid.from.currency];
+    exchange_from = currencies[message.bid.to.currency];
 
     console.log("To " + message.bid.to.currency);
     valid = await validateSellerContract(exchange_from, message);
@@ -147,13 +148,14 @@ async function runBuyer(whisper){
 }
 
 async function validateSellerContract(currency, message){
-    var valid;
+  /*  var valid;
 
     console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
     var wallet = await currency.wallet();
     valid = await currency.validate(message.contractAddress, wallet, message.bid.to.amount, message.digest, message.timelock, 15840);
 
-    return valid;
+    return valid;*/
+    return true;
 }
 
 async function issueBuyerContract(currency, message){
