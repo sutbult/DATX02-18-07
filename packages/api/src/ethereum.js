@@ -31,7 +31,7 @@ function Token(token_address, rpc = "http://localhost:8545") {
 async function wallet(){
     var accounts;
     accounts = await this.chain.eth.getAccounts();
-    return accounts[1];
+    return accounts[0];
     //return await this.chain.eth.getCoinbase();
 }
 
