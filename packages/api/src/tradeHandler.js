@@ -20,8 +20,8 @@ var secret = null;
 var currencies =
     {
 	ETH: require("./ethereum.js").Ether("http://localhost:8545"),
-	ETC: require("./ethereum.js").Ether("http://localhost:8546"),
-  BTC: require("./bitcoin.js").BitcoinTest('127.0.0.1', '16592')
+	ETC: require("./ethereum.js").Ether("http://localhost:8546")
+  // BTC: require("./bitcoin.js").BitcoinTest('127.0.0.1', '16592')
     };
 
 //Called from an interval set in index.js if bid has been accepted
