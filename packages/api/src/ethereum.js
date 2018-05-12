@@ -226,9 +226,12 @@ async function sendContract(args, from_address, value_in_wei){
     contract = new this.chain.eth.Contract(this.contract.abi);
 
     contract_instance = contract.deploy({data: '0x' + this.contract.code, arguments: args});
-    receipt = await contract_instance.send({from: from_address, gasPrice: "100000000000", gas: gas_estimate*2, value: value_in_wei});
+    receipt = await contract_instance.send({from: from_address, gasPrice: "100000000000", gas: gas_estimate*2, value: value_in_wei}).on('transactionHash', (transactionHash) => {
+      console.log('Successfully submitted contract: ' + transactionHash);
+    });
     contract_address = receipt._address;
     console.log("(ΘεΘʃƪ) Contract deployed at address " + contract_address + " (ΘεΘʃƪ)");
+
 
     contract.options.address = contract_address;
     //var subPromise = subscribeToClaim(contract, receipt.blockNumber);
