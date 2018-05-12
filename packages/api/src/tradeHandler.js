@@ -35,12 +35,14 @@ async function runSeller(whisper){
 
     // console.log("****LETS SEE WHAT WE HAVE HERE %s and the whole thing %o", message.bid.status, message);
     message = JSON.parse(whisper);
-
+    
     console.log("ლಠ益ಠ)ლ From " + message.bid.from.currency);
 
     currency_seller = currencies[message.bid.to.currency];
     currency_buyer = currencies[message.bid.from.currency];
 
+    
+    
     receipt = await issueSellerContract(currency_seller, message, secret);
 
     message.digest = receipt.digest;
@@ -48,7 +50,7 @@ async function runSeller(whisper){
     message.currencySeller.contract = receipt.contractAddress;
     message.currencyBuyer.sellerAddress = currency_buyer.wallet();
     message.currencySeller.sellerAddress = currency_seller.wallet();
-
+    
     console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
 
     require("./OrbitDBHandler.js").pushDigestInfo(message, claimBuyerContract, secret);
@@ -64,6 +66,7 @@ async function acceptBid(bid){
     if(currency_seller != null){
 
 	console.log("(´･ω･`) Bid accepted (´･ω･`)");
+	currency_seller.unlock();
 	wallet =  await currency_seller.wallet();
 	console.log("wallet: %s", wallet);
 	console.log(messenger);
