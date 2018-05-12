@@ -59,8 +59,6 @@ async function main() {
   }, 10000);
 
 }
-main();
-// test();
 async function send(wallet, digest, selPubKey, btc, timeoutOffset) {
   var buyPubKey = wallet.pubkey;
   var timeout = await generateTimeout(timeoutOffset);
