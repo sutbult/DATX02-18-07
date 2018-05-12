@@ -77,14 +77,15 @@ async function acceptBid(bid){
 }
 
 
-function unlockWithSecret(whisper){
+async function unlockWithSecret(whisper){
     var message;
     if(whisper.constructor === {}.constructor) message = whisper;
     else message = JSON.parse(whisper);
     message.secret = secret;
 
-    var currency = currencies[message.bid.from.currency]; //-
-    claim(currency, message);
+    var fromCurrency = currencies[message.bid.from.currency];
+    var toCurrency = currencies[message.bid.to.currency]; //-
+    claim(fromCurrency, toCurrency, message);
 }
 
 async function validateBuyerContract(currency, message){
@@ -181,17 +182,20 @@ async function issueBuyerContract(currency, message){
     return undefined;
 }
 
-async function claim(currency, message){
-    var wallet = await currency.wallet(), contract, secret;
+async function claim(fromCurrency, toCurrency, message){
+    var fromWallet = await fromCurrency.wallet(), contract, secret;
+    var toWallet = await toCurrency.wallet();
 
-    if(wallet != null){
+    if(fromWallet != null){
         contract = message.contractAddress;
 
         if(message.secret != null){
             console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
             secret = message.secret;
             try{
-                return await currency.claim(secret, wallet, contract);
+                console.log("Unlocking account: ");
+                  await fromCurrency.unlock(fromWallet, "headlesschrome")
+                return await fromCurrency.claim(secret, fromWallet, contract);
             }catch(e){
                 console.log("Claim was wrong: %s", e);
             }
@@ -202,12 +206,14 @@ async function claim(currency, message){
             var looping = true;
             while(looping){
                 console.log("Looping");
-                var result = await currency.search(message.contractAddress, 0);
+                var result = await fromCurrency.search(message.contractAddress, 0);
                 if(result.claimed){
-                    currency = currencies[message.bid.to.currency];
+          //          currency = currencies[message.bid.to.currency];
+                    console.log("unlocking account");
+                    await toCurrency.unlock(toWallet, "headlesschrome");
                     console.log("(´･ω･`) Found secret (´･ω･`)");
                     console.log("(´･ω･`) Claiming contract (´･ω･`)");
-                    var res =  await currency.claim(result.secret, wallet, contract);
+                    var res =  await toCurrency.claim(result.secret, toWallet, contract);
                     looping = false;
                     return res;
 
