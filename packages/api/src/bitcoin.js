@@ -76,7 +76,7 @@ async function validate() {
 }
 
 function BitcoinTest(host, port) {
-  Bitcoin(host, port, bitcoinjs.networks.testnet);
+  return Bitcoin(host, port, bitcoinjs.networks.testnet);
 }
 
 function Bitcoin(host, port, network) {
@@ -87,6 +87,7 @@ function Bitcoin(host, port, network) {
   config.port = port;
   currency.config = config;
   currency.network = network;
+  return currency;
 }
 
 async function wallet() {
