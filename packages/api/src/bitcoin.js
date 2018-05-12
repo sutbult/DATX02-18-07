@@ -12,14 +12,14 @@ var network;
 async function main() {
   //buyer sends it public key
   BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16593');
-  var buyerPrivkey = await getPrivateKey();
+  var buyerPrivkey = await getAddrPrivkeyPair();
   var buyerECPair = bitcoinjs.ECPair.fromWIF(buyerPrivkey, bitcoinjs.networks.testnet);
   var buyerPublicKeyBuffer = buyerECPair.getPublicKeyBuffer();
   //seller creates contract
   BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16592');
   var balance = await getBalance();
   console.log(balance);
-  var privkey = await getPrivateKey();
+  var privkey = await getAddrPrivkeyPair();
   var sellerECPair = bitcoinjs.ECPair.fromWIF(privkey, bitcoinjs.networks.testnet);
   var selPubKeyBuf = sellerECPair.getPublicKeyBuffer();
   var htlc = await createHTLC(toDigest("heja"), selPubKeyBuf, buyerPublicKeyBuffer, 10000, bitcoinjs.networks.testnet);
@@ -55,10 +55,17 @@ async function main() {
   }
 }
 
-async function send(selPubKey, digest, buyPubKey, btc, timeout) {
-  var htlc = await createHTLC(digest, selPubKey, buyPubKey, timeout, this.network);
+async function send(wallet, digest, selPubKey, btc, timeoutOffset) {
+  var buyPubKey = wallet.pubkey;
+  var timeout = await generateTimeout(timeoutOffset);
+  var htlc = await htlcAddress(digest, selPubKey, buyPubKey, timeout, this.network);
   var txid = await sendToHTLC(htlc.address, btc);
-  return txid;
+  receipt = new Object();
+  receipt.contractAddress = txid;
+  receipt.digest = digest;
+  receipt.timelock = timeout;
+  receipt.address = buyPubKey;
+  return receipt;
 }
 
 async function validate() {
@@ -80,10 +87,15 @@ function Bitcoin(host, port, network) {
 }
 
 function wallet() {
-  return this.config;
+  var res = {};
+  var addrPriv = await getAddrPrivkeyPair();
+  var privkey = addrPriv.privkey;
+  var ECPair = bitcoinjs.ECPair.fromWIF(sellerPrivkey, bitcoinjs.networks.testnet);
+  var publicKeyBuffer = sellerECPair.getPublicKeyBuffer();
+  res.address = addrPriv.address;
+  res.pubkey = publicKeyBuffer;
+  return res;
 }
-
-
 
 function BitcoinClient(user, password, host, port) {
   var config = {
@@ -192,7 +204,8 @@ async function getRawTransactionObject(transId) {
   });
 }
 
-function getPrivateKey() {
+function getAddrPrivkeyPair() {
+  result = {};
   return new Promise((resolve, reject) => {
     this.rpc.getNewAddress((err1, addr) => {
       if (err1) {
@@ -202,13 +215,28 @@ function getPrivateKey() {
           if (err2) {
             reject(err2)
           } else {
-            resolve(priv.result)
+            result.address = addr.result;
+            result.privkey = priv.result;
+            resolve(result);
           }
         });
       }
     });
   });
 }
+
+function getPrivkeyFromAddr(addr) {
+  return new Promise((resolve, reject) => {
+    this.rpc.dumpPrivKey(addr, (err, priv) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(priv.result);
+      }
+    });
+  });
+}
+
 async function test() {
   BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16593');
   var something = await checkForSecret('mhK2UW65ffGoUr3irFYovwjfByEaBYwLuQ', 2);
@@ -367,9 +395,8 @@ async function createHTLC(digest, selPubKeyBuf, buyPubKeyBuf, timeoutOffset, net
   return result;
 }
 
-async function htlcAddress(digest, selPubKeyBuf,  buyPubKeyBuf, timeoutOffset, network) {
+async function htlcAddress(digest, selPubKeyBuf,  buyPubKeyBuf, timeout, network) {
   var hashType = bitcoinjs.Transaction.SIGHASH_ALL;
-  var timeout = await generateTimeout(timeoutOffset);
   return new Promise(function(resolve, reject) {
     result = {};
     var redeemScript = htlc(digest, selPubKeyBuf, buyPubKeyBuf, timeout);
@@ -426,7 +453,13 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc
   });
 }
 
-async function redeemAsSeller(preImageHash, htlcTransId, sellerECPair, redeemScript) {
+async function redeemAsSeller(preImageHash, wallet, message) {
+  var htlcTransId = message.contractAddress;
+  var timeout = message.timeout;
+  var sellerPrivkey = await getPrivkeyFromAddr(wallet.address);
+  var sellerECPair = bitcoinjs.ECPair.fromWIF(sellerPrivkey, this.network);
+  var selPubKeyBuf = sellerECPair.getPublicKeyBuffer();
+  var redeemScript = await (toDigest(preImageHash), selPubKeyBuf,  buyPubKeyBuf, timeout, this.network)
   var destination = await getAddress();
   var transObject = await getRawTransactionObject(htlcTransId);
   var satoshi = transObject.vout[0].value*100000000; // multiply with hundred million to get satoshi
