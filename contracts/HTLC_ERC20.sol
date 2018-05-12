@@ -1,5 +1,3 @@
-pragma solidity ^0.4.18;
-
 contract ERC20Partial {
     mapping (address => uint256) public balanceOf;
     function name() public returns (string);
@@ -15,12 +13,9 @@ contract HTLC_ERC20 {
     address public token;
     uint256 public unlockAtTime;
     address issuer = msg.sender;
-
-    modifier onlyIssuer {require(msg.sender == issuer); _; }
-
     event Claim(string _hash);
 
-    function HTLC_ERC20(bytes32 _digest, address _dest, address _token, uint256 _hoursLocked) public payable {
+    function HTLC_ERC20(bytes32 _digest, address _dest, address _token, uint256 _hoursLocked) public {
         digest = _digest;
         dest = _dest;
         token = _token;
@@ -28,10 +23,12 @@ contract HTLC_ERC20 {
     }
 
     function claim(string _hash) public returns(bool result) {
-       require(digest == sha256(_hash));
+       if(digest != sha256(_hash)){
+           throw;
+       }
        transfer(dest);
        Claim(_hash);       
-       selfdestruct(dest);
+       suicide(dest);
        return true; //This will not occur
     }
 
@@ -45,10 +42,12 @@ contract HTLC_ERC20 {
         return e.balanceOf(this);
     }
     
-    function refund() onlyIssuer public returns(bool result) {
-        require(now >= unlockAtTime);
+    function refund() public returns(bool result) {
+        if(msg.sender != issuer || now < unlockAtTime){
+            throw;
+        }
         transfer(issuer);
-        selfdestruct(issuer);
+        suicide(issuer);
         return true;
     }
 }
