@@ -50,7 +50,7 @@ async function runSeller(whisper){
     message.digest = receipt.digest;
     message.timelock = receipt.timelock;
     message.currencySeller.contract = receipt.contractAddress;
-    message.currencyBuyer.sellerAddress = currency_buyer.wallet();
+    message.currencyBuyer.sellerAddress = await currency_buyer.wallet();
 
     console.log("HEJHEJHEJHEJ: " + JSON.stringify(message.currencyBuyer.sellerAddress));
     message.currencySeller.sellerAddress = wallet;
