@@ -187,21 +187,23 @@ async function issueBuyerContract(currency_buyer, message){
 
 
 async function claimBuyerContract(whisper, secret){
-    var wallet, currency_buyer;
+    var wallet, currency_buyer, message;
     
     message = getMessage(whisper);
     
     currency_buyer = currencies[message.bid.from.currency];
     
-    wallet =  = await currency_buyer.wallet()
+    wallet = await currency_buyer.wallet();
     
     console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
     
     try{
-        return await currency_buyer.claim(secret, wallet, message);
+        return await currency_buyer.claim(secret, wallet, message.currencyBuyer.contract, message.currencyBuyer.buyerAddress,  message.digest, message.timelock );
     }catch(e){
         console.log("Claim was wrong: %s", e);
-    }
+	return false;
+    };
+
 }
 
 async function claimSellerContract(whisper){
@@ -219,13 +221,13 @@ async function claimSellerContract(whisper){
     
     while(true){
         console.log("Looping");
-        var search_result = await currency_buyer.search(message.currencyBuyer.contract, 0);
+        search_result = await currency_buyer.search(message.currencyBuyer.contract, 0);
         
         if(search_result.claimed){            
             console.log("(´･ω･`) Found secret (´･ω･`)");
             console.log("(´･ω･`) Claiming contract (´･ω･`)");
             
-            claim_result = await currency_seller.claim(search_result.secret, wallet, message);
+            claim_result = await currency_seller.claim(search_result.secret, wallet, message.currencySeller.contract, message.currencySeller.sellerAddress, message.digest, message.timelock);
             
             return claim_result;
         }

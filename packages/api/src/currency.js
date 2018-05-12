@@ -13,14 +13,15 @@ function construct (balance, send, validate, claim, search, unlock, wallet) {
      * contract
      * @param {int} value - The value to send to the contract
      * expressed in the smallest unit
-     * @param {int} refund_time - How many (hours) the contract should
+     * @param {int} refund_time - How many seconds the contract should
      * be locked
-     * @returns {receipt} Object with .contractAddress, .digest and .timelock
+     * @returns {receipt} Object with .digest and .timelock
      */
     this.send = send;
 
-    /** validate(contract, destination, value, digest, timelock, margin)
+    /** validate(contract, creator, destination, value, digest, timelock, margin)
      * @param {hex} contract - The address of the contract
+     * @param {hex} creator - The address of the creator of the contract
      * @param {hex} destination - The claim destination of the
      * contract
      * @param {int} value - The value in the contract expressed in the
@@ -29,17 +30,17 @@ function construct (balance, send, validate, claim, search, unlock, wallet) {
      * @param {int} timelock - The timestamp when the contract is
      * unlocked
      * @param {int} margin - The acceptable amount of margin in
-     * timestamp difference
+     * timestamp difference described in seconds
      * @returns {bool} If the contract is valid or not
      */
     this.validate = validate;
 
-    /** claim(secret, account, contract)
+    /** claim(secret, account, message)
      * @param {string} secret - The pre image hash of the digest in
      * the contract
      * @param {hex} account - The address/account to unlock the
      * contract with
-     * @param {hex} contract - The address of the contract to claim
+     * @param {object} message - All the previous information in "message format"
      * @returns {bool} Returns true if it's claimed
      */
     this.claim = claim;
