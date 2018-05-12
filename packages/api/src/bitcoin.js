@@ -485,7 +485,7 @@ async function redeemAsSeller(preImageHash, wallet, htlcTransId, buyPubKeyBuf, t
   var sellerPrivkey = await getPrivkeyFromAddr.bind(this)(wallet.address);
   var sellerECPair = bitcoinjs.ECPair.fromWIF(sellerPrivkey, this.network);
   var selPubKeyBuf = sellerECPair.getPublicKeyBuffer();
-  var htlc = await htlcAddress.bind(this)(toDigest(preImageHash), selPubKeyBuf,  buyPubKeyBuf, timeout, this.network);
+  var htlc = await htlcAddress.bind(this)(toDigest(preImageHash), selPubKeyBuf,  Buffer.from(buyPubKeyBuf.pubkey.data), timeout, this.network);
   var redeemScript = htlc.redeemScript;
   var destination = await getAddress.bind(this)();
   var transObject = await getRawTransactionObject.bind(this)(htlcTransId);

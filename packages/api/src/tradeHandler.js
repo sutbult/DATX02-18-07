@@ -35,16 +35,16 @@ async function runSeller(whisper){
 
     // console.log("****LETS SEE WHAT WE HAVE HERE %s and the whole thing %o", message.bid.status, message);
     message = JSON.parse(whisper);
-    
+
     console.log("ლಠ益ಠ)ლ From " + message.bid.from.currency);
 
     currency_seller = currencies[message.bid.to.currency];
     currency_buyer = currencies[message.bid.from.currency];
     currency_seller.unlock();
 
-    
+
     wallet = await currency_seller.wallet();
-    
+
     receipt = await issueSellerContract(wallet, currency_seller, message, secret);
 
     message.digest = receipt.digest;
@@ -54,7 +54,7 @@ async function runSeller(whisper){
 
     console.log("HEJHEJHEJHEJ: " + JSON.stringify(message.currencyBuyer.sellerAddress));
     message.currencySeller.sellerAddress = wallet;
-    
+
     console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
     console.log("message");
     console.log(message);
@@ -142,11 +142,11 @@ async function runBuyer(whisper){
     if (valid){
         console.log("ヽ(ヅ)ノ Buyer finds Seller contract valid! ヽ(ヅ)ノ");
 
-	
+
 	wallet = await currency_buyer.wallet();
 
         receipt = await issueBuyerContract.bind(this)(wallet, currency_buyer, message);
-        
+
         message.currencyBuyer.buyerAddress = wallet;
         message.currencyBuyer.contract = receipt.contractAddress;
 
@@ -208,7 +208,7 @@ async function claimBuyerContract(whisper, secret){
     console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
 
     try{
-        return await currency_buyer.claim(secret, wallet, message.currencyBuyer.contract, message.currencyBuyer.buyerAddress, message.timelocxk );
+        return await currency_buyer.claim(secret, wallet, message.currencyBuyer.contract, message.currencyBuyer.buyerAddress, message.timelock );
     }catch(e){
         console.log("Claim was wrong: %s", e);
 	return false;
