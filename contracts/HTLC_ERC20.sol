@@ -15,11 +15,11 @@ contract HTLC_ERC20 {
     address issuer = msg.sender;
     event Claim(string _hash);
 
-    function HTLC_ERC20(bytes32 _digest, address _dest, address _token, uint256 _hoursLocked) public {
+    function HTLC_ERC20(bytes32 _digest, address _dest, address _token, uint256 _secondsLocked) public {
         digest = _digest;
         dest = _dest;
         token = _token;
-        unlockAtTime = now + (_hoursLocked * 1 hours);
+        unlockAtTime = now + _secondsLocked;
     }
 
     function claim(string _hash) public returns(bool result) {
