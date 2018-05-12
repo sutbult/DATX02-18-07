@@ -144,8 +144,7 @@ async function runBuyer(whisper){
 	wallet = await currency_buyer.wallet();
 
         receipt = await issueBuyerContract.bind(this)(wallet, currency_buyer, message);
-
-        message.currencySeller.buyerAddress = currency_seller.wallet();
+        
         message.currencyBuyer.buyerAddress = wallet;
         message.currencyBuyer.contract = receipt.contractAddress;
 
