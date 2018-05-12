@@ -40,6 +40,7 @@ async function runSeller(whisper){
 
     currency_seller = currencies[message.bid.to.currency];
     currency_buyer = currencies[message.bid.from.currency];
+    currency_seller.unlock();
 
     receipt = await issueSellerContract(currency_seller, message, secret);
 
