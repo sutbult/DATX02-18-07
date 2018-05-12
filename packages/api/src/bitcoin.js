@@ -61,9 +61,9 @@ async function main() {
 }
 async function send(wallet, digest, selPubKey, btc, timeoutOffset) {
   var buyPubKey = wallet.pubkey;
-  var timeout = await generateTimeout(timeoutOffset);
-  var htlc = await htlcAddress(digest, selPubKey, buyPubKey, timeout, this.network);
-  var txid = await sendToHTLC(htlc.address, btc);
+  var timeout = await generateTimeout.bind(this)(timeoutOffset);
+  var htlc = await htlcAddress.bind(this)(digest, selPubKey, buyPubKey, timeout, this.network);
+  var txid = await sendToHTLC.bind(this)(htlc.address, btc);
   receipt = new Object();
   receipt.contractAddress = txid;
   receipt.digest = digest;
@@ -92,7 +92,7 @@ function Bitcoin(host, port, network) {
 
 async function wallet() {
   var res = {};
-  var addrPriv = await getAddrPrivkeyPair();
+  var addrPriv = await getAddrPrivkeyPair.bind(this)();
   var privkey = addrPriv.privkey;
   var ECPair = bitcoinjs.ECPair.fromWIF(privkey, this.network);
   var publicKeyBuffer = ECPair.getPublicKeyBuffer();
@@ -266,8 +266,8 @@ async function checkForSecret(txid, numBlocks) {
       } else {
         let currentBlock = ret1.result;
         for (var i = 0; i < numBlocks; i++) {
-          var txPrev = await getBlockTxsAndPrev(currentBlock);
-          let secretJson = await findSecretInBlock(txPrev.txs, txid);
+          var txPrev = await getBlockTxsAndPrev.bind(this)(currentBlock);
+          let secretJson = await findSecretInBlock.bind(this)(txPrev.txs, txid);
           if (secretJson.found) {
             result.found = true;
             result.secret = secretJson.secret;
@@ -462,15 +462,15 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc
 }
 
 async function redeemAsSeller(preImageHash, wallet, htlcTransId, buyPubKeyBuf, timeout) {
-  var sellerPrivkey = await getPrivkeyFromAddr(wallet.address);
+  var sellerPrivkey = await getPrivkeyFromAddr.bind(this)(wallet.address);
   var sellerECPair = bitcoinjs.ECPair.fromWIF(sellerPrivkey, this.network);
   var selPubKeyBuf = sellerECPair.getPublicKeyBuffer();
-  var htlc = await htlcAddress(toDigest(preImageHash), selPubKeyBuf,  buyPubKeyBuf, timeout, this.network);
+  var htlc = await htlcAddress.bind(this)(toDigest(preImageHash), selPubKeyBuf,  buyPubKeyBuf, timeout, this.network);
   var redeemScript = htlc.redeemScript;
-  var destination = await getAddress();
-  var transObject = await getRawTransactionObject(htlcTransId);
+  var destination = await getAddress.bind(this)();
+  var transObject = await getRawTransactionObject.bind(this)(htlcTransId);
   var satoshi = transObject.vout[0].value*100000000; // multiply with hundred million to get satoshi
-  var tx = await buildReedemTransaction(htlcTransId, this.network, destination, satoshi);
+  var tx = await buildReedemTransaction.bind(this)(htlcTransId, this.network, destination, satoshi);
   var signatureHash = tx.hashForSignature(0, redeemScript, bitcoinjs.Transaction.SIGHASH_ALL);
   var stack = [ //This whole thing is the stack that will run through the script
     sellerECPair.sign(signatureHash).toScriptSignature(bitcoinjs.Transaction.SIGHASH_ALL),
