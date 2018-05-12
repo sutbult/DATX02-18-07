@@ -150,7 +150,7 @@ async function runBuyer(whisper){
         message.currencyBuyer.buyerAddress = wallet;
         message.currencyBuyer.contract = receipt.contractAddress;
 
-        require("./OrbitDBHandler.js").pushContractInfo(receipt, message, claimSellerContract);
+        require("./OrbitDBHandler.js").pushContractInfo(message, claimSellerContract);
     }
     else {
         console.log("(-公- ;) Buyer finds Seller contract invalid... (-公- ;)");
