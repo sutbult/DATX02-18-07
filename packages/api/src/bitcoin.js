@@ -71,7 +71,7 @@ async function send(wallet, digest, selPubKey, btc, timeoutOffset) {
   console.log("1");
   var timeout = await generateTimeout.bind(this)(timeoutOffset);
   console.log("2");
-  var htlc = await htlcAddress.bind(this)(digest, Buffer.from(selPubKey.pubkey.data), buyPubKey, timeout, this.network);
+    var htlc = await htlcAddress.bind(this)(digest, Buffer.from(selPubKey.pubkey.data), Buffer.from(buyPubKey), timeout, this.network);
   console.log("3");
   var txid = await sendToHTLC.bind(this)(htlc.address, btc/100000000);
   console.log("4");
@@ -131,11 +131,12 @@ function DefaultBitcoinClient() {
     // pass: 'pass'
     // host: '127.0.0.1'
     // port: '8332'
-  }
+  };
   rpc = new RpcClient(config);
 }
 
 function unlockAccount(user, pass) {
+    console.log("UNLOCKING ACCOUNT\n");
   this.config.user = "bitcoinrpc";
   this.config.pass = "password";
   this.rpc = new RpcClient(this.config);
@@ -155,7 +156,7 @@ function ping(callback) {
 
 function getBalance() {
   var rpc = this.rpc;
-  return new Promise((resolve, reject) => {
+    return new Promise(((resolve, reject) => {
     var result = {'error': '', 'balance': ''};
     if (this.rpc === undefined) {
       result.error = 'RPC needs to be defined';
@@ -169,14 +170,14 @@ function getBalance() {
         resolve(ret.result);
       }
     });
-  });
+    }).bind(this));
 }
 
 function getAddress() {
   return new Promise((resolve, reject) => {
     rpc.getNewAddress((err, ret) => {
       if (err) {
-        reject(err)
+          reject(err);
       }
       resolve(ret.result);
     });
@@ -204,7 +205,7 @@ async function voutFromTransaction(transId) {
 }
 
 async function getRawTransactionObject(transId) {
-  return new Promise((resolve, reject) => {
+    return new Promise(((resolve, reject) => {
     rpc.getRawTransaction(transId, (err, ret) => {
       if (err) {
         reject(err);
@@ -218,13 +219,13 @@ async function getRawTransactionObject(transId) {
         }
       });
     });
-  });
+    }).bind(this));
 }
 
 function getAddrPrivkeyPair(rpc) {
   result = {};
-  return new Promise((resolve, reject) => {
-    rpc.getNewAddress((err1, addr) => {
+    return new Promise(((resolve, reject) => {
+    this.rpc.getNewAddress((err1, addr) => {
       if (err1) {
         resolve(err1);
       } else {
@@ -239,19 +240,19 @@ function getAddrPrivkeyPair(rpc) {
         });
       }
     });
-  });
+    }).bind(this));
 }
 
 function getPrivkeyFromAddr(addr) {
-  return new Promise((resolve, reject) => {
-    rpc.dumpPrivKey(addr, (err, priv) => {
+    return new Promise(((resolve, reject) => {
+    this.rpc.dumpPrivKey(addr, (err, priv) => {
       if (err) {
         reject(err);
       } else {
         resolve(priv.result);
       }
     });
-  });
+    }).bind(this));
 }
 
 async function test() {
@@ -272,7 +273,7 @@ async function checkForSecret(txid, numBlocks) {
   var rpc = this.rpc;
 
   result = {'secret': '', found: false}
-  return new Promise(async function(resolve, reject) {
+    return new Promise((async function(resolve, reject) {
 
     rpc.getBestBlockHash(async function(err1, ret1) {
       if (err1) {
@@ -293,12 +294,12 @@ async function checkForSecret(txid, numBlocks) {
         resolve(result);
       }
     });
-  });
+    }).bind(this));
 }
 
 async function findSecretInBlock(txs, txid) {
   var result = {'secret': '', 'found': false};
-  return new Promise(async function(resolve, reject) {
+    return new Promise((async function(resolve, reject) {
     for (var i = 0; i < txs.length; i++) {
       var transaction = await getRawTransactionObject(txs[i]);
       var scriptSig = transaction.vin[0].scriptSig;
@@ -311,7 +312,7 @@ async function findSecretInBlock(txs, txid) {
       }
     }
     resolve(result);
-  });
+    }).bind(this));
 }
 
 function extractSecret(asm) {
@@ -332,8 +333,8 @@ function extractSecret(asm) {
 
 async function getBlockTxsAndPrev(blockhash) {
   var result = {'txs': '', 'prev': ''};
-  return new Promise((resolve, reject) => {
-    rpc.getBlock(blockhash, 1, (err, ret) => {
+    return new Promise(((resolve, reject) => {
+    this.rpc.getBlock(blockhash, 1, (err, ret) => {
       if (err) {
         reject(err);
       } else {
@@ -342,7 +343,7 @@ async function getBlockTxsAndPrev(blockhash) {
         resolve(result);
       }
     });
-  });
+    }).bind(this));
 }
 
 function toDigest(secret){
@@ -352,7 +353,7 @@ function toDigest(secret){
 async function sendToHTLC(address, btc) {
   console.log("btc");
   console.log(btc);
-  return new Promise((resolve, reject) => {
+    return new Promise(((resolve, reject) => {
     rpc.sendToAddress(address, btc, (err, ret) => {
       if (err) {
         console.log(err);
@@ -362,24 +363,24 @@ async function sendToHTLC(address, btc) {
         resolve(ret.result);
       }
     });
-  });
+    }).bind(this));
 }
 
 async function generateTimeoutBlocks(timeoutBlocks) {
-  return new Promise((resolve, reject) => {
-    rpc.getBlockCount((err, ret) => {
+    return new Promise(((resolve, reject) => {
+    this.rpc.getBlockCount((err, ret) => {
       if (err) {
         reject("Couldn't get current block count");
       }
       var timeout = bip65.encode({ blocks: (ret.result + timeoutBlocks)});
       resolve(timeout);
     });
-  });
+    }).bind(this));
 }
 
 async function generateTimeout(offset) {
-  return new Promise((resolve, reject) => {
-    rpc.getBestBlockHash((err, ret) => {
+    return new Promise(((resolve, reject) => {
+    this.rpc.getBestBlockHash((err, ret) => {
       if (err) {
         reject(err);
       } else {
@@ -393,7 +394,7 @@ async function generateTimeout(offset) {
         });
       }
     });
-  });
+    }).bind(this));
 }
 
 // TODO: Implement as interface says
@@ -422,7 +423,7 @@ async function createHTLC(digest, selPubKeyBuf, buyPubKeyBuf, timeoutOffset, net
 
 async function htlcAddress(digest, selPubKeyBuf,  buyPubKeyBuf, timeout, network) {
   var hashType = bitcoinjs.Transaction.SIGHASH_ALL;
-  return new Promise(function(resolve, reject) {
+    return new Promise((function(resolve, reject) {
     result = {};
     var redeemScript = htlc(digest, selPubKeyBuf, buyPubKeyBuf, timeout);
     var scriptPubKey = bitcoinjs.script.scriptHash.output.encode(bitcoinjs.crypto.hash160(redeemScript));
@@ -432,7 +433,7 @@ async function htlcAddress(digest, selPubKeyBuf,  buyPubKeyBuf, timeout, network
     result.scriptPubKey = scriptPubKey;
     result.address = address;
     resolve(result);
-  });
+    }).bind(this));
 }
 
 function htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
@@ -469,14 +470,14 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc
     bitcoinjs.opcodes.OP_FALSE
   ], redeemScript);
   tx.setInputScript(0, redeemScriptSig);
-  return new Promise(function(resolve, reject) {
-    rpc.sendRawTransaction(tx, true, (err, ret) => {
+    return new Promise((function(resolve, reject) {
+    this.rpc.sendRawTransaction(tx, true, (err, ret) => {
       if (err) {
         reject(err);
       }
       resolve(ret.result);
     });
-  });
+    }).bind(this));
 }
 
 async function redeemAsSeller(preImageHash, wallet, htlcTransId, buyPubKeyBuf, timeout) {
@@ -499,8 +500,8 @@ async function redeemAsSeller(preImageHash, wallet, htlcTransId, buyPubKeyBuf, t
   ];
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode(stack, redeemScript);
   tx.setInputScript(0, redeemScriptSig);
-  return new Promise(function(resolve, reject) {
-    rpc.sendRawTransaction(tx.toHex(), true, (err, ret) => {
+    return new Promise((function(resolve, reject) {
+    this.rpc.sendRawTransaction(tx.toHex(), true, (err, ret) => {
       if (err) {
         // console.log(err);
         reject(false);
@@ -508,7 +509,7 @@ async function redeemAsSeller(preImageHash, wallet, htlcTransId, buyPubKeyBuf, t
         resolve(true);
       }
     });
-  });
+    }).bind(this));
 }
 
 async function buildReedemTransaction(htlcTransId, network, destination, satoshi) {
