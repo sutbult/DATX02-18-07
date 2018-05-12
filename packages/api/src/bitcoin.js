@@ -460,7 +460,7 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc
   });
 }
 
-async function redeemAsSeller(preImageHash, wallet, htlcTransId, buyPubKeyBuf, timeout); {
+async function redeemAsSeller(preImageHash, wallet, htlcTransId, buyPubKeyBuf, timeout) {
   var sellerPrivkey = await getPrivkeyFromAddr(wallet.address);
   var sellerECPair = bitcoinjs.ECPair.fromWIF(sellerPrivkey, this.network);
   var selPubKeyBuf = sellerECPair.getPublicKeyBuffer();
