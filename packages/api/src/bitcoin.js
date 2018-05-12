@@ -79,6 +79,7 @@ async function send(wallet, digest, selPubKey, btc, timeoutOffset) {
   receipt.contractAddress = txid;
   receipt.digest = digest;
   receipt.timelock = timeout;
+  var generate = await generateBlock.bind(this)();
   return receipt;
 }
 
