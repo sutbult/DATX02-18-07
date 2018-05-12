@@ -347,7 +347,10 @@ async function getBlockTxsAndPrev(blockhash) {
 }
 
 function toDigest(secret){
-  return bcrypto.sha256(secret);
+  console.log("Inside digest");
+  var digest = bcrypto.sha256(secret);
+  console.log(digest);
+  return digest;
 }
 
 async function sendToHTLC(address, btc) {
@@ -437,6 +440,8 @@ async function htlcAddress(digest, selPubKeyBuf,  buyPubKeyBuf, timeout, network
 }
 
 function htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
+  console.log("digest");
+  console.log(digest);
   var text=  bitcoinjs.script.compile //CHECKSQUENCEVERIFY REFUSES TO WORK
   ([
     bitcoinjs.opcodes.OP_IF,
@@ -481,21 +486,31 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc
 }
 
 async function redeemAsSeller(preImageHash, wallet, htlcTransId, buyPubKeyBuf, timeout) {
+  console.log("preImageHash");
+  console.log(preImageHash);
   var rpc = this.rpc;
   var sellerPrivkey = await getPrivkeyFromAddr.bind(this)(wallet.address);
   var sellerECPair = bitcoinjs.ECPair.fromWIF(sellerPrivkey, this.network);
   var selPubKeyBuf = sellerECPair.getPublicKeyBuffer();
-  var htlc = await htlcAddress.bind(this)(toDigest(preImageHash), selPubKeyBuf,  Buffer.from(buyPubKeyBuf.pubkey.data), timeout, this.network);
+  console.log("selPubKey");
+  console.log(selPubKeyBuf);
+  console.log('butpudadwa');
+  console.log(buyPubKeyBuf);
+  console.log("1");
+  var htlc = await htlcAddress.bind(this)(Buffer.from(toDigest(preImageHash.toString())), Buffer.from(selPubKeyBuf),  Buffer.from(buyPubKeyBuf.pubkey.data), timeout, this.network);
+  console.log("2");
   var redeemScript = htlc.redeemScript;
   var destination = await getAddress.bind(this)();
   var transObject = await getRawTransactionObject.bind(this)(htlcTransId);
   var satoshi = transObject.vout[0].value*100000000; // multiply with hundred million to get satoshi
   var tx = await buildReedemTransaction.bind(this)(htlcTransId, this.network, destination, satoshi);
+  console.log("3");
   var signatureHash = tx.hashForSignature(0, redeemScript, bitcoinjs.Transaction.SIGHASH_ALL);
+  console.log(redeemScript);
   var stack = [ //This whole thing is the stack that will run through the script
     sellerECPair.sign(signatureHash).toScriptSignature(bitcoinjs.Transaction.SIGHASH_ALL),
     sellerECPair.getPublicKeyBuffer(),
-    Buffer.from(preImageHash),
+    Buffer.from(preImageHash.toString()),
     bitcoinjs.opcodes.OP_TRUE
   ];
   var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode(stack, redeemScript);
@@ -503,7 +518,7 @@ async function redeemAsSeller(preImageHash, wallet, htlcTransId, buyPubKeyBuf, t
     return new Promise((function(resolve, reject) {
     this.rpc.sendRawTransaction(tx.toHex(), true, (err, ret) => {
       if (err) {
-        // console.log(err);
+        console.log(err);
         reject(false);
       } else {
         resolve(true);
@@ -515,7 +530,7 @@ async function redeemAsSeller(preImageHash, wallet, htlcTransId, buyPubKeyBuf, t
 async function buildReedemTransaction(htlcTransId, network, destination, satoshi) {
   var vout = await voutFromTransaction(htlcTransId);
   var txb = new bitcoinjs.TransactionBuilder(network);
-  txb.addInput(htlcTransId, vout, 0xffffffff);
+  txb.addInput(htlcTransId, vout, 0xfffffffe);
   txb.addOutput(destination, satoshi - 400);
   var tx = txb.buildIncomplete();
   return tx;
