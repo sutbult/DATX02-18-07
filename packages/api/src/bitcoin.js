@@ -10,51 +10,57 @@ var network;
 
 
 async function main() {
+  this.network = bitcoinjs.networks.testnet;
   //buyer sends it public key
-  BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16593');
-  var buyerPrivkey = await getAddrPrivkeyPair();
-  var buyerECPair = bitcoinjs.ECPair.fromWIF(buyerPrivkey, bitcoinjs.networks.testnet);
-  var buyerPublicKeyBuffer = buyerECPair.getPublicKeyBuffer();
-  //seller creates contract
   BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16592');
-  var balance = await getBalance();
-  console.log(balance);
-  var privkey = await getAddrPrivkeyPair();
-  var sellerECPair = bitcoinjs.ECPair.fromWIF(privkey, bitcoinjs.networks.testnet);
-  var selPubKeyBuf = sellerECPair.getPublicKeyBuffer();
-  var htlc = await createHTLC(toDigest("heja"), selPubKeyBuf, buyerPublicKeyBuffer, 10000, bitcoinjs.networks.testnet);
-  // var ok = await htlcAddress(htlc.digest, sellerECPair.getPublicKeyBuffer(), htlc.buyerPublicKeyBuffer, 10, bitcoinjs.networks.testnet);
-  //buyer verifies contract and sends funds to it
+  var sellerAddrPrivkey = await wallet();
+  var secret = "hc";
+
   BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16593');
+  var buyerAddPrivkey = await wallet();
+  // console.log("SELLER: " + JSON.stringify(sellerAddrPrivkey));
+  // console.log("BUYER: " + JSON.stringify  (buyerAddPrivkey));
+
+  var receipt = await send(buyerAddPrivkey, toDigest(secret), sellerAddrPrivkey.pubkey, 0.1, 10000);
+  //seller creates contract
   var balance = await getBalance();
-  console.log(balance);
-  // console.log(htlc.redeemScript);
-  // console.log(htlc.address);
-  var ok = await verifyHTLC(toDigest("heja"), selPubKeyBuf, buyerPublicKeyBuffer, 10000, bitcoinjs.networks.testnet, htlc.address);
-  console.log(ok);
-  if (ok) {
-    var txid = await sendToHTLC(htlc.address, 0.1)
-    var balance = await getBalance();
-    console.log(txid);
-    console.log(balance);
+  // console.log('balance');
+  // console.log(balance);
 
-    //seller redeems with secret
-    BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16592');
+  BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16592');
+  // var sellerAddrPrivkey = await wallet();
+  // BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16593');
+  var balance = await getBalance();
+  // console.log('balance');
+  // console.log(balance);
+  var generate = await generateBlock();
+  // console.log("generate");
+  // console.log(generate);
+  // var secret = await checkForSecret('2526cbcf869bb3e555b98d3535fa2b0b1e1c2fcc83002a9b608f1e40413245ad', 10);
+  // console.log(secret);
+  var message = receipt;
+  // console.log("message" + JSON.stringify(message));
+  var interval = setInterval(async function() {
+    var ok = false;
+    try {
+      var redeem = await redeemAsSeller(secret, sellerAddrPrivkey, message);
+      ok = true;
+    } catch(err) {
+      // console.log("Got an error");
+      // console.log(err);
+    }
+    if (ok) {
+      clearInterval(interval);
+    }
+    // console.log("redeem" + JSON.stringify(redeem));
     var balance = await getBalance();
-    console.log(balance);
-    var generate = await generateBlock();
-    console.log(generate);
-    var address = await getAddress();
-    console.log(address);
-    console.log('before');
-    setTimeout(async function() {
-      var redeem = await redeemAsSeller(sellerECPair, "heja", txid, bitcoinjs.networks.testnet, address, 10000000, htlc.redeemScript);
-      console.log(redeem);
-    }, 10000);
+    // console.log('balance');
+    // console.log(balance);
+  }, 10000);
 
-  }
 }
-
+main();
+// test();
 async function send(wallet, digest, selPubKey, btc, timeoutOffset) {
   var buyPubKey = wallet.pubkey;
   var timeout = await generateTimeout(timeoutOffset);
@@ -86,12 +92,12 @@ function Bitcoin(host, port, network) {
   currency.network = network;
 }
 
-function wallet() {
+async function wallet() {
   var res = {};
   var addrPriv = await getAddrPrivkeyPair();
   var privkey = addrPriv.privkey;
-  var ECPair = bitcoinjs.ECPair.fromWIF(sellerPrivkey, bitcoinjs.networks.testnet);
-  var publicKeyBuffer = sellerECPair.getPublicKeyBuffer();
+  var ECPair = bitcoinjs.ECPair.fromWIF(privkey, this.network);
+  var publicKeyBuffer = ECPair.getPublicKeyBuffer();
   res.address = addrPriv.address;
   res.pubkey = publicKeyBuffer;
   return res;
@@ -105,7 +111,7 @@ function BitcoinClient(user, password, host, port) {
     host: host,
     port: port,
   };
-  rpc = new RpcClient(config);
+  this.rpc = new RpcClient(config);
 }
 
 function DefaultBitcoinClient() {
@@ -140,7 +146,7 @@ function ping(callback) {
 function getBalance() {
   return new Promise((resolve, reject) => {
     var result = {'error': '', 'balance': ''};
-    if (rpc === undefined) {
+    if (this.rpc === undefined) {
       result.error = 'RPC needs to be defined';
       resolve(result);
       return;
@@ -238,10 +244,13 @@ function getPrivkeyFromAddr(addr) {
 }
 
 async function test() {
+  this.network = bitcoinjs.networks.testnet;
+  console.log('hello');
   BitcoinClient('bitcoinrpc', 'password', '127.0.0.1', '16593');
-  var something = await checkForSecret('mhK2UW65ffGoUr3irFYovwjfByEaBYwLuQ', 2);
-  console.log("something");
-  console.log(something);
+  var secret = await checkForSecret('367cb024ffafd74ba244a53266ef93e8e45d8f50ff1f7f4b2a46ca9e9a093983', 30);
+  console.log("secret");
+  console.log(secret);
+  console.log("fasfa");
 }
 
 async function getAddressFromTransation(txid) {
@@ -282,7 +291,7 @@ async function findSecretInBlock(txs, txid) {
       var transaction = await getRawTransactionObject(txs[i]);
       var scriptSig = transaction.vin[0].scriptSig;
       if (scriptSig !== undefined) {
-        if (transaction.vin[0].txid == txid) {
+        if (transaction.vin[0].txid == txid && txs[i] == transaction.hash) {
           result.found = true;
           result.secret = extractSecret(scriptSig.asm);
           resolve(result);
@@ -332,6 +341,7 @@ function sendToHTLC(address, btc) {
   return new Promise((resolve, reject) => {
     this.rpc.sendToAddress(address, btc, (err, ret) => {
       if (err) {
+        console.log(err);
         reject(err);
       } else {
         resolve(ret.result);
@@ -406,13 +416,12 @@ async function htlcAddress(digest, selPubKeyBuf,  buyPubKeyBuf, timeout, network
     result.redeemScript = redeemScript;
     result.scriptPubKey = scriptPubKey;
     result.address = address;
-    // console.log(JSON.stringify(result.redeemScript));
     resolve(result);
   });
 }
 
 function htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
-  return bitcoinjs.script.compile //CHECKSQUENCEVERIFY REFUSES TO WORK
+  var text=  bitcoinjs.script.compile //CHECKSQUENCEVERIFY REFUSES TO WORK
   ([
     bitcoinjs.opcodes.OP_IF,
     bitcoinjs.opcodes.OP_SHA256,
@@ -432,7 +441,8 @@ function htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
     bitcoinjs.opcodes.OP_EQUALVERIFY,
     bitcoinjs.opcodes.OP_CHECKSIG
   ]);
-};
+  return text;
+}
 
 async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc, redeemScript) {
   var tx = await buildReedemTransaction(htlcTransId, network, destination, btc);
@@ -455,26 +465,30 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc
 
 async function redeemAsSeller(preImageHash, wallet, message) {
   var htlcTransId = message.contractAddress;
-  var timeout = message.timeout;
+  var timeout = message.timelock;
+  var buyPubKeyBuf = message.address;
   var sellerPrivkey = await getPrivkeyFromAddr(wallet.address);
   var sellerECPair = bitcoinjs.ECPair.fromWIF(sellerPrivkey, this.network);
   var selPubKeyBuf = sellerECPair.getPublicKeyBuffer();
-  var redeemScript = await (toDigest(preImageHash), selPubKeyBuf,  buyPubKeyBuf, timeout, this.network)
+  var htlc = await htlcAddress(toDigest(preImageHash), selPubKeyBuf,  buyPubKeyBuf, timeout, this.network);
+  var redeemScript = htlc.redeemScript;
   var destination = await getAddress();
   var transObject = await getRawTransactionObject(htlcTransId);
   var satoshi = transObject.vout[0].value*100000000; // multiply with hundred million to get satoshi
   var tx = await buildReedemTransaction(htlcTransId, this.network, destination, satoshi);
   var signatureHash = tx.hashForSignature(0, redeemScript, bitcoinjs.Transaction.SIGHASH_ALL);
-  var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode([ //This whole thing is the stack that will run through the script
+  var stack = [ //This whole thing is the stack that will run through the script
     sellerECPair.sign(signatureHash).toScriptSignature(bitcoinjs.Transaction.SIGHASH_ALL),
     sellerECPair.getPublicKeyBuffer(),
     Buffer.from(preImageHash),
     bitcoinjs.opcodes.OP_TRUE
-  ], redeemScript);
+  ];
+  var redeemScriptSig = bitcoinjs.script.scriptHash.input.encode(stack, redeemScript);
   tx.setInputScript(0, redeemScriptSig);
   return new Promise(function(resolve, reject) {
     this.rpc.sendRawTransaction(tx.toHex(), true, (err, ret) => {
       if (err) {
+        // console.log(err);
         reject(err);
       } else {
         resolve(ret.result);
@@ -486,7 +500,7 @@ async function redeemAsSeller(preImageHash, wallet, message) {
 async function buildReedemTransaction(htlcTransId, network, destination, satoshi) {
   var vout = await voutFromTransaction(htlcTransId);
   var txb = new bitcoinjs.TransactionBuilder(network);
-  txb.addInput(htlcTransId, vout, 0xfffffffe);
+  txb.addInput(htlcTransId, vout, 0xffffffff);
   txb.addOutput(destination, satoshi - 400);
   var tx = txb.buildIncomplete();
   return tx;

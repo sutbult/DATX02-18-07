@@ -5,6 +5,8 @@
         "test": "node_modules/.bin/jest --runInBand"
     },
     "dependencies": {
+        "bip65": "^1.0.3",
+        "bitcoind-rpc": "^0.7.1",
         "child_process": "^1.0.2",
         "express": "^4.16.2",
         "ipfs": "0.28.2",
