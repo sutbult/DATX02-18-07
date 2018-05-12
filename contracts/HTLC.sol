@@ -6,10 +6,10 @@ contract HTLC {
 
     event Claim(string _hash);
 
-    function HTLC(bytes32 _digest, address _dest, uint256 _hoursLocked) public {
+    function HTLC(bytes32 _digest, address _dest, uint256 _secondsLocked) public {
         digest = _digest;
         dest = _dest;
-        unlockAtTime = now + (_hoursLocked * 1 hours);
+        unlockAtTime = now + _secondsLocked;
     }
     
     function claim(string _hash) public returns(bool result) {
