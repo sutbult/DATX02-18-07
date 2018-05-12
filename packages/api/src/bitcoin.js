@@ -70,7 +70,6 @@ async function send(wallet, digest, selPubKey, btc, timeoutOffset) {
   receipt.contractAddress = txid;
   receipt.digest = digest;
   receipt.timelock = timeout;
-  receipt.address = buyPubKey;
   return receipt;
 }
 
@@ -463,10 +462,7 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc
   });
 }
 
-async function redeemAsSeller(preImageHash, wallet, message) {
-  var htlcTransId = message.contractAddress;
-  var timeout = message.timelock;
-  var buyPubKeyBuf = message.address;
+async function redeemAsSeller(preImageHash, wallet, htlcTransId, buyPubKeyBuf, timeout); {
   var sellerPrivkey = await getPrivkeyFromAddr(wallet.address);
   var sellerECPair = bitcoinjs.ECPair.fromWIF(sellerPrivkey, this.network);
   var selPubKeyBuf = sellerECPair.getPublicKeyBuffer();
@@ -489,9 +485,9 @@ async function redeemAsSeller(preImageHash, wallet, message) {
     this.rpc.sendRawTransaction(tx.toHex(), true, (err, ret) => {
       if (err) {
         // console.log(err);
-        reject(err);
+        reject(false);
       } else {
-        resolve(ret.result);
+        resolve(true);
       }
     });
   });
