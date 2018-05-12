@@ -128,8 +128,10 @@ async function acceptBid(bid, address, callback){
 
     var acceptMessage = new Object();
     acceptMessage.step = 1;
-    acceptMessage.address = address;
     acceptMessage.bid = bid;
+    acceptMessage.currencySeller = new Object();
+    acceptMessage.currencyBuyer = new Object();
+    acceptMessage.currencySeller.buyerAddress = address;
 
     var JSONObject = JSON.stringify(acceptMessage);
     var returnvalue = await channel.add(JSONObject);
