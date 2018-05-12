@@ -60,11 +60,21 @@ async function main() {
 
 }
 async function send(wallet, digest, selPubKey, btc, timeoutOffset) {
-    console.log("SENDING\n");
+  console.log("wallet");
+  console.log(wallet);
+  console.log("selPubKey");
+  console.log(selPubKey);
+  console.log(selPubKey.pubkey);
+
+  var rpc = this.rpc;
   var buyPubKey = wallet.pubkey;
+  console.log("1");
   var timeout = await generateTimeout.bind(this)(timeoutOffset);
-  var htlc = await htlcAddress.bind(this)(digest, selPubKey, buyPubKey, timeout, this.network);
-  var txid = await sendToHTLC.bind(this)(htlc.address, btc);
+  console.log("2");
+    var htlc = await htlcAddress.bind(this)(digest, Buffer.from(selPubKey.pubkey.data), Buffer.from(buyPubKey), timeout, this.network);
+  console.log("3");
+  var txid = await sendToHTLC.bind(this)(htlc.address, btc/100000000);
+  console.log("4");
   receipt = new Object();
   receipt.contractAddress = txid;
   receipt.digest = digest;
@@ -92,9 +102,9 @@ function Bitcoin(host, port, network) {
 }
 
 async function wallet() {
-    console.log("RETRIEVING WALLET\n");
+  rpc = this.rpc;
   var res = {};
-  var addrPriv = await getAddrPrivkeyPair.bind(this)();
+  var addrPriv = await getAddrPrivkeyPair.bind(this)(rpc);
   var privkey = addrPriv.privkey;
   var ECPair = bitcoinjs.ECPair.fromWIF(privkey, this.network);
   var publicKeyBuffer = ECPair.getPublicKeyBuffer();
@@ -121,7 +131,7 @@ function DefaultBitcoinClient() {
     // pass: 'pass'
     // host: '127.0.0.1'
     // port: '8332'
-  }
+  };
   rpc = new RpcClient(config);
 }
 
@@ -134,7 +144,7 @@ function unlockAccount(user, pass) {
 
 function ping(callback) {
   var result = {'error': '', 'status': ''};
-  this.rpc.getNetworkInfo(function (err, ret) {
+  rpc.getNetworkInfo(function (err, ret) {
     if (err) {
       result.error = err;
     } else {
@@ -145,6 +155,7 @@ function ping(callback) {
 }
 
 function getBalance() {
+  var rpc = this.rpc;
     return new Promise(((resolve, reject) => {
     var result = {'error': '', 'balance': ''};
     if (this.rpc === undefined) {
@@ -152,7 +163,7 @@ function getBalance() {
       resolve(result);
       return;
     }
-    this.rpc.getBalance((err, ret) => {
+    rpc.getBalance((err, ret) => {
       if (err) {
         reject(err);
       } else {
@@ -164,9 +175,9 @@ function getBalance() {
 
 function getAddress() {
   return new Promise((resolve, reject) => {
-    this.rpc.getNewAddress((err, ret) => {
+    rpc.getNewAddress((err, ret) => {
       if (err) {
-        reject(err)
+          reject(err);
       }
       resolve(ret.result);
     });
@@ -175,7 +186,7 @@ function getAddress() {
 
 function generateBlock() {
   return new Promise(function(resolve, reject) {
-    this.rpc.generate(1, (err, ret) => {
+    rpc.generate(1, (err, ret) => {
       if (err) {
         console.log(err);
         reject(err);
@@ -195,12 +206,12 @@ async function voutFromTransaction(transId) {
 
 async function getRawTransactionObject(transId) {
     return new Promise(((resolve, reject) => {
-    this.rpc.getRawTransaction(transId, (err, ret) => {
+    rpc.getRawTransaction(transId, (err, ret) => {
       if (err) {
         reject(err);
       }
       var rawTransaction = ret.result;
-      this.rpc.decodeRawTransaction(rawTransaction, (err1, ret1) => {
+      rpc.decodeRawTransaction(rawTransaction, (err1, ret1) => {
         if (err1) {
           reject(err1);
         } else {
@@ -211,14 +222,14 @@ async function getRawTransactionObject(transId) {
     }).bind(this));
 }
 
-function getAddrPrivkeyPair() {
+function getAddrPrivkeyPair(rpc) {
   result = {};
     return new Promise(((resolve, reject) => {
     this.rpc.getNewAddress((err1, addr) => {
       if (err1) {
         resolve(err1);
       } else {
-        this.rpc.dumpPrivKey(addr.result.toString(), (err2, priv) => {
+        rpc.dumpPrivKey(addr.result.toString(), (err2, priv) => {
           if (err2) {
             reject(err2)
           } else {
@@ -255,15 +266,16 @@ async function test() {
 }
 
 async function getAddressFromTransation(txid) {
-  this.rpc.getRawTransaction()
+  rpc.getRawTransaction()
 }
 
 async function checkForSecret(txid, numBlocks) {
+  var rpc = this.rpc;
 
   result = {'secret': '', found: false}
     return new Promise((async function(resolve, reject) {
 
-    this.rpc.getBestBlockHash(async function(err1, ret1) {
+    rpc.getBestBlockHash(async function(err1, ret1) {
       if (err1) {
         reject(err1);
       } else {
@@ -338,13 +350,16 @@ function toDigest(secret){
   return bcrypto.sha256(secret);
 }
 
-function sendToHTLC(address, btc) {
+async function sendToHTLC(address, btc) {
+  console.log("btc");
+  console.log(btc);
     return new Promise(((resolve, reject) => {
-    this.rpc.sendToAddress(address, btc, (err, ret) => {
+    rpc.sendToAddress(address, btc, (err, ret) => {
       if (err) {
         console.log(err);
         reject(err);
       } else {
+        console.log(ret);
         resolve(ret.result);
       }
     });
@@ -369,7 +384,7 @@ async function generateTimeout(offset) {
       if (err) {
         reject(err);
       } else {
-        this.rpc.getBlock(ret.result, 1, (err1, ret1) => {
+        rpc.getBlock(ret.result, 1, (err1, ret1) => {
           if (err1) {
             reject(err1)
           } else {
@@ -426,7 +441,7 @@ function htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
   ([
     bitcoinjs.opcodes.OP_IF,
     bitcoinjs.opcodes.OP_SHA256,
-    digest,
+    Buffer.from(digest),
     bitcoinjs.opcodes.OP_EQUALVERIFY,
     bitcoinjs.opcodes.OP_DUP,
     bitcoinjs.opcodes.OP_HASH160,
@@ -442,6 +457,7 @@ function htlc(digest, sellerPublicKeyBuffer, buyerPublicKeyBuffer, timeout) {
     bitcoinjs.opcodes.OP_EQUALVERIFY,
     bitcoinjs.opcodes.OP_CHECKSIG
   ]);
+  console.log("compiled");
   return text;
 }
 
@@ -465,6 +481,7 @@ async function redeemAsBuyer(buyerECPair, network, htlcTransId, destination, btc
 }
 
 async function redeemAsSeller(preImageHash, wallet, htlcTransId, buyPubKeyBuf, timeout) {
+  var rpc = this.rpc;
   var sellerPrivkey = await getPrivkeyFromAddr.bind(this)(wallet.address);
   var sellerECPair = bitcoinjs.ECPair.fromWIF(sellerPrivkey, this.network);
   var selPubKeyBuf = sellerECPair.getPublicKeyBuffer();

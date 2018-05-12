@@ -27,7 +27,7 @@ var currencies =
 //Called from an interval set in index.js if bid has been accepted
 //bid is accepted if the bid.channel contains a step 2
 async function runSeller(whisper){
-    var message, currency_seller, currency_buyer, receipt;
+    var message, currency_seller, currency_buyer, receipt, wallet;
     //remove bid from db to prevent multiple contracts
 
     //use random function to get a good secret
@@ -40,16 +40,20 @@ async function runSeller(whisper){
 
     currency_seller = currencies[message.bid.to.currency];
     currency_buyer = currencies[message.bid.from.currency];
+    currency_seller.unlock();
 
     
+    wallet = await currency_seller.wallet();
     
-    receipt = await issueSellerContract(currency_seller, message, secret);
+    receipt = await issueSellerContract(wallet, currency_seller, message, secret);
 
     message.digest = receipt.digest;
     message.timelock = receipt.timelock;
     message.currencySeller.contract = receipt.contractAddress;
     message.currencyBuyer.sellerAddress = currency_buyer.wallet();
-    message.currencySeller.sellerAddress = currency_seller.wallet();
+
+    console.log("HEJHEJHEJHEJ: " + JSON.stringify(message.currencyBuyer.sellerAddress));
+    message.currencySeller.sellerAddress = wallet;
     
     console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
 
@@ -95,10 +99,9 @@ async function validateBuyerContract(currency_buyer, message){
     return valid;
 }
 
-async function issueSellerContract(currency_seller, message, secret){
-    var wallet, to, value, result, receipt;
+async function issueSellerContract(wallet, currency_seller, message, secret){
+    var to, value, result, receipt;
 
-    wallet = await currency_seller.wallet();
 
     //Make sure only one contract is deployed, this does that by changing status to pending
     if(wallet != null){
@@ -123,7 +126,7 @@ async function issueSellerContract(currency_seller, message, secret){
 
 async function runBuyer(whisper){
     //In pushContractInfo we send a json object, otherwise we send a string
-    var message, receipt, currency_seller, currency_buyer, valid, exchange_to, exchange_from;
+    var message, receipt, currency_seller, wallet, currency_buyer, valid, exchange_to, exchange_from;
 
     if(whisper.constructor === {}.constructor) message = whisper;
     else message = JSON.parse(whisper);
@@ -137,10 +140,13 @@ async function runBuyer(whisper){
     if (valid){
         console.log("ヽ(ヅ)ノ Buyer finds Seller contract valid! ヽ(ヅ)ノ");
 
-        receipt = await issueBuyerContract.bind(this)(currency_buyer, message);
+	
+	wallet = await currency_buyer.wallet();
 
-        message.currencySeller.buyerAddress = currency_buyer.wallet();
-        message.currencyBuyer.buyerAddress = currency_seller.wallet();
+        receipt = await issueBuyerContract.bind(this)(wallet, currency_buyer, message);
+
+        message.currencySeller.buyerAddress = currency_seller.wallet();
+        message.currencyBuyer.buyerAddress = wallet;
         message.currencyBuyer.contract = receipt.contractAddress;
 
         require("./OrbitDBHandler.js").pushContractInfo(receipt, message, claimSellerContract);
@@ -163,10 +169,10 @@ async function validateSellerContract(currencySeller, message){
     return true;
 }
 
-async function issueBuyerContract(currency_buyer, message){
-    var wallet, receipt, to, digest, value, result;
+async function issueBuyerContract(wallet, currency_buyer, message){
+    var receipt, to, digest, value, result;
 
-    wallet = await currency_buyer.wallet();
+    console.log(message);
 
     if(wallet != null){
         to = message.currencyBuyer.sellerAddress;
