@@ -51,6 +51,8 @@ async function runSeller(whisper){
     message.currencySeller.sellerAddress = currency_seller.wallet();
 
     console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
+    console.log("message");
+    console.log(message);
 
     require("./OrbitDBHandler.js").pushDigestInfo(message, claimBuyerContract, secret);
 
