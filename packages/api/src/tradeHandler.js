@@ -21,7 +21,7 @@ var currencies =
     {
 	ETH: require("./ethereum.js").Ether("http://localhost:8545"),
 	ETC: require("./ethereum.js").Ether("http://localhost:8546")
-	// BTC: require("./bitcoin.js").BitcoinTest('127.0.0.1', '16592')
+	BTC: require("./bitcoin.js").BitcoinTest('127.0.0.1', '16592')
     };
 
 //Called from an interval set in index.js if bid has been accepted
@@ -48,7 +48,7 @@ async function runSeller(whisper){
     message.currencySeller.contract = receipt.contractAddress;
     message.currencyBuyer.sellerAddress = currency_buyer.wallet();
     message.currencySeller.sellerAddress = currency_seller.wallet();
-    
+
     console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
 
     require("./OrbitDBHandler.js").pushDigestInfo(message, claimBuyerContract, secret);
@@ -85,7 +85,7 @@ async function validateBuyerContract(currency_buyer, message){
 
     console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
     console.log(message);
-    
+
     wallet = await currency_buyer.wallet();
     valid = await currency_buyer.validate(message.currencyBuyer.contract, message.currencyBuyer.buyerAddress, wallet, message.bid.from.amount, message.digest, message.timelock, 7920);
 
@@ -94,9 +94,9 @@ async function validateBuyerContract(currency_buyer, message){
 
 async function issueSellerContract(currency_seller, message, secret){
     var wallet, to, value, result, receipt;
-    
+
     wallet = await currency_seller.wallet();
-    
+
     //Make sure only one contract is deployed, this does that by changing status to pending
     if(wallet != null){
         to = message.currencySeller.buyerAddress;
@@ -107,7 +107,7 @@ async function issueSellerContract(currency_seller, message, secret){
 
         console.log("(´･ω･`) Sending first contract (´･ω･`)");
         receipt = await currency_seller.send(wallet, sha256.hash(secret), to, value, refund_seller);
-        
+
         console.log("(´･ω･`) Maybe sent first contract (´･ω･`)");
 
         return receipt;
@@ -133,13 +133,13 @@ async function runBuyer(whisper){
 
     if (valid){
         console.log("ヽ(ヅ)ノ Buyer finds Seller contract valid! ヽ(ヅ)ノ");
-        
+
         receipt = await issueBuyerContract.bind(this)(currency_buyer, message);
 
         message.currencySeller.buyerAddress = currency_buyer.wallet();
         message.currencyBuyer.buyerAddress = currency_seller.wallet();
         message.currencyBuyer.contract = receipt.contractAddress;
-	
+
         require("./OrbitDBHandler.js").pushContractInfo(receipt, message, claimSellerContract);
     }
     else {
@@ -162,7 +162,7 @@ async function validateSellerContract(currencySeller, message){
 
 async function issueBuyerContract(currency_buyer, message){
     var wallet, receipt, to, digest, value, result;
-    
+
     wallet = await currency_buyer.wallet();
 
     if(wallet != null){
@@ -188,15 +188,15 @@ async function issueBuyerContract(currency_buyer, message){
 
 async function claimBuyerContract(whisper, secret){
     var wallet, currency_buyer, message;
-    
+
     message = getMessage(whisper);
-    
+
     currency_buyer = currencies[message.bid.from.currency];
-    
+
     wallet = await currency_buyer.wallet();
-    
+
     console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
-    
+
     try{
         return await currency_buyer.claim(secret, wallet, message.currencyBuyer.contract, message.currencyBuyer.buyerAddress,  message.digest, message.timelock );
     }catch(e){
@@ -208,27 +208,27 @@ async function claimBuyerContract(whisper, secret){
 
 async function claimSellerContract(whisper){
     var search_result, claim_result, currency_buyer, currency_seller, wallet, message;
-    
+
     message = getMessage(whisper);
-    
+
     currency_buyer = currencies[message.bid.from.currency];
     currency_seller = currencies[message.bid.to.currency];
-    
+
     console.log("Second User Claiming from: " + message.currencySeller.contract);
     console.log("(´･ω･`) Searching for secret (´･ω･`)");
-    
+
     wallet = await currency_seller.wallet();
-    
+
     while(true){
         console.log("Looping");
         search_result = await currency_buyer.search(message.currencyBuyer.contract, 0);
-        
-        if(search_result.claimed){            
+
+        if(search_result.claimed){
             console.log("(´･ω･`) Found secret (´･ω･`)");
             console.log("(´･ω･`) Claiming contract (´･ω･`)");
-            
+
             claim_result = await currency_seller.claim(search_result.secret, wallet, message.currencySeller.contract, message.currencySeller.sellerAddress, message.digest, message.timelock);
-            
+
             return claim_result;
         }
     }
@@ -236,10 +236,10 @@ async function claimSellerContract(whisper){
 }
 function getMessage(whisper){
     var message;
-    
+
     if(whisper.constructor === {}.constructor) message = whisper;
     else message = JSON.parse(whisper);
-    
+
     return message;
 }
 

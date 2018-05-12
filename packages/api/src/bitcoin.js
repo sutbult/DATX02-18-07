@@ -123,8 +123,8 @@ function DefaultBitcoinClient() {
 }
 
 function unlockAccount(user, pass) {
-  this.config.user = user;
-  this.config.pass = pass;
+  this.config.user = "bitcoinrpc";
+  this.config.pass = "password";
   this.rpc = new RpcClient(this.config);
 }
 
