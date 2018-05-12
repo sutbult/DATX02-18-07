@@ -151,7 +151,7 @@ async function bidAccepted(bid, callback){
 }
 
 //If correct step is found the information in the channel will be returned to the callback function
-function checkForStep(step, callback) {
+function checkForStep(step, callback, secret) {
     var message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
     try{
 	console.log(message);
@@ -169,7 +169,7 @@ function checkForStep(step, callback) {
 		    message = channel.iterator({ limit: 1 }).collect().map((e) => e.payload.value);
 		} else {
 		    clearInterval(timer);
-		    callback(message);
+		    callback(message, secret);
 		}
 
 	    }catch(e){
@@ -179,7 +179,7 @@ function checkForStep(step, callback) {
     }, 5000);
 }
 
-async function pushDigestInfo(contractInfo, func) {
+async function pushDigestInfo(contractInfo, func, secret) {
 
     // var messaging = await createDB(contractInfo.channel, "log", "public"); //Additions
     // channel = await getLogDB(messaging);
@@ -195,18 +195,16 @@ async function pushDigestInfo(contractInfo, func) {
 
     var digestMessage = JSON.stringify(jsonObj);
     await channel.add(digestMessage);
-    checkForStep(3,func);
+    checkForStep(3, func, secret);
 }
 
-async function pushContractInfo(contract, message, callback) {
+async function pushContractInfo(message, callback) {
     //Will wait until the contract is deployed on the blockchain
 
     var jsonMessage = message;
     jsonMessage.step = 3; //recycling step 3 data, need to update some values
-    jsonMessage.contractAddress = contract.contractAddress;
     var contractMessage = JSON.stringify(jsonMessage);
 
-    message.promise = contract.promise;
     channel.add(contractMessage);
     callback(message);
 }

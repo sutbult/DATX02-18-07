@@ -236,7 +236,6 @@ async function sendContract(args, from_address, value_in_wei){
     receipt.contractAddress = contract_address;
     receipt.digest = args[0];
     receipt.timelock = await contract.methods.unlockAtTime().call();
-    receipt.address = from_address; //this is incorrect, remove
     //returnObj.promise = subPromise;
     return receipt;
 }
