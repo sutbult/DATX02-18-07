@@ -35,12 +35,15 @@ function construct (balance, send, validate, claim, search, unlock, wallet) {
      */
     this.validate = validate;
 
-    /** claim(secret, account, message)
+    /** claim(secret, account, contract, creator, digest, timelock)
      * @param {string} secret - The pre image hash of the digest in
      * the contract
      * @param {hex} account - The address/account to unlock the
      * contract with
-     * @param {object} message - All the previous information in "message format"
+     * @param {hex} contract - The address of the contract
+     * @param {hex} creator - The creator of the contract
+     * @param {int} timelock - the timestamp when the contract is
+     * unlocked
      * @returns {bool} Returns true if it's claimed
      */
     this.claim = claim;
