@@ -27,7 +27,7 @@ var currencies =
 //Called from an interval set in index.js if bid has been accepted
 //bid is accepted if the bid.channel contains a step 2
 async function runSeller(whisper){
-    var message, currency, receipt;
+    var message, currency_seller, currency_buyer, receipt;
     //remove bid from db to prevent multiple contracts
 
     //use random function to get a good secret
@@ -39,14 +39,16 @@ async function runSeller(whisper){
 
     console.log("ლಠ益ಠ)ლ From " + message.bid.from.currency);
 
-    currency = currencies[message.bid.to.currency];
+    currency_buyer = currencies[message.bid.to.currency];
+    currency_seller = currencies[message.bid.from.currency];
 
-
-    receipt = await issueSellerContract(currency, message);
+    receipt = await issueSellerContract(currency_seller, message);
 
     console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
 
+    
     receipt.bid = message.bid;
+    receipt.address = await currency_buyer.wallet();
     require("./OrbitDBHandler.js").pushDigestInfo(receipt, unlockWithSecret);
 
 }
@@ -125,20 +127,20 @@ async function issueSellerContract(currency, message){
 
 async function runBuyer(whisper){
     //In pushContractInfo we send a json object, otherwise we send a string
-    var message, receipt, currency, valid, exchange_to, exchange_from;
+    var message, receipt, currency_seller, currency_buyer, valid;
 
     if(whisper.constructor === {}.constructor) message = whisper;
     else message = JSON.parse(whisper);
 
-    exchange_to = currencies[message.bid.from.currency];
-    exchange_from = currencies[message.bid.to.currency];
+    currency_seller = currencies[message.bid.from.currency];
+    currency_buyer = currencies[message.bid.to.currency];
 
     console.log("To " + message.bid.to.currency);
-    valid = await validateSellerContract(exchange_from, message);
+    valid = await validateSellerContract(currency_seller, message);
 
     if (valid){
         console.log("ヽ(ヅ)ノ Buyer finds Seller contract valid! ヽ(ヅ)ノ");
-        receipt = await issueBuyerContract.bind(this)(exchange_to, message);
+        receipt = await issueBuyerContract.bind(this)(currency_buyer, message);
         require("./OrbitDBHandler.js").pushContractInfo(receipt, message, unlockWithSecret);
     }
     else {
