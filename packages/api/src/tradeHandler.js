@@ -198,7 +198,7 @@ async function claimBuyerContract(whisper, secret){
     console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
     
     try{
-        return await currency_buyer.claim(secret, wallet, message.currencyBuyer.contract, message.currencyBuyer.buyerAddress,  message.digest, message.timelock );
+        return await currency_buyer.claim(secret, wallet, message.currencyBuyer.contract, message.currencyBuyer.buyerAddress, message.timelocxk );
     }catch(e){
         console.log("Claim was wrong: %s", e);
 	return false;
@@ -227,7 +227,7 @@ async function claimSellerContract(whisper){
             console.log("(´･ω･`) Found secret (´･ω･`)");
             console.log("(´･ω･`) Claiming contract (´･ω･`)");
             
-            claim_result = await currency_seller.claim(search_result.secret, wallet, message.currencySeller.contract, message.currencySeller.sellerAddress, message.digest, message.timelock);
+            claim_result = await currency_seller.claim(search_result.secret, wallet, message.currencySeller.contract, message.currencySeller.sellerAddress, message.timelock);
             
             return claim_result;
         }
