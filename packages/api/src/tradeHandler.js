@@ -91,15 +91,14 @@ async function unlockWithSecret(whisper){
 }
 
 async function validateBuyerContract(currency, message){
-    // var valid;
-    //
-    // console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
-    // console.log(message);
-    // var wallet = await currency.wallet();
-    // valid = await currency.validate(message.contractAddress, wallet, message.bid.from.amount, message.digest, message.timelock, 7920);
-    //
-    // return valid;
-    return true;
+     var valid;
+
+     console.log("(´･ω･`) Seller validating Buyer contract (´･ω･`)");
+     console.log(message);
+     var wallet = await currency.wallet();
+     valid = await currency.validate(message.contractAddress, wallet, message.bid.from.amount, message.digest, message.timelock, 7920);
+
+     return valid;
 }
 
 async function issueSellerContract(currency, message){
@@ -136,7 +135,7 @@ async function runBuyer(whisper){
     currency_buyer = currencies[message.bid.from.currency];
 
     console.log("To " + message.bid.to.currency);
-    valid = await validateSellerContract(currency_seller, message);
+    valid = await validateSellerContract(currency_buyer, message);
 
     if (valid){
         console.log("ヽ(ヅ)ノ Buyer finds Seller contract valid! ヽ(ヅ)ノ");
@@ -151,14 +150,13 @@ async function runBuyer(whisper){
 }
 
 async function validateSellerContract(currency, message){
-  /*  var valid;
+    var valid;
 
     console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
     var wallet = await currency.wallet();
     valid = await currency.validate(message.contractAddress, wallet, message.bid.to.amount, message.digest, message.timelock, 15840);
 
-    return valid;*/
-    return true;
+    return valid;
 }
 
 async function issueBuyerContract(currency, message){
@@ -192,6 +190,9 @@ async function claim(fromCurrency, toCurrency, message){
         contract = message.contractAddress;
 
         if(message.secret != null){
+          valid = await validateBuyerContract(fromCurrency, message);
+          if(valid){
+            console.log("Contract is valid! " + valid);
             console.log("(´･ω･`) Unlocking with original secret (´･ω･`)");
             secret = message.secret;
             try{
@@ -201,6 +202,11 @@ async function claim(fromCurrency, toCurrency, message){
             }catch(e){
                 console.log("Claim was wrong: %s", e);
             }
+          }
+          else {
+            console.log("(-公- ;) Seller finds Buyer contract invalid... (-公- ;) " + valid);
+            //WHAT SHOULD HAPPEN HERE??
+          }
         }else{
           contract = require("./OrbitDBHandler.js").getContract();
           console.log("Second User Claiming from: " + contract)
