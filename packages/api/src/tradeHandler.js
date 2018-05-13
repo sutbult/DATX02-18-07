@@ -135,7 +135,7 @@ async function runBuyer(whisper){
     currency_buyer = currencies[message.bid.from.currency];
 
     console.log("To " + message.bid.to.currency);
-    valid = await validateSellerContract(currency_buyer, message);
+    valid = await validateSellerContract(currency_seller, message);
 
     if (valid){
         console.log("ヽ(ヅ)ノ Buyer finds Seller contract valid! ヽ(ヅ)ノ");
