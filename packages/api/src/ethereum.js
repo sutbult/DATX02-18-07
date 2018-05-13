@@ -131,7 +131,7 @@ async function validateRefund(contract_address, unlock_time, time_margin){
     console.log("unlock time: " + unlock_time);
     console.log("latest block: " + latest_block.timestamp);
     console.log("time margin: " + time_margin);
-    console.log("difference: " + (unlock_time - latest_block.timestamp));
+    console.log("difference: " + (contract_unlock_time - latest_block.timestamp));
     return contract_unlock_time == unlock_time &&
 	(unlock_time - latest_block.timestamp) > time_margin;
 }
