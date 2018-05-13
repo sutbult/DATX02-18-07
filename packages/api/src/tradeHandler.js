@@ -39,14 +39,14 @@ async function runSeller(whisper){
 
     console.log("ლಠ益ಠ)ლ From " + message.bid.from.currency);
 
-    currency_buyer = currencies[message.bid.to.currency];
-    currency_seller = currencies[message.bid.from.currency];
+    currency_buyer = currencies[message.bid.from.currency];
+    currency_seller = currencies[message.bid.to.currency];
 
     receipt = await issueSellerContract(currency_seller, message);
 
     console.log("ლಠ益ಠ)ლ RESULT ლಠ益ಠ)ლ " + receipt);
 
-    
+
     receipt.bid = message.bid;
     receipt.address = await currency_buyer.wallet();
     require("./OrbitDBHandler.js").pushDigestInfo(receipt, unlockWithSecret);
@@ -132,8 +132,8 @@ async function runBuyer(whisper){
     if(whisper.constructor === {}.constructor) message = whisper;
     else message = JSON.parse(whisper);
 
-    currency_seller = currencies[message.bid.from.currency];
-    currency_buyer = currencies[message.bid.to.currency];
+    currency_seller = currencies[message.bid.to.currency];
+    currency_buyer = currencies[message.bid.from.currency];
 
     console.log("To " + message.bid.to.currency);
     valid = await validateSellerContract(currency_seller, message);
