@@ -96,7 +96,7 @@ async function validateBuyerContract(currency, message){
      console.log("(´･ω･`) Seller validating Buyer contract (´･ω･`)");
      console.log(message);
      var wallet = await currency.wallet();
-     valid = await currency.validate(message.contractAddress, wallet, message.bid.from.amount, message.digest, message.timelock, 7920);
+     valid = await currency.validate(message.contractAddress, wallet, message.bid.from.amount, message.digest, message.timelock, 79200);
 
      return valid;
 }
@@ -154,7 +154,7 @@ async function validateSellerContract(currency, message){
 
     console.log("(´･ω･`) Buyer validating Seller contract (´･ω･`)");
     var wallet = await currency.wallet();
-    valid = await currency.validate(message.contractAddress, wallet, message.bid.to.amount, message.digest, message.timelock, 15840);
+    valid = await currency.validate(message.contractAddress, wallet, message.bid.to.amount, message.digest, message.timelock, 158400);
 
     return valid;
 }
