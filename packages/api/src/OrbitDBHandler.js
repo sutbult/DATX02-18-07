@@ -202,6 +202,8 @@ async function pushContractInfo(contract, message, callback) {
     var jsonMessage = message;
     jsonMessage.step = 3; //recycling step 3 data, need to update some values
     jsonMessage.contractAddress = contract.contractAddress;
+    jsonMessage.timelock = contract.timelock;
+    jsonMessage.digest = contract.digest;
     var contractMessage = JSON.stringify(jsonMessage);
 
     message.promise = contract.promise;
