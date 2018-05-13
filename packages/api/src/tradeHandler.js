@@ -4,11 +4,11 @@ const sha256 = require("./sha256.js");
 
 // Refund time (in hours) and the time margin when validating the first contract (in seconds)
 const refund_seller = 172800; // 48 hours in seconds
-const margin_seller = 7920; //22 hours in seconds
+const margin_seller = 79200; //22 hours in seconds
 
 // Refund time (in hours) and the time margin when validating the second contract (in seconds)
 const refund_buyer = 86400; // 24 hours in seconds
-const margin_buyer = 15840; //44 hours in seconds
+const margin_buyer = 158400; //44 hours in seconds
 
 //"global" variable, will be assigned if function whenBidAccepted is called, otherwise stays null
 var secret = null;

@@ -127,9 +127,11 @@ async function validateRefund(contract_address, unlock_time, time_margin){
     contract = new this.chain.eth.Contract(this.contract.abi, contract_address);
     contract_unlock_time = await contract.methods.unlockAtTime().call();
     latest_block = await this.chain.eth.getBlock('latest');
+    console.log("contract_unlock_time: ", contract_unlock_time);
     console.log("unlock time: " + unlock_time);
     console.log("latest block: " + latest_block.timestamp);
     console.log("time margin: " + time_margin);
+    console.log("difference: " + (unlock_time - latest_block.timestamp));
     return contract_unlock_time == unlock_time &&
 	(unlock_time - latest_block.timestamp) > time_margin;
 }
